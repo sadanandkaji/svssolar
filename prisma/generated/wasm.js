@@ -266,6 +266,25 @@ exports.Prisma.QuotationFixedCostScalarFieldEnum = {
   sortOrder: 'sortOrder'
 };
 
+exports.Prisma.EmployeeScalarFieldEnum = {
+  id: 'id',
+  companyId: 'companyId',
+  name: 'name',
+  email: 'email',
+  passwordHash: 'passwordHash',
+  role: 'role',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  employeeId: 'employeeId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -309,6 +328,12 @@ exports.QuotationStatus = exports.$Enums.QuotationStatus = {
   APPROVED: 'APPROVED'
 };
 
+exports.EmployeeRole = exports.$Enums.EmployeeRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  STAFF: 'STAFF'
+};
+
 exports.Prisma.ModelName = {
   Category: 'Category',
   CategoryAttribute: 'CategoryAttribute',
@@ -320,7 +345,9 @@ exports.Prisma.ModelName = {
   Company: 'Company',
   Quotation: 'Quotation',
   QuotationItem: 'QuotationItem',
-  QuotationFixedCost: 'QuotationFixedCost'
+  QuotationFixedCost: 'QuotationFixedCost',
+  Employee: 'Employee',
+  Session: 'Session'
 };
 
 /**

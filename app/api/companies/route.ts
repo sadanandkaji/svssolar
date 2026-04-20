@@ -1,36 +1,20 @@
+// app/api/companies/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAuth } from "@/lib/auth";
 
+// GET /api/companies — returns the logged-in user's company
 export async function GET() {
-  const companies = await prisma.company.findMany({ orderBy: { id: "asc" } });
+  const user = await requireAuth();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const companies = await prisma.company.findMany({
+    where: { id: user.companyId },
+    orderBy: { id: "asc" },
+  });
+
   return NextResponse.json(companies);
 }
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-    const company = await prisma.company.create({
-      data: {
-        name: body.name?.trim(),
-        ownerName: body.ownerName?.trim() || null,
-        address: body.address?.trim() || null,
-        gstNumber: body.gstNumber?.trim() || null,
-        contact: body.contact?.trim() || null,
-        email: body.email?.trim() || null,
-        logoUrl: body.logoUrl?.trim() || null,
-        bankName: body.bankName?.trim() || null,
-        branchName: body.branchName?.trim() || null,
-        accountName: body.accountName?.trim() || null,
-        accountNumber: body.accountNumber?.trim() || null,
-        ifscCode: body.ifscCode?.trim() || null,
-      },
-    });
-    return NextResponse.json(company, { status: 201 });
-  } catch (err: any) {
-    if (err.code === "P2002") {
-      return NextResponse.json({ error: "Company name already exists" }, { status: 409 });
-    }
-    console.error(err);
-    return NextResponse.json({ error: err.message || "Failed to create company" }, { status: 500 });
-  }
-}
+// POST is intentionally removed — no self-registration in this version.
+// The database is seeded with the default company and owner account.
