@@ -58,7 +58,7 @@ const GST_OPTIONS = ["0", "5", "12", "18", "28"];
 const PAYMENT_TYPES = ["Cash", "Cheque", "UPI", "NEFT", "RTGS", "Bank Transfer"];
 const SYSTEM_TYPES = ["On Grid", "Off Grid", "Hybrid", "Solar pump"];
 const PANEL_TYPES = ["DCR","NON DCR"];
-const PHASES = ["Single-Phase", "Three-Phase"];
+const PHASES = ["Single Phase", "Three Phase"];
 
 const DEFAULT_FIXED_COSTS: Omit<FixedCost, "id">[] = [
   { label: "Miscellaneous", cost: "0", rateNote: "₹1.5/W", gstRate: "18", total: 0, included: true },

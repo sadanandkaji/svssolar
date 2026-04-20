@@ -1,7 +1,6 @@
 // app/api/barcode/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import bwipjs from "bwip-js";
-
+import * as bwipjs from "bwip-js";
 // Maps our BarcodeType enum to bwip-js bcid strings
 const BCID_MAP: Record<string, string> = {
   CODE128: "code128",
@@ -52,15 +51,15 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const svg = bwipjs.toSVG({
-      bcid,
-      text: barcodeText,
-      scale: 2,
-      height: type === "QRCODE" ? 20 : 10,
-      includetext: type !== "QRCODE",
-      textxalign: "center",
-      textsize: 8,
-    });
+    const svg = (bwipjs as any).toSVG({
+  bcid,
+  text: barcodeText,
+  scale: 2,
+  height: type === "QRCODE" ? 20 : 10,
+  includetext: type !== "QRCODE",
+  textxalign: "center",
+  textsize: 8,
+});
 
     return new NextResponse(svg, {
       status: 200,
