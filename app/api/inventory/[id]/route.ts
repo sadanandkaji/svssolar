@@ -15,7 +15,6 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
     include: {
       product: { select: { id: true, name: true, sku: true, barcodeHandling: true, barcodeType: true } },
       warehouse: { select: { id: true, name: true } },
-      franchise: { select: { id: true, name: true } },
       uniqueBarcodes: { select: { id: true, barcode: true } },
     },
   });
@@ -86,7 +85,6 @@ export async function PUT(req: NextRequest, { params }: RouteContext) {
         include: {
           product: { select: { id: true, name: true, sku: true, barcodeHandling: true, barcodeType: true } },
           warehouse: { select: { id: true, name: true } },
-          franchise: { select: { id: true, name: true } },
           uniqueBarcodes: { select: { id: true, barcode: true } },
         },
       });
