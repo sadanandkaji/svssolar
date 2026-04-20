@@ -1,0 +1,233 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  hsnCode     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  attributes CategoryAttribute[]
+  products   Product[]
+
+  @@map("categories")
+}
+
+model CategoryAttribute {
+  id         Int           @id @default(autoincrement())
+  categoryId Int
+  name       String
+  type       AttributeType @default(TEXT)
+  required   Boolean       @default(false)
+  sortOrder  Int           @default(0)
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, name])
+  @@map("category_attributes")
+}
+
+enum AttributeType {
+  TEXT
+  NUMBER
+  SELECT
+}
+
+model Product {
+  id              Int             @id @default(autoincrement())
+  sku             String          @unique
+  name            String
+  manufacturer    String?
+  categoryId      Int
+  basePrice       Decimal         @default(0) @db.Decimal(12, 2)
+  gstRate         Decimal         @default(0) @db.Decimal(5, 2)
+  barcodeHandling BarcodeHandling @default(SINGLE)
+  barcode         String?         @unique
+  barcodeType     BarcodeType     @default(CODE128)
+  description     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  category        Category                @relation(fields: [categoryId], references: [id])
+  attributeValues ProductAttributeValue[]
+  inventoryItems  InventoryItem[]
+
+  @@map("products")
+}
+
+model ProductAttributeValue {
+  id          Int    @id @default(autoincrement())
+  productId   Int
+  attributeId Int
+  value       String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, attributeId])
+  @@map("product_attribute_values")
+}
+
+enum BarcodeHandling {
+  SINGLE
+  UNIQUE
+}
+
+enum BarcodeType {
+  CODE128
+  EAN13
+  UPCA
+  QRCODE
+}
+
+// ── NEW: WarehouseStatus enum ──────────────────────────────────────────────────
+enum WarehouseStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Warehouse {
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  location  String?
+  status    WarehouseStatus @default(ACTIVE)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  inventoryItems InventoryItem[]
+
+  @@map("warehouses")
+}
+
+model InventoryItem {
+  id          Int      @id @default(autoincrement())
+  productId   Int
+  warehouseId Int
+  quantity    Int      @default(0)
+  salePrice   Decimal  @default(0) @db.Decimal(12, 2)
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product        Product         @relation(fields: [productId], references: [id])
+  warehouse      Warehouse       @relation(fields: [warehouseId], references: [id])
+  uniqueBarcodes UniqueBarcode[]
+
+  @@map("inventory_items")
+}
+
+model UniqueBarcode {
+  id              Int      @id @default(autoincrement())
+  inventoryItemId Int
+  barcode         String   @unique
+  createdAt       DateTime @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id], onDelete: Cascade)
+
+  @@map("unique_barcodes")
+}
+
+model Company {
+  id            Int         @id @default(autoincrement())
+  name          String      @unique
+  ownerName     String? // e.g. DARSHAN K M
+  address       String?
+  gstNumber     String?
+  contact       String?
+  email         String?
+  logoUrl       String?
+  bankName      String?
+  branchName    String?
+  accountName   String?
+  accountNumber String?
+  ifscCode      String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  quotations    Quotation[]
+
+  @@map("companies")
+}
+
+enum QuotationStatus {
+  DRAFT
+  SAVED
+  APPROVED
+}
+
+model Quotation {
+  id              Int                  @id @default(autoincrement())
+  quoteNumber     String               @unique
+  quoteDate       DateTime             @default(now())
+  companyId       Int
+  customerName    String
+  customerAddress String?
+  customerContact String?
+  customerEmail   String?
+  systemType      String?
+  systemSizeKw    Decimal?             @db.Decimal(10, 2)
+  panelType       String?
+  panelWattage    Int?
+  panelCount      Int?
+  outputWattageKw Decimal?             @db.Decimal(10, 2)
+  phase           String?
+  subtotal        Decimal              @default(0) @db.Decimal(14, 2)
+  totalGst        Decimal              @default(0) @db.Decimal(14, 2)
+  discountPercent Decimal              @default(0) @db.Decimal(5, 2)
+  discountAmount  Decimal              @default(0) @db.Decimal(14, 2)
+  finalPrice      Decimal              @default(0) @db.Decimal(14, 2)
+  roundedPrice    Decimal              @default(0) @db.Decimal(14, 2)
+  advancePayment  Decimal              @default(0) @db.Decimal(14, 2)
+  balanceDue      Decimal              @default(0) @db.Decimal(14, 2)
+  paymentType     String?
+  receiverName    String?
+  remarks         String?
+  preparedBy      String?
+  status          QuotationStatus      @default(DRAFT)
+  company         Company              @relation(fields: [companyId], references: [id])
+  items           QuotationItem[]
+  fixedCosts      QuotationFixedCost[]
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  @@map("quotations")
+}
+
+model QuotationItem {
+  id           Int       @id @default(autoincrement())
+  quotationId  Int
+  categoryName String?
+  productName  String
+  description  String?
+  unitPrice    Decimal   @db.Decimal(12, 2)
+  quantity     Decimal   @default(1) @db.Decimal(10, 2)
+  gstRate      Decimal   @default(0) @db.Decimal(5, 2)
+  totalPrice   Decimal   @db.Decimal(14, 2)
+  sortOrder    Int       @default(0)
+  quotation    Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  @@map("quotation_items")
+}
+
+model QuotationFixedCost {
+  id          Int       @id @default(autoincrement())
+  quotationId Int
+  label       String
+  cost        Decimal   @default(0) @db.Decimal(14, 2)
+  rateNote    String?
+  gstRate     Decimal   @default(18) @db.Decimal(5, 2)
+  total       Decimal   @default(0) @db.Decimal(14, 2)
+  included    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+
+  @@map("quotation_fixed_costs")
+}
