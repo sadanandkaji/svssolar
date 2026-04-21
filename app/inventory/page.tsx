@@ -2,7 +2,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,14 +41,7 @@ const PAGE_SIZES: { value: PageSize; label: string }[] = [
   { value: "ALL", label: "All" },
 ];
 
-const NAV_ITEMS = [
-  { href: "/", label: "Dashboard" },
-  { href: "/warehouses", label: "Warehouses" },
-  { href: "/categories", label: "Categories" },
-  { href: "/products", label: "Products" },
-  { href: "/inventory", label: "Inventory" },
-  { href: "/quotations", label: "Quotations" },
-];
+
 
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
@@ -700,36 +692,7 @@ export default function InventoryPage() {
 }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
-
-      <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-rose-600">SVS Inventory Management System</h1>
-          <p className="text-sm text-slate-500">Administrator Dashboard</p>
-        </div>
-
-        {/* Nav */}
-        <nav className="mb-6 border-b border-slate-200">
-          <ul className="flex flex-wrap gap-1">
-            {NAV_ITEMS.map((item) => {
-              const active = item.href === "/inventory";
-              return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`inline-flex items-center rounded-t-md px-4 py-2 text-sm font-medium transition ${
-                      active ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
+    
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* LEFT: Add Form */}
@@ -1061,8 +1024,7 @@ export default function InventoryPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+      
 
       {/* Modals */}
       {viewingBarcodes && (
