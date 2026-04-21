@@ -65,7 +65,7 @@ export default function Navbar() {
   }
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 print:hidden">
       {/* Top header bar with title + user info */}
       <div className="flex items-center justify-between mb-4">
         <div>

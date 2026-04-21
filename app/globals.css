@@ -1,2 +1,18 @@
 @import "tailwindcss";
 
+@media print {
+  /* Hide the app shell navigation */
+  nav,
+  header,
+  aside,
+  [data-sidebar],
+  .navbar,
+  .app-nav {
+    display: none !important;
+  }
+
+  /* Also suppress browser's own header/footer */
+  @page {
+    margin: 0;
+  }
+}
