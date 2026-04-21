@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -49,6 +49,7 @@ type Quotation = {
     id: number;
     categoryName: string | null;
     productName: string;
+    hsnCode: string | null;
     description: string | null;
     unitPrice: string;
     quantity: string;
@@ -60,6 +61,7 @@ type Quotation = {
     label: string;
     cost: string;
     rateNote: string | null;
+    hsnCode: string | null;
     gstRate: string;
     total: string;
     included: boolean;
@@ -100,14 +102,12 @@ function numberToWords(amount: number): string {
   return convert(rounded).trim() + " Rupees Only";
 }
 
-// Split GST into CGST + SGST
 function splitGst(items: Quotation["items"], fixedCosts: Quotation["fixedCosts"]) {
   const gstGroups: Record<string, { taxable: number; cgst: number; sgst: number }> = {};
 
   const processItem = (taxable: number, gstRateStr: string) => {
     const rate = parseFloat(gstRateStr || "0");
     if (rate === 0) return;
-    const half = rate / 2;
     const key = `${rate}`;
     if (!gstGroups[key]) gstGroups[key] = { taxable: 0, cgst: 0, sgst: 0 };
     const gstAmt = taxable * (rate / 100);
@@ -149,13 +149,12 @@ export default function QuotationPreviewPage() {
   const q = quotation;
   const gstGroups = splitGst(q.items, q.fixedCosts);
 
-  // All line items (products + included fixed costs)
+  // All line items (products + included fixed costs) — HSN now correctly mapped
   const allLineItems = [
     ...q.items.map((it) => ({
       name: it.productName,
       description: it.description,
-      hsn: "",
-      warranty: "",
+      hsn: it.hsnCode || "—",          // ✅ FIX: was missing before
       qty: Number(it.quantity),
       unit: "Nos",
       unitPrice: Number(it.unitPrice),
@@ -166,8 +165,7 @@ export default function QuotationPreviewPage() {
     ...q.fixedCosts.filter((fc) => fc.included).map((fc) => ({
       name: fc.label,
       description: fc.rateNote || null,
-      hsn: "",
-      warranty: "",
+      hsn: fc.hsnCode || "—",          // ✅ FIX: was missing before
       qty: 1,
       unit: "PCS",
       unitPrice: Number(fc.cost),
@@ -215,7 +213,7 @@ export default function QuotationPreviewPage() {
       {/* ── Printable Document ── */}
       <div className="max-w-[900px] mx-auto bg-white my-6 print:my-0 shadow-lg print:shadow-none font-sans text-sm text-slate-800 border border-slate-200 print:border-0">
 
-        {/* ── HEADER: Logo + Company Info ── */}
+        {/* ── HEADER ── */}
         <div className="flex items-start gap-4 p-6 pb-4 border-b-2 border-[#1a237e]">
           {q.company.logoUrl ? (
             <img src={q.company.logoUrl} alt="Logo" className="h-20 w-20 object-contain shrink-0" />
@@ -235,8 +233,7 @@ export default function QuotationPreviewPage() {
               {q.company.email && <span><strong>Email:</strong> {q.company.email}</span>}
             </div>
           </div>
-          {/* Stamp area */}
-          <div className="text-right shrink-0">
+          <div className="shrink-0">
             <div className="inline-block border-2 border-[#1a237e] rounded px-3 py-1.5 text-center">
               <p className="text-xs font-bold text-[#1a237e] uppercase tracking-wider">Quotation</p>
             </div>
@@ -274,55 +271,51 @@ export default function QuotationPreviewPage() {
           </div>
         </div>
 
-        {/* ── Items Table ── */}
-        <div className="px-0">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="bg-[#1a237e] text-white">
-                <th className="px-3 py-2.5 text-left font-semibold text-xs">ITEMS / SERVICES</th>
-                <th className="px-3 py-2.5 text-center font-semibold text-xs w-24">HSN/SAC</th>
-                <th className="px-3 py-2.5 text-center font-semibold text-xs w-20">WARRANTY</th>
-                <th className="px-3 py-2.5 text-center font-semibold text-xs w-20">QTY.</th>
-                <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">RATE</th>
-                <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">TAX</th>
-                <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">AMOUNT</th>
+        {/* ── Items Table — WARRANTY column removed, HSN now working ── */}
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="bg-[#1a237e] text-white">
+              <th className="px-3 py-2.5 text-center font-semibold text-xs w-10">S.No</th>
+              <th className="px-3 py-2.5 text-left font-semibold text-xs">ITEMS / SERVICES</th>
+              <th className="px-3 py-2.5 text-center font-semibold text-xs w-24">HSN/SAC</th>
+              {/* ✅ WARRANTY column removed */}
+              <th className="px-3 py-2.5 text-center font-semibold text-xs w-20">QTY.</th>
+              <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">RATE</th>
+              <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">TAX</th>
+              <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">AMOUNT</th>
+            </tr>
+          </thead>
+          <tbody>
+            {allLineItems.map((it, i) => (
+              <tr key={i} className="border-b border-slate-100">
+                <td className="px-3 py-2.5 text-center text-slate-500">{i + 1}</td>
+                <td className="px-3 py-2.5">
+                  <p className="font-semibold text-slate-800">{it.name}</p>
+                  {it.description && <p className="text-xs text-slate-500 mt-0.5">{it.description}</p>}
+                </td>
+                <td className="px-3 py-2.5 text-center text-xs font-mono text-slate-600">{it.hsn}</td>
+                {/* ✅ WARRANTY cell removed */}
+                <td className="px-3 py-2.5 text-center">{it.qty} {it.unit}</td>
+                <td className="px-3 py-2.5 text-right font-mono">{formatINR(it.unitPrice)}</td>
+                <td className="px-3 py-2.5 text-right">
+                  <span className="font-mono">{formatINR(it.gstAmt)}</span>
+                  <span className="block text-xs text-slate-400">({it.gstRate}%)</span>
+                </td>
+                <td className="px-3 py-2.5 text-right font-semibold font-mono">{formatINR(it.unitPrice * it.qty)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {allLineItems.map((it, i) => (
-                <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="px-3 py-2.5">
-                    <p className="font-semibold text-slate-800">{it.name}</p>
-                    {it.description && <p className="text-xs text-slate-500 mt-0.5">{it.description}</p>}
-                  </td>
-                  <td className="px-3 py-2.5 text-center text-xs text-slate-600 font-mono">{it.hsn || "—"}</td>
-                  <td className="px-3 py-2.5 text-center text-xs text-slate-600">{it.warranty || "-"}</td>
-                  <td className="px-3 py-2.5 text-center">{it.qty} {it.unit}</td>
-                  <td className="px-3 py-2.5 text-right font-mono">{formatINR(it.unitPrice)}</td>
-                  <td className="px-3 py-2.5 text-right">
-                    <span className="font-mono">{formatINR(it.gstAmt)}</span>
-                    <span className="block text-xs text-slate-400">({it.gstRate}%)</span>
-                  </td>
-                  <td className="px-3 py-2.5 text-right font-semibold font-mono">{formatINR(it.unitPrice * it.qty)}</td>
-                </tr>
-              ))}
-            </tbody>
-            {/* Subtotal row */}
-            <tfoot>
-              <tr className="border-t-2 border-slate-300 bg-slate-50">
-                <td colSpan={4} className="px-3 py-2.5 font-bold text-slate-700">SUBTOTAL</td>
-                <td className="px-3 py-2.5"></td>
-                <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(gstTotal)}</td>
-                <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(taxableTotal)}</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t-2 border-slate-300 bg-slate-50">
+              <td colSpan={5} className="px-3 py-2.5 font-bold text-slate-700">SUBTOTAL</td>
+              <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(gstTotal)}</td>
+              <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(taxableTotal)}</td>
+            </tr>
+          </tfoot>
+        </table>
 
         {/* ── Bank Details + Tax Summary ── */}
         <div className="grid grid-cols-2 gap-0 border-t border-slate-200">
-
-          {/* Bank Details */}
           <div className="px-5 py-4 border-r border-slate-200">
             <p className="font-bold text-slate-800 mb-3 text-sm">BANK DETAILS</p>
             {q.company.accountName && (
@@ -349,14 +342,13 @@ export default function QuotationPreviewPage() {
                 <span className="font-medium text-slate-800">{q.company.bankName}{q.company.branchName ? ` - ${q.company.branchName}` : ""}</span>
               </div>
             )}
-
-            {/* Terms */}
             <div className="mt-4">
               <p className="font-bold text-slate-800 mb-1.5 text-sm">TERMS AND CONDITIONS</p>
               <p className="text-xs text-slate-600 font-medium mb-1">Payment Terms:</p>
               <ol className="text-xs text-slate-600 space-y-0.5 list-decimal list-inside">
                 <li>40% Installation Advance amount</li>
-                <li>50% Material dispatch 3. 10% After Installation</li>
+                <li>50% Material dispatch</li>
+                <li>10% After Installation</li>
               </ol>
               {q.remarks && (
                 <div className="mt-2">
@@ -367,7 +359,6 @@ export default function QuotationPreviewPage() {
             </div>
           </div>
 
-          {/* Tax Breakdown + Total */}
           <div className="px-5 py-4">
             <table className="w-full text-xs">
               <tbody className="divide-y divide-slate-100">
@@ -375,7 +366,6 @@ export default function QuotationPreviewPage() {
                   <td className="py-1.5 text-slate-600">Taxable Amount</td>
                   <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(taxableTotal)}</td>
                 </tr>
-                {/* Per-rate CGST/SGST breakdown */}
                 {Object.entries(gstGroups).map(([rate, vals]) => {
                   const half = Number(rate) / 2;
                   return (
@@ -400,13 +390,12 @@ export default function QuotationPreviewPage() {
                 {Math.abs(roundOff) > 0.001 && (
                   <tr>
                     <td className="py-1.5 text-slate-600">Round Off</td>
-                    <td className="py-1.5 text-right font-mono font-medium">{roundOff >= 0 ? "" : "- "}₹ {formatINR(Math.abs(roundOff))}</td>
+                    <td className="py-1.5 text-right font-mono font-medium">{roundOff >= 0 ? "+" : "-"}₹ {formatINR(Math.abs(roundOff))}</td>
                   </tr>
                 )}
               </tbody>
             </table>
 
-            {/* Total Amount box */}
             <div className="border-t-2 border-[#1a237e] mt-2 pt-2">
               <div className="flex justify-between items-center">
                 <span className="font-bold text-slate-800">Total Amount</span>
@@ -414,7 +403,6 @@ export default function QuotationPreviewPage() {
               </div>
             </div>
 
-            {/* Payment details */}
             {(Number(q.advancePayment) > 0 || Number(q.balanceDue) > 0) && (
               <div className="mt-3 space-y-1 text-xs">
                 {Number(q.advancePayment) > 0 && (
@@ -438,7 +426,6 @@ export default function QuotationPreviewPage() {
               </div>
             )}
 
-            {/* Total in words */}
             <div className="mt-3 border-t border-slate-200 pt-2">
               <p className="text-xs font-bold text-slate-700">Total Amount (in words)</p>
               <p className="text-xs text-slate-600 mt-0.5 italic">{numberToWords(roundedPrice)}</p>
@@ -465,13 +452,11 @@ export default function QuotationPreviewPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 pb-4 text-center text-xs text-slate-400 border-t border-slate-100">
           This is a computer-generated document. No signature required if digitally signed.
         </div>
       </div>
 
-      {/* Print styles */}
       <style>{`
         @media print {
           body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
