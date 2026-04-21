@@ -57,7 +57,7 @@ const NAV_ITEMS = [
 const GST_OPTIONS = ["0", "5", "12", "18", "28"];
 const PAYMENT_TYPES = ["Cash", "Cheque", "UPI", "NEFT", "RTGS", "Bank Transfer"];
 const SYSTEM_TYPES = ["On Grid", "Off Grid", "Hybrid", "Solar pump"];
-const PANEL_TYPES = ["DCR","NON DCR"];
+const PANEL_TYPES = ["DCR", "NON DCR"];
 const PHASES = ["Single Phase", "Three Phase"];
 
 const DEFAULT_FIXED_COSTS: Omit<FixedCost, "id">[] = [
@@ -145,6 +145,9 @@ export default function QuotationPage() {
   const [remarks, setRemarks] = useState("");
   const [preparedBy, setPreparedBy] = useState("");
 
+  // ── Row-level validation errors: track which item ids have errors
+  const [itemErrors, setItemErrors] = useState<Record<string, { category?: boolean; product?: boolean }>>({});
+
   // ── Load data
   useEffect(() => {
     fetch("/api/companies").then((r) => r.json()).then(setCompanies).catch(() => {});
@@ -228,6 +231,16 @@ export default function QuotationPage() {
         return next;
       })
     );
+    // Clear errors for this field when user updates it
+    setItemErrors((prev) => {
+      const updated = { ...prev };
+      if (updated[id]) {
+        if (patch.categoryName !== undefined) delete updated[id].category;
+        if (patch.productName !== undefined) delete updated[id].product;
+        if (!updated[id].category && !updated[id].product) delete updated[id];
+      }
+      return updated;
+    });
   }
 
   function addItem() {
@@ -239,6 +252,11 @@ export default function QuotationPage() {
 
   function removeItem(id: string) {
     setItems((prev) => prev.filter((it) => it.id !== id));
+    setItemErrors((prev) => {
+      const updated = { ...prev };
+      delete updated[id];
+      return updated;
+    });
   }
 
   function onSelectProduct(itemId: string, productName: string) {
@@ -311,6 +329,38 @@ export default function QuotationPage() {
   const advance = parseFloat(advancePayment || "0");
   const balanceDue = roundedPrice - advance;
 
+  // ── Validate items: every row must have BOTH category and product selected
+  function validateItems(): boolean {
+    const errors: Record<string, { category?: boolean; product?: boolean }> = {};
+    let valid = true;
+
+    for (const item of items) {
+      const rowError: { category?: boolean; product?: boolean } = {};
+
+      // A row is "touched" if either category or product has been set,
+      // OR if it's the only row (we always require at least one valid row).
+      const isTouched = item.categoryName.trim() !== "" || item.productName.trim() !== "";
+
+      if (isTouched || items.length === 1) {
+        if (!item.categoryName.trim()) {
+          rowError.category = true;
+          valid = false;
+        }
+        if (!item.productName.trim()) {
+          rowError.product = true;
+          valid = false;
+        }
+      }
+
+      if (Object.keys(rowError).length > 0) {
+        errors[item.id] = rowError;
+      }
+    }
+
+    setItemErrors(errors);
+    return valid;
+  }
+
   // ── Save / Preview
   async function buildPayload(status: string) {
     return {
@@ -341,7 +391,10 @@ export default function QuotationPage() {
       remarks,
       preparedBy,
       status,
-      items: items.map((it, i) => ({ ...it, sortOrder: i })),
+      // Only include rows that have both category and product filled
+      items: items
+        .filter((it) => it.categoryName.trim() !== "" && it.productName.trim() !== "")
+        .map((it, i) => ({ ...it, sortOrder: i })),
       fixedCosts: fixedCosts.map((fc, i) => ({ ...fc, sortOrder: i })),
     };
   }
@@ -349,6 +402,10 @@ export default function QuotationPage() {
   async function handleSave() {
     if (!companyId) { showToast("err", "Select a company"); return; }
     if (!customerName.trim()) { showToast("err", "Customer name is required"); return; }
+    if (!validateItems()) {
+      showToast("err", "Each product row requires both a Category and a Product to be selected.");
+      return;
+    }
     setSaving(true);
     try {
       const payload = await buildPayload("SAVED");
@@ -372,6 +429,10 @@ export default function QuotationPage() {
 
   async function handlePreview() {
     if (!companyId) { showToast("err", "Select a company"); return; }
+    if (!validateItems()) {
+      showToast("err", "Each product row requires both a Category and a Product to be selected.");
+      return;
+    }
     setSaving(true);
     try {
       const payload = await buildPayload("DRAFT");
@@ -396,8 +457,6 @@ export default function QuotationPage() {
     setToast({ type, text });
     setTimeout(() => setToast(null), 3500);
   }
-
-  const productsForList = allProducts.map((p) => p.name);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -528,7 +587,7 @@ export default function QuotationPage() {
                 <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerContact} onChange={(e) => setCustomerContact(e.target.value)} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email: <span className="text-optional text-slate-400 text-xs">(optional)</span></label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Email: <span className="text-xs text-slate-400">(optional)</span></label>
                 <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} />
               </div>
             </div>
@@ -611,8 +670,8 @@ export default function QuotationPage() {
               <thead>
                 <tr className="bg-[#1a237e] text-white">
                   <th className="px-3 py-3 text-left text-xs font-semibold w-10">#</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-44">CATEGORY</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-48">PRODUCT</th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-44">CATEGORY <span className="text-red-300">*</span></th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-48">PRODUCT <span className="text-red-300">*</span></th>
                   <th className="px-3 py-3 text-left text-xs font-semibold">DESCRIPTION</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold w-32">UNIT PRICE (₹)</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold w-24">QUANTITY</th>
@@ -630,29 +689,45 @@ export default function QuotationPage() {
                       })
                     : allProducts;
 
+                  const rowErr = itemErrors[item.id] || {};
+
                   return (
-                    <tr key={item.id} className="hover:bg-slate-50">
+                    <tr key={item.id} className={`hover:bg-slate-50 ${(rowErr.category || rowErr.product) ? "bg-red-50" : ""}`}>
                       <td className="px-3 py-2 text-slate-500">{idx + 1}</td>
+
+                      {/* Category */}
                       <td className="px-3 py-2">
                         <select
-                          className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm"
+                          className={`w-full border rounded px-2 py-1.5 text-sm ${rowErr.category ? "border-red-500 bg-red-50 focus:ring-red-400" : "border-slate-300"} focus:outline-none focus:ring-1 focus:ring-blue-500`}
                           value={item.categoryName}
                           onChange={(e) => updateItem(item.id, { categoryName: e.target.value, productName: "", unitPrice: "", description: "" })}
                         >
                           <option value="">Select Category</option>
                           {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
                         </select>
+                        {rowErr.category && (
+                          <p className="text-red-500 text-xs mt-1">Category is required</p>
+                        )}
                       </td>
+
+                      {/* Product */}
                       <td className="px-3 py-2">
                         <select
-                          className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm"
+                          className={`w-full border rounded px-2 py-1.5 text-sm ${rowErr.product ? "border-red-500 bg-red-50 focus:ring-red-400" : "border-slate-300"} focus:outline-none focus:ring-1 focus:ring-blue-500`}
                           value={item.productName}
                           onChange={(e) => onSelectProduct(item.id, e.target.value)}
+                          disabled={!item.categoryName}
                         >
-                          <option value="">Select Product</option>
+                          <option value="">
+                            {item.categoryName ? "Select Product" : "Select category first"}
+                          </option>
                           {catProducts.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
                         </select>
+                        {rowErr.product && (
+                          <p className="text-red-500 text-xs mt-1">Product is required</p>
+                        )}
                       </td>
+
                       <td className="px-3 py-2">
                         <textarea
                           className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm resize-none"
