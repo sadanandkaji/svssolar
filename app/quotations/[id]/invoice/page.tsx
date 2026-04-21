@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -81,43 +81,34 @@ export default function InvoicePreviewPage() {
   const gstGroups = splitGst(q.items, q.fixedCosts);
 
   const allItems = [
-    ...q.items.map((it, i) => ({
-      sno: i + 1,
-      name: it.productName,
-      hsn: it.hsnCode || "—",
-      description: it.description,
-      qty: Number(it.quantity),
-      unitPrice: Number(it.unitPrice),
-      gstRate: Number(it.gstRate),
-      gstAmt: Number(it.unitPrice) * Number(it.quantity) * (Number(it.gstRate) / 100),
-      baseTotal: Number(it.unitPrice) * Number(it.quantity),
+    ...q.items.map((it,i) => ({
+      sno:i+1, name:it.productName, hsn:it.hsnCode||"—",
+      description:it.description, qty:Number(it.quantity),
+      unitPrice:Number(it.unitPrice), gstRate:Number(it.gstRate),
+      gstAmt:Number(it.unitPrice)*Number(it.quantity)*(Number(it.gstRate)/100),
+      baseTotal:Number(it.unitPrice)*Number(it.quantity),
     })),
-    ...q.fixedCosts.filter(fc => fc.included).map((fc, i) => ({
-      sno: q.items.length + i + 1,
-      name: fc.label,
-      hsn: fc.hsnCode || "—",
-      description: fc.rateNote || null,
-      qty: 1,
-      unitPrice: Number(fc.cost),
-      gstRate: Number(fc.gstRate),
-      gstAmt: Number(fc.cost) * (Number(fc.gstRate) / 100),
-      baseTotal: Number(fc.cost),
+    ...q.fixedCosts.filter(fc=>fc.included).map((fc,i) => ({
+      sno:q.items.length+i+1, name:fc.label, hsn:fc.hsnCode||"—",
+      description:fc.rateNote||null, qty:1,
+      unitPrice:Number(fc.cost), gstRate:Number(fc.gstRate),
+      gstAmt:Number(fc.cost)*(Number(fc.gstRate)/100),
+      baseTotal:Number(fc.cost),
     })),
   ];
 
-  const taxableTotal = allItems.reduce((s, it) => s + it.baseTotal, 0);
-  const gstTotal = allItems.reduce((s, it) => s + it.gstAmt, 0);
+  const taxableTotal = allItems.reduce((s,it)=>s+it.baseTotal,0);
+  const gstTotal = allItems.reduce((s,it)=>s+it.gstAmt,0);
   const roundedPrice = Number(q.roundedPrice);
-  const roundOff = roundedPrice - (taxableTotal + gstTotal - Number(q.discountAmount));
+  const roundOff = roundedPrice-(taxableTotal+gstTotal-Number(q.discountAmount));
 
   return (
     <>
-      {/* Toolbar */}
       <div className="print:hidden bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between sticky top-0 z-10 shadow">
         <h1 className="text-base font-bold">Tax Invoice</h1>
         <div className="flex gap-3">
-          <button onClick={() => router.push(`/quotations?edit=${id}`)} className="bg-amber-500 hover:bg-amber-600 px-4 py-1.5 rounded text-sm font-medium">✏️ Edit</button>
-          <button onClick={() => window.print()} className="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded text-sm font-medium">🖨️ Print / PDF</button>
+          <button onClick={()=>router.push(`/quotations?edit=${id}`)} className="bg-amber-500 hover:bg-amber-600 px-4 py-1.5 rounded text-sm font-medium">✏️ Edit</button>
+          <button onClick={()=>window.print()} className="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded text-sm font-medium">🖨️ Print / PDF</button>
           <Link href={`/quotations/${id}/preview`} className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded text-sm font-medium">📄 Quotation</Link>
           <Link href="/quotations/list" className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded text-sm font-medium">← List</Link>
         </div>
@@ -125,7 +116,7 @@ export default function InvoicePreviewPage() {
 
       <div className="max-w-[900px] mx-auto bg-white my-6 print:my-0 shadow-lg print:shadow-none font-sans text-sm text-slate-800 border border-slate-200 print:border-0">
 
-        {/* ── HEADER ── */}
+        {/* Header */}
         <div className="flex items-start gap-4 p-6 pb-4 border-b-2 border-[#1a237e]">
           {q.company.logoUrl
             ? <img src={q.company.logoUrl} alt="Logo" className="h-20 w-20 object-contain shrink-0"/>
@@ -145,34 +136,40 @@ export default function InvoicePreviewPage() {
           </div>
         </div>
 
-        {/* ── Invoice No / Date / Customer ── */}
-        <div className="grid grid-cols-2 gap-0 border-b border-slate-200">
-          {/* Left: Invoice meta */}
-          <div className="px-6 py-4 border-r border-slate-200 space-y-1">
-            <div className="flex gap-2 text-sm">
-              <span className="font-bold text-slate-600 w-32 shrink-0">Invoice No.:</span>
-              <span className="font-mono text-[#1a237e] font-semibold">{invoiceNumber}</span>
-            </div>
-            <div className="flex gap-2 text-sm">
-              <span className="font-bold text-slate-600 w-32 shrink-0">Invoice Date:</span>
-              <span>{formatDate(q.quoteDate)}</span>
-            </div>
-            <div className="flex gap-2 text-xs text-slate-500">
-              <span className="w-32 shrink-0">Ref. Quote:</span>
-              <span className="font-mono">{q.quoteNumber}</span>
-            </div>
-          </div>
-          {/* Right: Bill To */}
-          <div className="px-6 py-4">
+        {/* Invoice No / Date */}
+        <div className="flex justify-between items-center px-6 py-3 bg-slate-50 border-b border-slate-200 text-sm font-medium">
+          <div>Invoice No.: <span className="font-mono text-[#1a237e]">{invoiceNumber}</span></div>
+          <div>Invoice Date: {formatDate(q.quoteDate)}</div>
+          <div className="text-xs text-slate-500">Ref: <span className="font-mono">{q.quoteNumber}</span></div>
+        </div>
+
+        {/* Bill To / Ship To / Payment */}
+        <div className="grid grid-cols-3 gap-0 border-b border-slate-200">
+          <div className="px-5 py-4 border-r border-slate-200">
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">BILL TO</p>
             <p className="font-bold text-slate-800">{q.customerName}</p>
             {q.customerAddress && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{q.customerAddress}</p>}
             {q.customerContact && <p className="text-xs text-slate-600 mt-1">Mobile: {q.customerContact}</p>}
             {q.customerEmail && <p className="text-xs text-slate-600">Email: {q.customerEmail}</p>}
           </div>
+          <div className="px-5 py-4 border-r border-slate-200">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">SHIP TO</p>
+            <p className="font-bold text-slate-800">{q.customerName}</p>
+            {q.customerAddress && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{q.customerAddress}</p>}
+            {q.systemType && <p className="text-xs text-slate-600 mt-1">System: {q.systemType}</p>}
+            {q.phase && <p className="text-xs text-slate-600">Phase: {q.phase}</p>}
+          </div>
+          <div className="px-5 py-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">PAYMENT INFO</p>
+            {q.paymentType && <p className="text-xs text-slate-700"><strong>Mode:</strong> {q.paymentType}</p>}
+            {Number(q.advancePayment)>0 && <p className="text-xs text-slate-700 mt-1"><strong>Advance:</strong> ₹{formatINR(q.advancePayment)}</p>}
+            {Number(q.balanceDue)>0 && <p className="text-xs text-red-600 mt-1 font-semibold"><strong>Balance Due:</strong> ₹{formatINR(q.balanceDue)}</p>}
+            {q.receiverName && <p className="text-xs text-slate-700 mt-1"><strong>Received By:</strong> {q.receiverName.toUpperCase()}</p>}
+            {q.preparedBy && <p className="text-xs text-slate-700 mt-1"><strong>Prepared By:</strong> {q.preparedBy}</p>}
+          </div>
         </div>
 
-        {/* ── Items Table ── */}
+        {/* Items */}
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-[#1a237e] text-white">
@@ -200,86 +197,68 @@ export default function InvoicePreviewPage() {
                   <span className="font-mono">{formatINR(it.gstAmt)}</span>
                   <span className="block text-xs text-slate-400">({it.gstRate}%)</span>
                 </td>
-                <td className="px-3 py-2.5 text-right font-semibold font-mono">{formatINR(it.baseTotal)}</td>
+                <td className="px-3 py-2.5 text-right font-semibold font-mono">{formatINR(it.baseTotal + it.gstAmt)}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr className="border-t-2 border-slate-300 bg-slate-50">
-              <td colSpan={5} className="px-3 py-2.5 font-bold text-slate-700">SUBTOTAL</td>
+              <td colSpan={4} className="px-3 py-2.5 font-bold text-slate-700">SUBTOTAL</td>
+              <td className="px-3 py-2.5"></td>
               <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(gstTotal)}</td>
-              <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(taxableTotal)}</td>
+              <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(taxableTotal + gstTotal)}</td>
             </tr>
           </tfoot>
         </table>
 
-        {/* ── Tax Summary + Total ── */}
+        {/* Bank + Summary */}
         <div className="grid grid-cols-2 gap-0 border-t border-slate-200">
-          {/* Left: Amount in words + remarks */}
-          <div className="px-5 py-5 border-r border-slate-200 flex flex-col justify-between">
-            <div>
-              <p className="text-xs font-bold text-slate-700 mb-1">Total Amount (in words)</p>
-              <p className="text-xs text-slate-600 italic">{numberToWords(roundedPrice)}</p>
+          <div className="px-5 py-4 border-r border-slate-200">
+            <p className="font-bold text-slate-800 mb-3">BANK DETAILS</p>
+            {q.company.accountName && <div className="flex gap-2 text-xs mb-1"><span className="text-slate-500 w-20 shrink-0">Name:</span><span className="font-medium">{q.company.accountName}</span></div>}
+            {q.company.ifscCode && <div className="flex gap-2 text-xs mb-1"><span className="text-slate-500 w-20 shrink-0">IFSC:</span><span className="font-mono font-medium">{q.company.ifscCode}</span></div>}
+            {q.company.accountNumber && <div className="flex gap-2 text-xs mb-1"><span className="text-slate-500 w-20 shrink-0">Account No:</span><span className="font-mono font-medium">{q.company.accountNumber}</span></div>}
+            {q.company.bankName && <div className="flex gap-2 text-xs mb-1"><span className="text-slate-500 w-20 shrink-0">Bank:</span><span className="font-medium">{q.company.bankName}{q.company.branchName?` - ${q.company.branchName}`:""}</span></div>}
+            <div className="mt-4">
+              <p className="font-bold text-slate-800 mb-1">TERMS AND CONDITIONS</p>
+              <ol className="text-xs text-slate-600 space-y-0.5 list-decimal list-inside">
+                <li>Goods once sold will not be taken back</li>
+                <li>Interest @24% p.a. if payment not made within due date</li>
+                <li>Subject to local jurisdiction only</li>
+              </ol>
+              {q.remarks && <p className="text-xs text-slate-600 mt-2"><strong>Remarks:</strong> {q.remarks}</p>}
             </div>
-            {q.remarks && (
-              <div className="mt-4">
-                <p className="text-xs font-bold text-slate-600 mb-0.5">Remarks:</p>
-                <p className="text-xs text-slate-600">{q.remarks}</p>
-              </div>
-            )}
           </div>
-
-          {/* Right: Tax breakdown + total */}
           <div className="px-5 py-4">
             <table className="w-full text-xs">
               <tbody className="divide-y divide-slate-100">
-                <tr>
-                  <td className="py-1.5 text-slate-600">Taxable Amount</td>
-                  <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(taxableTotal)}</td>
-                </tr>
-                {Object.entries(gstGroups).map(([rate, vals]) => {
-                  const half = Number(rate) / 2;
+                <tr><td className="py-1.5 text-slate-600">Taxable Amount</td><td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(taxableTotal)}</td></tr>
+                {Object.entries(gstGroups).map(([rate,vals]) => {
+                  const half = Number(rate)/2;
                   return (
-                    <>
-                      <tr key={`c${rate}`}>
-                        <td className="py-1.5 text-slate-600">CGST @{half}%</td>
-                        <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(vals.cgst)}</td>
-                      </tr>
-                      <tr key={`s${rate}`}>
-                        <td className="py-1.5 text-slate-600">SGST @{half}%</td>
-                        <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(vals.sgst)}</td>
-                      </tr>
-                    </>
+                    <React.Fragment key={rate}>
+                      <tr><td className="py-1.5 text-slate-600">CGST @{half}%</td><td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(vals.cgst)}</td></tr>
+                      <tr><td className="py-1.5 text-slate-600">SGST @{half}%</td><td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(vals.sgst)}</td></tr>
+                    </React.Fragment>
                   );
                 })}
-                {Number(q.discountAmount) > 0 && (
-                  <tr>
-                    <td className="py-1.5 text-red-600">Discount ({q.discountPercent}%)</td>
-                    <td className="py-1.5 text-right font-mono font-medium text-red-600">- ₹ {formatINR(q.discountAmount)}</td>
-                  </tr>
-                )}
-                {Math.abs(roundOff) > 0.001 && (
-                  <tr>
-                    <td className="py-1.5 text-slate-600">Round Off</td>
-                    <td className="py-1.5 text-right font-mono font-medium">{roundOff >= 0 ? "+" : "-"}₹ {formatINR(Math.abs(roundOff))}</td>
-                  </tr>
-                )}
+                {Number(q.discountAmount)>0 && <tr><td className="py-1.5 text-red-600">Discount ({q.discountPercent}%)</td><td className="py-1.5 text-right font-mono font-medium text-red-600">- ₹ {formatINR(q.discountAmount)}</td></tr>}
+                {Math.abs(roundOff)>0.001 && <tr><td className="py-1.5 text-slate-600">Round Off</td><td className="py-1.5 text-right font-mono font-medium">{roundOff>=0?"+":"-"}₹ {formatINR(Math.abs(roundOff))}</td></tr>}
               </tbody>
             </table>
             <div className="border-t-2 border-[#1a237e] mt-2 pt-2 flex justify-between items-center">
               <span className="font-bold text-slate-800">Total Amount</span>
               <span className="font-bold text-[#1a237e] text-lg font-mono">₹ {formatINR(roundedPrice)}</span>
             </div>
-            {Number(q.balanceDue) > 0 && (
-              <div className="mt-1 flex justify-between text-xs">
-                <span className="text-slate-600 font-medium">Balance Due:</span>
-                <span className="font-mono font-bold text-red-600">₹ {formatINR(q.balanceDue)}</span>
-              </div>
-            )}
+            {Number(q.balanceDue)>0 && <div className="mt-1 flex justify-between text-xs"><span className="text-slate-600 font-medium">Balance Due:</span><span className="font-mono font-bold text-red-600">₹ {formatINR(q.balanceDue)}</span></div>}
+            <div className="mt-3 border-t border-slate-200 pt-2">
+              <p className="text-xs font-bold text-slate-700">Total Amount (in words)</p>
+              <p className="text-xs text-slate-600 mt-0.5 italic">{numberToWords(roundedPrice)}</p>
+            </div>
           </div>
         </div>
 
-        {/* ── Signatures ── */}
+        {/* Signatures */}
         <div className="grid grid-cols-2 gap-6 px-6 py-6 border-t border-slate-200">
           <div className="text-center border border-dashed border-slate-300 rounded p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Customer Signature</p>
@@ -291,18 +270,16 @@ export default function InvoicePreviewPage() {
           <div className="text-center border border-dashed border-slate-300 rounded p-4">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Authorized Signatory</p>
             <div className="border-t border-slate-400 pt-2">
-              <p className="font-medium text-slate-700">{q.preparedBy || q.company.name}</p>
+              <p className="font-medium text-slate-700">{q.preparedBy||q.company.name}</p>
               <p className="text-xs text-slate-500">{q.company.name}</p>
               <p className="text-xs text-slate-400 mt-1">Date: {formatDate(q.quoteDate)}</p>
             </div>
           </div>
         </div>
-
         <div className="px-6 pb-4 text-center text-xs text-slate-400 border-t border-slate-100">
           Computer-generated Tax Invoice. Subject to local jurisdiction.
         </div>
       </div>
-
       <style>{`@media print{body{margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.print\\:hidden{display:none!important;}}`}</style>
     </>
   );
