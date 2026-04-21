@@ -15,15 +15,6 @@ type Quotation = {
   company: { name: string };
 };
 
-const NAV_ITEMS = [
-  { href: "/", label: "Dashboard" },
-  { href: "/warehouses", label: "Warehouses" },
-  { href: "/categories", label: "Categories" },
-  { href: "/products", label: "Products" },
-  { href: "/inventory", label: "Inventory" },
-  { href: "/quotations", label: "Quotations" },
-];
-
 type PageSize = 10 | 20 | "ALL";
 
 export default function QuotationListPage() {
@@ -101,7 +92,8 @@ export default function QuotationListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    // Break out of layout padding like the quotation form page
+    <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 bg-gray-100 min-h-screen">
       {toast && (
         <div className={`fixed right-4 top-4 z-[200] flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
           {toast.text}
@@ -109,23 +101,12 @@ export default function QuotationListPage() {
         </div>
       )}
 
+      {/* Top bar */}
       <div className="bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between shadow">
         <h1 className="text-lg font-bold tracking-wide">Quotation System</h1>
         <Link href="/quotations" className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded flex items-center gap-1.5 transition">
           + New Quotation
         </Link>
-      </div>
-
-      <div className="bg-white border-b border-slate-200 px-6">
-        <ul className="flex gap-1">
-          {NAV_ITEMS.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className={`inline-flex items-center px-4 py-2 text-sm font-medium transition rounded-t-md ${item.href === "/quotations" ? "bg-blue-600 text-white" : "text-slate-700 hover:bg-slate-100"}`}>
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 py-6">
