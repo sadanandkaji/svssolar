@@ -11838,6 +11838,7 @@ export namespace Prisma {
     quotationId: number | null
     categoryName: string | null
     productName: string | null
+    hsnCode: string | null
     description: string | null
     unitPrice: Decimal | null
     quantity: Decimal | null
@@ -11851,6 +11852,7 @@ export namespace Prisma {
     quotationId: number | null
     categoryName: string | null
     productName: string | null
+    hsnCode: string | null
     description: string | null
     unitPrice: Decimal | null
     quantity: Decimal | null
@@ -11864,6 +11866,7 @@ export namespace Prisma {
     quotationId: number
     categoryName: number
     productName: number
+    hsnCode: number
     description: number
     unitPrice: number
     quantity: number
@@ -11899,6 +11902,7 @@ export namespace Prisma {
     quotationId?: true
     categoryName?: true
     productName?: true
+    hsnCode?: true
     description?: true
     unitPrice?: true
     quantity?: true
@@ -11912,6 +11916,7 @@ export namespace Prisma {
     quotationId?: true
     categoryName?: true
     productName?: true
+    hsnCode?: true
     description?: true
     unitPrice?: true
     quantity?: true
@@ -11925,6 +11930,7 @@ export namespace Prisma {
     quotationId?: true
     categoryName?: true
     productName?: true
+    hsnCode?: true
     description?: true
     unitPrice?: true
     quantity?: true
@@ -12025,6 +12031,7 @@ export namespace Prisma {
     quotationId: number
     categoryName: string | null
     productName: string
+    hsnCode: string | null
     description: string | null
     unitPrice: Decimal
     quantity: Decimal
@@ -12057,6 +12064,7 @@ export namespace Prisma {
     quotationId?: boolean
     categoryName?: boolean
     productName?: boolean
+    hsnCode?: boolean
     description?: boolean
     unitPrice?: boolean
     quantity?: boolean
@@ -12071,6 +12079,7 @@ export namespace Prisma {
     quotationId?: boolean
     categoryName?: boolean
     productName?: boolean
+    hsnCode?: boolean
     description?: boolean
     unitPrice?: boolean
     quantity?: boolean
@@ -12085,6 +12094,7 @@ export namespace Prisma {
     quotationId?: boolean
     categoryName?: boolean
     productName?: boolean
+    hsnCode?: boolean
     description?: boolean
     unitPrice?: boolean
     quantity?: boolean
@@ -12110,6 +12120,7 @@ export namespace Prisma {
       quotationId: number
       categoryName: string | null
       productName: string
+      hsnCode: string | null
       description: string | null
       unitPrice: Prisma.Decimal
       quantity: Prisma.Decimal
@@ -12514,6 +12525,7 @@ export namespace Prisma {
     readonly quotationId: FieldRef<"QuotationItem", 'Int'>
     readonly categoryName: FieldRef<"QuotationItem", 'String'>
     readonly productName: FieldRef<"QuotationItem", 'String'>
+    readonly hsnCode: FieldRef<"QuotationItem", 'String'>
     readonly description: FieldRef<"QuotationItem", 'String'>
     readonly unitPrice: FieldRef<"QuotationItem", 'Decimal'>
     readonly quantity: FieldRef<"QuotationItem", 'Decimal'>
@@ -12888,6 +12900,7 @@ export namespace Prisma {
     label: string | null
     cost: Decimal | null
     rateNote: string | null
+    hsnCode: string | null
     gstRate: Decimal | null
     total: Decimal | null
     included: boolean | null
@@ -12900,6 +12913,7 @@ export namespace Prisma {
     label: string | null
     cost: Decimal | null
     rateNote: string | null
+    hsnCode: string | null
     gstRate: Decimal | null
     total: Decimal | null
     included: boolean | null
@@ -12912,6 +12926,7 @@ export namespace Prisma {
     label: number
     cost: number
     rateNote: number
+    hsnCode: number
     gstRate: number
     total: number
     included: number
@@ -12944,6 +12959,7 @@ export namespace Prisma {
     label?: true
     cost?: true
     rateNote?: true
+    hsnCode?: true
     gstRate?: true
     total?: true
     included?: true
@@ -12956,6 +12972,7 @@ export namespace Prisma {
     label?: true
     cost?: true
     rateNote?: true
+    hsnCode?: true
     gstRate?: true
     total?: true
     included?: true
@@ -12968,6 +12985,7 @@ export namespace Prisma {
     label?: true
     cost?: true
     rateNote?: true
+    hsnCode?: true
     gstRate?: true
     total?: true
     included?: true
@@ -13067,6 +13085,7 @@ export namespace Prisma {
     label: string
     cost: Decimal
     rateNote: string | null
+    hsnCode: string | null
     gstRate: Decimal
     total: Decimal
     included: boolean
@@ -13098,6 +13117,7 @@ export namespace Prisma {
     label?: boolean
     cost?: boolean
     rateNote?: boolean
+    hsnCode?: boolean
     gstRate?: boolean
     total?: boolean
     included?: boolean
@@ -13111,6 +13131,7 @@ export namespace Prisma {
     label?: boolean
     cost?: boolean
     rateNote?: boolean
+    hsnCode?: boolean
     gstRate?: boolean
     total?: boolean
     included?: boolean
@@ -13124,6 +13145,7 @@ export namespace Prisma {
     label?: boolean
     cost?: boolean
     rateNote?: boolean
+    hsnCode?: boolean
     gstRate?: boolean
     total?: boolean
     included?: boolean
@@ -13148,6 +13170,7 @@ export namespace Prisma {
       label: string
       cost: Prisma.Decimal
       rateNote: string | null
+      hsnCode: string | null
       gstRate: Prisma.Decimal
       total: Prisma.Decimal
       included: boolean
@@ -13551,6 +13574,7 @@ export namespace Prisma {
     readonly label: FieldRef<"QuotationFixedCost", 'String'>
     readonly cost: FieldRef<"QuotationFixedCost", 'Decimal'>
     readonly rateNote: FieldRef<"QuotationFixedCost", 'String'>
+    readonly hsnCode: FieldRef<"QuotationFixedCost", 'String'>
     readonly gstRate: FieldRef<"QuotationFixedCost", 'Decimal'>
     readonly total: FieldRef<"QuotationFixedCost", 'Decimal'>
     readonly included: FieldRef<"QuotationFixedCost", 'Boolean'>
@@ -16052,6 +16076,7 @@ export namespace Prisma {
     quotationId: 'quotationId',
     categoryName: 'categoryName',
     productName: 'productName',
+    hsnCode: 'hsnCode',
     description: 'description',
     unitPrice: 'unitPrice',
     quantity: 'quantity',
@@ -16069,6 +16094,7 @@ export namespace Prisma {
     label: 'label',
     cost: 'cost',
     rateNote: 'rateNote',
+    hsnCode: 'hsnCode',
     gstRate: 'gstRate',
     total: 'total',
     included: 'included',
@@ -17078,6 +17104,7 @@ export namespace Prisma {
     quotationId?: IntFilter<"QuotationItem"> | number
     categoryName?: StringNullableFilter<"QuotationItem"> | string | null
     productName?: StringFilter<"QuotationItem"> | string
+    hsnCode?: StringNullableFilter<"QuotationItem"> | string | null
     description?: StringNullableFilter<"QuotationItem"> | string | null
     unitPrice?: DecimalFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
@@ -17092,6 +17119,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     categoryName?: SortOrderInput | SortOrder
     productName?: SortOrder
+    hsnCode?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     unitPrice?: SortOrder
     quantity?: SortOrder
@@ -17109,6 +17137,7 @@ export namespace Prisma {
     quotationId?: IntFilter<"QuotationItem"> | number
     categoryName?: StringNullableFilter<"QuotationItem"> | string | null
     productName?: StringFilter<"QuotationItem"> | string
+    hsnCode?: StringNullableFilter<"QuotationItem"> | string | null
     description?: StringNullableFilter<"QuotationItem"> | string | null
     unitPrice?: DecimalFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
@@ -17123,6 +17152,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     categoryName?: SortOrderInput | SortOrder
     productName?: SortOrder
+    hsnCode?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
     unitPrice?: SortOrder
     quantity?: SortOrder
@@ -17144,6 +17174,7 @@ export namespace Prisma {
     quotationId?: IntWithAggregatesFilter<"QuotationItem"> | number
     categoryName?: StringNullableWithAggregatesFilter<"QuotationItem"> | string | null
     productName?: StringWithAggregatesFilter<"QuotationItem"> | string
+    hsnCode?: StringNullableWithAggregatesFilter<"QuotationItem"> | string | null
     description?: StringNullableWithAggregatesFilter<"QuotationItem"> | string | null
     unitPrice?: DecimalWithAggregatesFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
     quantity?: DecimalWithAggregatesFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
@@ -17161,6 +17192,7 @@ export namespace Prisma {
     label?: StringFilter<"QuotationFixedCost"> | string
     cost?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     rateNote?: StringNullableFilter<"QuotationFixedCost"> | string | null
+    hsnCode?: StringNullableFilter<"QuotationFixedCost"> | string | null
     gstRate?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     total?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     included?: BoolFilter<"QuotationFixedCost"> | boolean
@@ -17174,6 +17206,7 @@ export namespace Prisma {
     label?: SortOrder
     cost?: SortOrder
     rateNote?: SortOrderInput | SortOrder
+    hsnCode?: SortOrderInput | SortOrder
     gstRate?: SortOrder
     total?: SortOrder
     included?: SortOrder
@@ -17190,6 +17223,7 @@ export namespace Prisma {
     label?: StringFilter<"QuotationFixedCost"> | string
     cost?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     rateNote?: StringNullableFilter<"QuotationFixedCost"> | string | null
+    hsnCode?: StringNullableFilter<"QuotationFixedCost"> | string | null
     gstRate?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     total?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     included?: BoolFilter<"QuotationFixedCost"> | boolean
@@ -17203,6 +17237,7 @@ export namespace Prisma {
     label?: SortOrder
     cost?: SortOrder
     rateNote?: SortOrderInput | SortOrder
+    hsnCode?: SortOrderInput | SortOrder
     gstRate?: SortOrder
     total?: SortOrder
     included?: SortOrder
@@ -17223,6 +17258,7 @@ export namespace Prisma {
     label?: StringWithAggregatesFilter<"QuotationFixedCost"> | string
     cost?: DecimalWithAggregatesFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     rateNote?: StringNullableWithAggregatesFilter<"QuotationFixedCost"> | string | null
+    hsnCode?: StringNullableWithAggregatesFilter<"QuotationFixedCost"> | string | null
     gstRate?: DecimalWithAggregatesFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     total?: DecimalWithAggregatesFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     included?: BoolWithAggregatesFilter<"QuotationFixedCost"> | boolean
@@ -18203,6 +18239,7 @@ export namespace Prisma {
   export type QuotationItemCreateInput = {
     categoryName?: string | null
     productName: string
+    hsnCode?: string | null
     description?: string | null
     unitPrice: Decimal | DecimalJsLike | number | string
     quantity?: Decimal | DecimalJsLike | number | string
@@ -18217,6 +18254,7 @@ export namespace Prisma {
     quotationId: number
     categoryName?: string | null
     productName: string
+    hsnCode?: string | null
     description?: string | null
     unitPrice: Decimal | DecimalJsLike | number | string
     quantity?: Decimal | DecimalJsLike | number | string
@@ -18228,6 +18266,7 @@ export namespace Prisma {
   export type QuotationItemUpdateInput = {
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -18242,6 +18281,7 @@ export namespace Prisma {
     quotationId?: IntFieldUpdateOperationsInput | number
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -18255,6 +18295,7 @@ export namespace Prisma {
     quotationId: number
     categoryName?: string | null
     productName: string
+    hsnCode?: string | null
     description?: string | null
     unitPrice: Decimal | DecimalJsLike | number | string
     quantity?: Decimal | DecimalJsLike | number | string
@@ -18266,6 +18307,7 @@ export namespace Prisma {
   export type QuotationItemUpdateManyMutationInput = {
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -18279,6 +18321,7 @@ export namespace Prisma {
     quotationId?: IntFieldUpdateOperationsInput | number
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -18291,6 +18334,7 @@ export namespace Prisma {
     label: string
     cost?: Decimal | DecimalJsLike | number | string
     rateNote?: string | null
+    hsnCode?: string | null
     gstRate?: Decimal | DecimalJsLike | number | string
     total?: Decimal | DecimalJsLike | number | string
     included?: boolean
@@ -18304,6 +18348,7 @@ export namespace Prisma {
     label: string
     cost?: Decimal | DecimalJsLike | number | string
     rateNote?: string | null
+    hsnCode?: string | null
     gstRate?: Decimal | DecimalJsLike | number | string
     total?: Decimal | DecimalJsLike | number | string
     included?: boolean
@@ -18314,6 +18359,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean
@@ -18327,6 +18373,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean
@@ -18339,6 +18386,7 @@ export namespace Prisma {
     label: string
     cost?: Decimal | DecimalJsLike | number | string
     rateNote?: string | null
+    hsnCode?: string | null
     gstRate?: Decimal | DecimalJsLike | number | string
     total?: Decimal | DecimalJsLike | number | string
     included?: boolean
@@ -18349,6 +18397,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean
@@ -18361,6 +18410,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean
@@ -19415,6 +19465,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     categoryName?: SortOrder
     productName?: SortOrder
+    hsnCode?: SortOrder
     description?: SortOrder
     unitPrice?: SortOrder
     quantity?: SortOrder
@@ -19438,6 +19489,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     categoryName?: SortOrder
     productName?: SortOrder
+    hsnCode?: SortOrder
     description?: SortOrder
     unitPrice?: SortOrder
     quantity?: SortOrder
@@ -19451,6 +19503,7 @@ export namespace Prisma {
     quotationId?: SortOrder
     categoryName?: SortOrder
     productName?: SortOrder
+    hsnCode?: SortOrder
     description?: SortOrder
     unitPrice?: SortOrder
     quantity?: SortOrder
@@ -19475,6 +19528,7 @@ export namespace Prisma {
     label?: SortOrder
     cost?: SortOrder
     rateNote?: SortOrder
+    hsnCode?: SortOrder
     gstRate?: SortOrder
     total?: SortOrder
     included?: SortOrder
@@ -19496,6 +19550,7 @@ export namespace Prisma {
     label?: SortOrder
     cost?: SortOrder
     rateNote?: SortOrder
+    hsnCode?: SortOrder
     gstRate?: SortOrder
     total?: SortOrder
     included?: SortOrder
@@ -19508,6 +19563,7 @@ export namespace Prisma {
     label?: SortOrder
     cost?: SortOrder
     rateNote?: SortOrder
+    hsnCode?: SortOrder
     gstRate?: SortOrder
     total?: SortOrder
     included?: SortOrder
@@ -21601,6 +21657,7 @@ export namespace Prisma {
   export type QuotationItemCreateWithoutQuotationInput = {
     categoryName?: string | null
     productName: string
+    hsnCode?: string | null
     description?: string | null
     unitPrice: Decimal | DecimalJsLike | number | string
     quantity?: Decimal | DecimalJsLike | number | string
@@ -21613,6 +21670,7 @@ export namespace Prisma {
     id?: number
     categoryName?: string | null
     productName: string
+    hsnCode?: string | null
     description?: string | null
     unitPrice: Decimal | DecimalJsLike | number | string
     quantity?: Decimal | DecimalJsLike | number | string
@@ -21635,6 +21693,7 @@ export namespace Prisma {
     label: string
     cost?: Decimal | DecimalJsLike | number | string
     rateNote?: string | null
+    hsnCode?: string | null
     gstRate?: Decimal | DecimalJsLike | number | string
     total?: Decimal | DecimalJsLike | number | string
     included?: boolean
@@ -21646,6 +21705,7 @@ export namespace Prisma {
     label: string
     cost?: Decimal | DecimalJsLike | number | string
     rateNote?: string | null
+    hsnCode?: string | null
     gstRate?: Decimal | DecimalJsLike | number | string
     total?: Decimal | DecimalJsLike | number | string
     included?: boolean
@@ -21734,6 +21794,7 @@ export namespace Prisma {
     quotationId?: IntFilter<"QuotationItem"> | number
     categoryName?: StringNullableFilter<"QuotationItem"> | string | null
     productName?: StringFilter<"QuotationItem"> | string
+    hsnCode?: StringNullableFilter<"QuotationItem"> | string | null
     description?: StringNullableFilter<"QuotationItem"> | string | null
     unitPrice?: DecimalFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFilter<"QuotationItem"> | Decimal | DecimalJsLike | number | string
@@ -21767,6 +21828,7 @@ export namespace Prisma {
     label?: StringFilter<"QuotationFixedCost"> | string
     cost?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     rateNote?: StringNullableFilter<"QuotationFixedCost"> | string | null
+    hsnCode?: StringNullableFilter<"QuotationFixedCost"> | string | null
     gstRate?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     total?: DecimalFilter<"QuotationFixedCost"> | Decimal | DecimalJsLike | number | string
     included?: BoolFilter<"QuotationFixedCost"> | boolean
@@ -22675,6 +22737,7 @@ export namespace Prisma {
     id?: number
     categoryName?: string | null
     productName: string
+    hsnCode?: string | null
     description?: string | null
     unitPrice: Decimal | DecimalJsLike | number | string
     quantity?: Decimal | DecimalJsLike | number | string
@@ -22688,6 +22751,7 @@ export namespace Prisma {
     label: string
     cost?: Decimal | DecimalJsLike | number | string
     rateNote?: string | null
+    hsnCode?: string | null
     gstRate?: Decimal | DecimalJsLike | number | string
     total?: Decimal | DecimalJsLike | number | string
     included?: boolean
@@ -22697,6 +22761,7 @@ export namespace Prisma {
   export type QuotationItemUpdateWithoutQuotationInput = {
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -22709,6 +22774,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -22721,6 +22787,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     categoryName?: NullableStringFieldUpdateOperationsInput | string | null
     productName?: StringFieldUpdateOperationsInput | string
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     unitPrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
@@ -22733,6 +22800,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean
@@ -22744,6 +22812,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean
@@ -22755,6 +22824,7 @@ export namespace Prisma {
     label?: StringFieldUpdateOperationsInput | string
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     rateNote?: NullableStringFieldUpdateOperationsInput | string | null
+    hsnCode?: NullableStringFieldUpdateOperationsInput | string | null
     gstRate?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     total?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     included?: BoolFieldUpdateOperationsInput | boolean

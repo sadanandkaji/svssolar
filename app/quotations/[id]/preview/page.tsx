@@ -33,6 +33,7 @@ type Quotation = {
   preparedBy: string | null;
   company: {
     name: string;
+    ownerName: string | null;
     address: string | null;
     gstNumber: string | null;
     contact: string | null;
@@ -73,12 +74,63 @@ function formatDate(d: string) {
   return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+function expiryDate(d: string) {
+  const date = new Date(d);
+  date.setMonth(date.getMonth() + 1);
+  return date.toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function numberToWords(amount: number): string {
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+    "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  function convert(n: number): string {
+    if (n === 0) return "";
+    if (n < 20) return ones[n] + " ";
+    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "") + " ";
+    if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred " + convert(n % 100);
+    if (n < 100000) return convert(Math.floor(n / 1000)) + "Thousand " + convert(n % 1000);
+    if (n < 10000000) return convert(Math.floor(n / 100000)) + "Lakh " + convert(n % 100000);
+    return convert(Math.floor(n / 10000000)) + "Crore " + convert(n % 10000000);
+  }
+
+  const rounded = Math.round(amount);
+  if (rounded === 0) return "Zero Rupees Only";
+  return convert(rounded).trim() + " Rupees Only";
+}
+
+// Split GST into CGST + SGST
+function splitGst(items: Quotation["items"], fixedCosts: Quotation["fixedCosts"]) {
+  const gstGroups: Record<string, { taxable: number; cgst: number; sgst: number }> = {};
+
+  const processItem = (taxable: number, gstRateStr: string) => {
+    const rate = parseFloat(gstRateStr || "0");
+    if (rate === 0) return;
+    const half = rate / 2;
+    const key = `${rate}`;
+    if (!gstGroups[key]) gstGroups[key] = { taxable: 0, cgst: 0, sgst: 0 };
+    const gstAmt = taxable * (rate / 100);
+    gstGroups[key].taxable += taxable;
+    gstGroups[key].cgst += gstAmt / 2;
+    gstGroups[key].sgst += gstAmt / 2;
+  };
+
+  items.forEach((it) => {
+    processItem(Number(it.unitPrice) * Number(it.quantity), it.gstRate);
+  });
+  fixedCosts.filter((fc) => fc.included).forEach((fc) => {
+    processItem(Number(fc.cost), fc.gstRate);
+  });
+
+  return gstGroups;
+}
+
 export default function QuotationPreviewPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [quotation, setQuotation] = useState<Quotation | null>(null);
   const [loading, setLoading] = useState(true);
-  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetch(`/api/quotations/${id}`)
@@ -87,251 +139,346 @@ export default function QuotationPreviewPage() {
       .catch(() => setLoading(false));
   }, [id]);
 
-  function handlePrint() {
-    window.print();
-  }
-
-  if (loading) return <div className="flex h-screen items-center justify-center text-slate-500">Loading...</div>;
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center text-slate-500">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-[#1a237e]" />
+    </div>
+  );
   if (!quotation) return <div className="flex h-screen items-center justify-center text-red-500">Quotation not found.</div>;
 
   const q = quotation;
-  const hasSystem = q.systemType || q.panelType || q.panelCount || q.phase;
+  const gstGroups = splitGst(q.items, q.fixedCosts);
 
-  // Combine items + included fixed costs for the product table
+  // All line items (products + included fixed costs)
   const allLineItems = [
     ...q.items.map((it) => ({
       name: it.productName,
       description: it.description,
+      hsn: "",
+      warranty: "",
       qty: Number(it.quantity),
+      unit: "Nos",
       unitPrice: Number(it.unitPrice),
+      gstRate: Number(it.gstRate),
+      gstAmt: Number(it.unitPrice) * Number(it.quantity) * (Number(it.gstRate) / 100),
       total: Number(it.totalPrice),
     })),
     ...q.fixedCosts.filter((fc) => fc.included).map((fc) => ({
       name: fc.label,
       description: fc.rateNote || null,
+      hsn: "",
+      warranty: "",
       qty: 1,
+      unit: "PCS",
       unitPrice: Number(fc.cost),
+      gstRate: Number(fc.gstRate),
+      gstAmt: Number(fc.cost) * (Number(fc.gstRate) / 100),
       total: Number(fc.total),
     })),
   ];
 
+  const taxableTotal = allLineItems.reduce((s, it) => s + it.unitPrice * it.qty, 0);
+  const gstTotal = allLineItems.reduce((s, it) => s + it.gstAmt, 0);
+  const roundedPrice = Number(q.roundedPrice);
+  const roundOff = roundedPrice - (taxableTotal + gstTotal);
+
   return (
     <>
       {/* Toolbar — hidden on print */}
-      <div className="print:hidden bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between">
+      <div className="print:hidden bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between sticky top-0 z-10 shadow">
         <h1 className="text-base font-bold">Quotation Preview</h1>
         <div className="flex gap-3">
           <button
             onClick={() => router.push(`/quotations?edit=${id}`)}
-            className="bg-amber-500 hover:bg-amber-600 px-4 py-1.5 rounded text-sm font-medium"
+            className="bg-amber-500 hover:bg-amber-600 px-4 py-1.5 rounded text-sm font-medium transition"
           >
             ✏️ Edit
           </button>
           <button
-            onClick={handlePrint}
-            className="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded text-sm font-medium"
+            onClick={() => window.print()}
+            className="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded text-sm font-medium transition"
           >
             🖨️ Print / Download PDF
           </button>
-          <Link href="/quotations/list" className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded text-sm font-medium">
+          <Link
+            href={`/quotations/${id}/invoice`}
+            className="bg-violet-600 hover:bg-violet-700 px-4 py-1.5 rounded text-sm font-medium transition"
+          >
+            🧾 Generate Invoice
+          </Link>
+          <Link href="/quotations/list" className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded text-sm font-medium transition">
             ← Back to List
           </Link>
         </div>
       </div>
 
-      {/* ── Printable Receipt ── */}
-      <div ref={printRef} className="max-w-[900px] mx-auto bg-white p-8 my-6 print:my-0 print:p-6 shadow-lg print:shadow-none font-sans text-sm text-slate-800">
+      {/* ── Printable Document ── */}
+      <div className="max-w-[900px] mx-auto bg-white my-6 print:my-0 shadow-lg print:shadow-none font-sans text-sm text-slate-800 border border-slate-200 print:border-0">
 
-        {/* Title */}
-        <h1 className="text-center text-2xl font-bold text-[#1a237e] mb-1">Receipt Of Payment</h1>
-        <hr className="mb-5 border-slate-300" />
-
-        {/* Date + Quote No */}
-        <div className="flex justify-between text-sm mb-5">
-          <span>Date: {formatDate(q.quoteDate)}</span>
-          <span>Quote No: {q.quoteNumber}</span>
+        {/* ── HEADER: Logo + Company Info ── */}
+        <div className="flex items-start gap-4 p-6 pb-4 border-b-2 border-[#1a237e]">
+          {q.company.logoUrl ? (
+            <img src={q.company.logoUrl} alt="Logo" className="h-20 w-20 object-contain shrink-0" />
+          ) : (
+            <div className="h-20 w-20 shrink-0 rounded bg-[#1a237e] flex items-center justify-center text-white text-2xl font-bold">
+              {q.company.name.charAt(0)}
+            </div>
+          )}
+          <div className="flex-1">
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{q.company.name}</h1>
+            {q.company.address && (
+              <p className="text-xs text-slate-600 mt-1 max-w-lg leading-relaxed">{q.company.address}</p>
+            )}
+            <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1.5 text-xs text-slate-700">
+              {q.company.contact && <span><strong>Mobile:</strong> {q.company.contact}</span>}
+              {q.company.gstNumber && <span><strong>GSTIN:</strong> {q.company.gstNumber}</span>}
+              {q.company.email && <span><strong>Email:</strong> {q.company.email}</span>}
+            </div>
+          </div>
+          {/* Stamp area */}
+          <div className="text-right shrink-0">
+            <div className="inline-block border-2 border-[#1a237e] rounded px-3 py-1.5 text-center">
+              <p className="text-xs font-bold text-[#1a237e] uppercase tracking-wider">Quotation</p>
+            </div>
+          </div>
         </div>
 
-        {/* Company + Customer */}
-        <div className="grid grid-cols-2 gap-4 mb-5 border border-slate-200 rounded p-4 bg-slate-50">
-          <div>
-            <p className="font-bold text-xs uppercase tracking-wide text-slate-500 mb-1">Company Information:</p>
-            <p className="font-bold text-slate-800">{q.company.name}</p>
-            {q.company.contact && <p className="text-xs text-slate-600">Mobile: {q.company.contact}</p>}
-            {q.company.email && <p className="text-xs text-slate-600">Email: {q.company.email}</p>}
-            {q.company.gstNumber && <p className="text-xs text-slate-600">GSTIN: {q.company.gstNumber}</p>}
-          </div>
-          <div>
-            <p className="font-bold text-xs uppercase tracking-wide text-slate-500 mb-1">Customer Information:</p>
-            <p className="font-medium text-slate-800">Name: {q.customerName}</p>
-            {q.customerContact && <p className="text-xs text-slate-600">Mobile: {q.customerContact}</p>}
-            {q.customerAddress && <p className="text-xs text-slate-600">Address: {q.customerAddress}</p>}
+        {/* ── Quote No / Date / Expiry ── */}
+        <div className="flex justify-between items-center px-6 py-3 bg-slate-50 border-b border-slate-200 text-sm">
+          <div><span className="font-bold">Quotation No.: </span><span className="font-mono text-[#1a237e]">{q.quoteNumber}</span></div>
+          <div><span className="font-bold">Quotation Date: </span>{formatDate(q.quoteDate)}</div>
+          <div><span className="font-bold">Expiry Date: </span>{expiryDate(q.quoteDate)}</div>
+        </div>
+
+        {/* ── Bill To / Ship To / Salesman ── */}
+        <div className="grid grid-cols-3 gap-0 border-b border-slate-200">
+          <div className="px-5 py-4 border-r border-slate-200">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">BILL TO</p>
+            <p className="font-bold text-slate-800">{q.customerName}</p>
+            {q.customerAddress && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{q.customerAddress}</p>}
+            {q.customerContact && <p className="text-xs text-slate-600 mt-1">Mobile: {q.customerContact}</p>}
             {q.customerEmail && <p className="text-xs text-slate-600">Email: {q.customerEmail}</p>}
           </div>
+          <div className="px-5 py-4 border-r border-slate-200">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">SHIP TO</p>
+            <p className="font-bold text-slate-800">{q.customerName}</p>
+            {q.customerAddress && <p className="text-xs text-slate-600 mt-1 leading-relaxed">{q.customerAddress}</p>}
+            {q.systemType && <p className="text-xs text-slate-600 mt-1">System: {q.systemType}</p>}
+            {q.phase && <p className="text-xs text-slate-600">Phase: {q.phase}</p>}
+          </div>
+          <div className="px-5 py-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">SALESMAN</p>
+            <p className="font-bold text-slate-800">{q.preparedBy || "—"}</p>
+            {q.systemSizeKw && <p className="text-xs text-slate-600 mt-1">System Size: {q.systemSizeKw} KW</p>}
+            {q.panelType && <p className="text-xs text-slate-600">Panel: {q.panelType}</p>}
+          </div>
         </div>
 
-        {/* System Specifications */}
-        {hasSystem && (
-          <div className="mb-5">
-            <div className="bg-[#1a237e] text-white text-center py-2 rounded-t text-sm font-bold">System Specifications</div>
-            <table className="w-full border border-slate-200 rounded-b text-sm">
-              <tbody>
-                <tr className="divide-x divide-slate-200">
-                  <td className="px-4 py-2 bg-slate-50 w-1/2">
-                    <span className="font-semibold">Panel Type:</span> {q.panelType || "—"}
-                  </td>
-                  <td className="px-4 py-2 bg-slate-50">
-                    <span className="font-semibold">Wattage:</span> {q.panelWattage ? `${q.panelWattage}.00 W` : "—"}
-                  </td>
-                </tr>
-                <tr className="divide-x divide-slate-200 border-t border-slate-200">
-                  <td className="px-4 py-2">
-                    <span className="font-semibold">No. of Panels:</span> {q.panelCount || "—"}
-                  </td>
-                  <td className="px-4 py-2">
-                    <span className="font-semibold">Phase:</span> {q.phase || "—"}
-                  </td>
-                </tr>
-                <tr className="divide-x divide-slate-200 border-t border-slate-200">
-                  <td className="px-4 py-2 bg-slate-50">
-                    <span className="font-semibold">Output:</span> {q.outputWattageKw ? `${q.outputWattageKw} kw` : "—"} KW
-                  </td>
-                  <td className="px-4 py-2 bg-slate-50">
-                    <span className="font-semibold">System Size:</span> {q.systemSizeKw || "—"} {q.panelType ? `${q.panelType} KW` : "KW"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Product Details */}
-        <div className="mb-5">
-          <table className="w-full border border-slate-200 text-sm">
+        {/* ── Items Table ── */}
+        <div className="px-0">
+          <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-[#1a237e] text-white">
-                <th className="px-3 py-2 text-left font-semibold">Product</th>
-                <th className="px-3 py-2 text-left font-semibold">Description</th>
-                <th className="px-3 py-2 text-center font-semibold w-16">Qty</th>
-                <th className="px-3 py-2 text-right font-semibold w-28">Unit Price</th>
-                <th className="px-3 py-2 text-center font-semibold w-20">Type</th>
-                <th className="px-3 py-2 text-right font-semibold w-28">Total</th>
+                <th className="px-3 py-2.5 text-left font-semibold text-xs">ITEMS / SERVICES</th>
+                <th className="px-3 py-2.5 text-center font-semibold text-xs w-24">HSN/SAC</th>
+                <th className="px-3 py-2.5 text-center font-semibold text-xs w-20">WARRANTY</th>
+                <th className="px-3 py-2.5 text-center font-semibold text-xs w-20">QTY.</th>
+                <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">RATE</th>
+                <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">TAX</th>
+                <th className="px-3 py-2.5 text-right font-semibold text-xs w-28">AMOUNT</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody>
               {allLineItems.map((it, i) => (
-                <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-slate-50"}>
-                  <td className="px-3 py-2">{it.name}</td>
-                  <td className="px-3 py-2 text-slate-500 text-xs">{it.description || "-"}</td>
-                  <td className="px-3 py-2 text-center">{Number(it.qty).toFixed(2)}</td>
-                  <td className="px-3 py-2 text-right">{formatINR(it.unitPrice)}</td>
-                  <td className="px-3 py-2 text-center text-xs">Nos</td>
-                  <td className="px-3 py-2 text-right font-medium">{formatINR(it.total)}</td>
+                <tr key={i} className="border-b border-slate-100 hover:bg-slate-50">
+                  <td className="px-3 py-2.5">
+                    <p className="font-semibold text-slate-800">{it.name}</p>
+                    {it.description && <p className="text-xs text-slate-500 mt-0.5">{it.description}</p>}
+                  </td>
+                  <td className="px-3 py-2.5 text-center text-xs text-slate-600 font-mono">{it.hsn || "—"}</td>
+                  <td className="px-3 py-2.5 text-center text-xs text-slate-600">{it.warranty || "-"}</td>
+                  <td className="px-3 py-2.5 text-center">{it.qty} {it.unit}</td>
+                  <td className="px-3 py-2.5 text-right font-mono">{formatINR(it.unitPrice)}</td>
+                  <td className="px-3 py-2.5 text-right">
+                    <span className="font-mono">{formatINR(it.gstAmt)}</span>
+                    <span className="block text-xs text-slate-400">({it.gstRate}%)</span>
+                  </td>
+                  <td className="px-3 py-2.5 text-right font-semibold font-mono">{formatINR(it.unitPrice * it.qty)}</td>
                 </tr>
               ))}
             </tbody>
+            {/* Subtotal row */}
+            <tfoot>
+              <tr className="border-t-2 border-slate-300 bg-slate-50">
+                <td colSpan={4} className="px-3 py-2.5 font-bold text-slate-700">SUBTOTAL</td>
+                <td className="px-3 py-2.5"></td>
+                <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(gstTotal)}</td>
+                <td className="px-3 py-2.5 text-right font-bold font-mono">₹ {formatINR(taxableTotal)}</td>
+              </tr>
+            </tfoot>
           </table>
         </div>
 
-        {/* Bank Details + Cost Summary */}
-        <div className="grid grid-cols-2 gap-6 mb-5">
-          {/* Bank */}
-          <div>
-            {(q.company.bankName || q.company.accountNumber) && (
-              <>
-                <div className="border border-[#1a237e] rounded">
-                  <div className="bg-[#1a237e] text-white px-3 py-1.5 text-sm font-bold rounded-t">Bank Details</div>
-                  <div className="p-3 text-sm space-y-1">
-                    {q.company.bankName && <p><span className="font-medium">Bank Name:</span> {q.company.bankName}</p>}
-                    {q.company.branchName && <p><span className="font-medium">Branch:</span> {q.company.branchName}</p>}
-                    {q.company.ifscCode && <p><span className="font-medium">IFSC Code:</span> {q.company.ifscCode}</p>}
-                    {q.company.accountNumber && <p><span className="font-medium">Account Number:</span> {q.company.accountNumber}</p>}
-                    {q.company.accountName && <p><span className="font-medium">Account Name:</span> {q.company.accountName}</p>}
-                  </div>
-                </div>
-              </>
+        {/* ── Bank Details + Tax Summary ── */}
+        <div className="grid grid-cols-2 gap-0 border-t border-slate-200">
+
+          {/* Bank Details */}
+          <div className="px-5 py-4 border-r border-slate-200">
+            <p className="font-bold text-slate-800 mb-3 text-sm">BANK DETAILS</p>
+            {q.company.accountName && (
+              <div className="flex gap-2 text-xs mb-1">
+                <span className="text-slate-500 w-20 shrink-0">Name:</span>
+                <span className="font-medium text-slate-800">{q.company.accountName}</span>
+              </div>
             )}
+            {q.company.ifscCode && (
+              <div className="flex gap-2 text-xs mb-1">
+                <span className="text-slate-500 w-20 shrink-0">IFSC Code:</span>
+                <span className="font-medium text-slate-800 font-mono">{q.company.ifscCode}</span>
+              </div>
+            )}
+            {q.company.accountNumber && (
+              <div className="flex gap-2 text-xs mb-1">
+                <span className="text-slate-500 w-20 shrink-0">Account No:</span>
+                <span className="font-medium text-slate-800 font-mono">{q.company.accountNumber}</span>
+              </div>
+            )}
+            {q.company.bankName && (
+              <div className="flex gap-2 text-xs mb-1">
+                <span className="text-slate-500 w-20 shrink-0">Bank:</span>
+                <span className="font-medium text-slate-800">{q.company.bankName}{q.company.branchName ? ` - ${q.company.branchName}` : ""}</span>
+              </div>
+            )}
+
+            {/* Terms */}
+            <div className="mt-4">
+              <p className="font-bold text-slate-800 mb-1.5 text-sm">TERMS AND CONDITIONS</p>
+              <p className="text-xs text-slate-600 font-medium mb-1">Payment Terms:</p>
+              <ol className="text-xs text-slate-600 space-y-0.5 list-decimal list-inside">
+                <li>40% Installation Advance amount</li>
+                <li>50% Material dispatch 3. 10% After Installation</li>
+              </ol>
+              {q.remarks && (
+                <div className="mt-2">
+                  <p className="text-xs font-medium text-slate-600 mb-0.5">Remarks:</p>
+                  <p className="text-xs text-slate-600">{q.remarks}</p>
+                </div>
+              )}
+            </div>
           </div>
-          {/* Cost Summary */}
-          <div>
-            <div className="border border-[#1a237e] rounded">
-              <div className="bg-[#1a237e] text-white px-3 py-1.5 text-sm font-bold rounded-t">Cost Summary</div>
-              <div className="p-3 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Total Before GST:</span>
-                  <span className="font-bold">RS {formatINR(q.subtotal)}</span>
-                </div>
+
+          {/* Tax Breakdown + Total */}
+          <div className="px-5 py-4">
+            <table className="w-full text-xs">
+              <tbody className="divide-y divide-slate-100">
+                <tr>
+                  <td className="py-1.5 text-slate-600">Taxable Amount</td>
+                  <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(taxableTotal)}</td>
+                </tr>
+                {/* Per-rate CGST/SGST breakdown */}
+                {Object.entries(gstGroups).map(([rate, vals]) => {
+                  const half = Number(rate) / 2;
+                  return (
+                    <>
+                      <tr key={`cgst-${rate}`}>
+                        <td className="py-1.5 text-slate-600">CGST @{half}%</td>
+                        <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(vals.cgst)}</td>
+                      </tr>
+                      <tr key={`sgst-${rate}`}>
+                        <td className="py-1.5 text-slate-600">SGST @{half}%</td>
+                        <td className="py-1.5 text-right font-mono font-medium">₹ {formatINR(vals.sgst)}</td>
+                      </tr>
+                    </>
+                  );
+                })}
                 {Number(q.discountAmount) > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-600">Discount ({q.discountPercent}%):</span>
-                    <span className="font-bold text-red-600">- RS {formatINR(q.discountAmount)}</span>
-                  </div>
+                  <tr>
+                    <td className="py-1.5 text-red-600">Discount ({q.discountPercent}%)</td>
+                    <td className="py-1.5 text-right font-mono font-medium text-red-600">- ₹ {formatINR(q.discountAmount)}</td>
+                  </tr>
                 )}
-                <div className="flex justify-between">
-                  <span className="text-slate-600">GST Amount:</span>
-                  <span className="font-bold">RS {formatINR(q.totalGst)}</span>
-                </div>
-                <div className="flex justify-between border-t border-slate-200 pt-2">
-                  <span className="font-bold text-slate-800">Final Price:</span>
-                  <span className="font-bold text-blue-700">RS {formatINR(q.roundedPrice)}</span>
-                </div>
+                {Math.abs(roundOff) > 0.001 && (
+                  <tr>
+                    <td className="py-1.5 text-slate-600">Round Off</td>
+                    <td className="py-1.5 text-right font-mono font-medium">{roundOff >= 0 ? "" : "- "}₹ {formatINR(Math.abs(roundOff))}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {/* Total Amount box */}
+            <div className="border-t-2 border-[#1a237e] mt-2 pt-2">
+              <div className="flex justify-between items-center">
+                <span className="font-bold text-slate-800">Total Amount</span>
+                <span className="font-bold text-[#1a237e] text-lg font-mono">₹ {formatINR(roundedPrice)}</span>
               </div>
             </div>
+
+            {/* Payment details */}
+            {(Number(q.advancePayment) > 0 || Number(q.balanceDue) > 0) && (
+              <div className="mt-3 space-y-1 text-xs">
+                {Number(q.advancePayment) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Advance Payment:</span>
+                    <span className="font-mono font-medium">₹ {formatINR(q.advancePayment)}</span>
+                  </div>
+                )}
+                {Number(q.balanceDue) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Balance Due:</span>
+                    <span className="font-mono font-medium">₹ {formatINR(q.balanceDue)}</span>
+                  </div>
+                )}
+                {q.paymentType && (
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Payment Mode:</span>
+                    <span className="font-medium">{q.paymentType}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Total in words */}
+            <div className="mt-3 border-t border-slate-200 pt-2">
+              <p className="text-xs font-bold text-slate-700">Total Amount (in words)</p>
+              <p className="text-xs text-slate-600 mt-0.5 italic">{numberToWords(roundedPrice)}</p>
+            </div>
           </div>
         </div>
 
-        {/* Payment Details */}
-        <div className="border border-[#1a237e] rounded mb-5">
-          <div className="bg-[#1a237e] text-white text-center py-2 text-sm font-bold rounded-t">Payment Details</div>
-          <div className="p-4 grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p><span className="font-semibold">Advance Payment:</span> ₹{formatINR(q.advancePayment)}</p>
-              {q.paymentType && <p className="mt-1"><span className="font-semibold">Payment Mode:</span> {q.paymentType}</p>}
-            </div>
-            <div>
-              <p><span className="font-semibold">Balance Payment:</span> ₹{formatINR(q.balanceDue)}</p>
-              {q.receiverName && <p className="mt-1"><span className="font-semibold">Payment Received By:</span> {q.receiverName.toUpperCase()}</p>}
-            </div>
-          </div>
-        </div>
-
-        {/* Remarks */}
-        {q.remarks && (
-          <div className="mb-5 border border-slate-200 rounded p-3">
-            <p className="text-xs font-semibold text-slate-500 mb-1">Remarks:</p>
-            <p className="text-sm text-slate-700">{q.remarks}</p>
-          </div>
-        )}
-
-        {/* Signatures */}
-        <div className="grid grid-cols-2 gap-6 mt-8">
+        {/* ── Signatures ── */}
+        <div className="grid grid-cols-2 gap-6 px-6 py-6 border-t border-slate-200">
           <div className="text-center border border-dashed border-slate-300 rounded p-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Prepared By</p>
-            <div className="border-t border-slate-400 mt-8 pt-2">
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Prepared By</p>
+            <div className="border-t border-slate-400 pt-2">
               <p className="font-medium text-slate-700">{q.preparedBy || "—"}</p>
               <p className="text-xs text-slate-500">{q.company.name}</p>
               <p className="text-xs text-slate-400 mt-1">Date: {formatDate(q.quoteDate)}</p>
             </div>
           </div>
           <div className="text-center border border-dashed border-slate-300 rounded p-4">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6">Authorized By</p>
-            <div className="border-t border-slate-400 mt-8 pt-2">
-              <p className="text-xs text-slate-400 italic">Signature</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Authorized Signatory</p>
+            <div className="border-t border-slate-400 pt-2">
+              <p className="text-xs text-slate-400 italic">Signature &amp; Stamp</p>
+              <p className="text-xs text-slate-500 mt-1">{q.company.name}</p>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="mt-8 pt-4 border-t border-slate-200 text-center text-xs text-slate-400">
-          This is a computer-generated document. No signature required.
+        <div className="px-6 pb-4 text-center text-xs text-slate-400 border-t border-slate-100">
+          This is a computer-generated document. No signature required if digitally signed.
         </div>
       </div>
 
       {/* Print styles */}
       <style>{`
         @media print {
-          body { margin: 0; }
+          body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
+          .print\\:my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+          .print\\:shadow-none { box-shadow: none !important; }
+          .print\\:border-0 { border: none !important; }
         }
       `}</style>
     </>

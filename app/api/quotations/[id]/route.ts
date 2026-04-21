@@ -66,6 +66,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
               data: items.map((item: any, i: number) => ({
                 categoryName: item.categoryName?.trim() || null,
                 productName: item.productName?.trim() || "",
+                hsnCode: item.hsnCode?.trim() || null,
                 description: item.description?.trim() || null,
                 unitPrice: parseFloat(item.unitPrice || "0"),
                 quantity: parseFloat(item.quantity || "1"),
@@ -81,6 +82,7 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
                 label: fc.label?.trim() || "",
                 cost: parseFloat(fc.cost || "0"),
                 rateNote: fc.rateNote?.trim() || null,
+                hsnCode: fc.hsnCode?.trim() || null,
                 gstRate: parseFloat(fc.gstRate || "18"),
                 total: parseFloat(fc.total || "0"),
                 included: fc.included !== false,

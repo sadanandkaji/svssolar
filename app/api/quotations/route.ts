@@ -7,12 +7,7 @@ function generateQuoteNumber(companyName: string): string {
   const m = String(now.getMonth() + 1).padStart(2, "0");
   const d = String(now.getDate()).padStart(2, "0");
   const rand = Math.floor(Math.random() * 9000 + 1000);
-  const prefix = companyName
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 3);
+  const prefix = companyName.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 3);
   return `QT-${prefix}-${y}${m}${d}-${rand}`;
 }
 
@@ -115,6 +110,7 @@ export async function POST(req: NextRequest) {
             data: items.map((item: any, i: number) => ({
               categoryName: item.categoryName?.trim() || null,
               productName: item.productName?.trim() || "",
+              hsnCode: item.hsnCode?.trim() || null,   // ← save hsnCode
               description: item.description?.trim() || null,
               unitPrice: parseFloat(item.unitPrice || "0"),
               quantity: parseFloat(item.quantity || "1"),
@@ -130,6 +126,7 @@ export async function POST(req: NextRequest) {
               label: fc.label?.trim() || "",
               cost: parseFloat(fc.cost || "0"),
               rateNote: fc.rateNote?.trim() || null,
+              hsnCode: fc.hsnCode?.trim() || null,     // ← save hsnCode
               gstRate: parseFloat(fc.gstRate || "18"),
               total: parseFloat(fc.total || "0"),
               included: fc.included !== false,

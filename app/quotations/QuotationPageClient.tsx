@@ -4,30 +4,21 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type Company = {
-  id: number;
-  name: string;
-  address: string | null;
-  gstNumber: string | null;
-  contact: string | null;
-  email: string | null;
-  logoUrl: string | null;
-  bankName: string | null;
-  branchName: string | null;
-  accountName: string | null;
-  accountNumber: string | null;
-  ifscCode: string | null;
+  id: number; name: string; address: string | null; gstNumber: string | null;
+  contact: string | null; email: string | null; logoUrl: string | null;
+  bankName: string | null; branchName: string | null; accountName: string | null;
+  accountNumber: string | null; ifscCode: string | null;
 };
 
-type Category = { id: number; name: string };
+type Category = { id: number; name: string; hsnCode: string | null };  // ← hsnCode added
 type Product = { id: number; name: string; categoryId: number; basePrice: string; gstRate: string; description: string | null };
 
 type LineItem = {
   id: string;
   categoryName: string;
   productName: string;
+  hsnCode: string;      // ← new
   description: string;
   unitPrice: string;
   quantity: string;
@@ -36,13 +27,8 @@ type LineItem = {
 };
 
 type FixedCost = {
-  id: string;
-  label: string;
-  cost: string;
-  rateNote: string;
-  gstRate: string;
-  total: number;
-  included: boolean;
+  id: string; label: string; cost: string; rateNote: string;
+  gstRate: string; total: number; included: boolean;
 };
 
 const GST_OPTIONS = ["0", "5", "12", "18", "28"];
@@ -58,9 +44,7 @@ const DEFAULT_FIXED_COSTS: Omit<FixedCost, "id">[] = [
   { label: "Net Metering", cost: "0", rateNote: "₹25,000", gstRate: "18", total: 0, included: true },
 ];
 
-function uid() {
-  return Math.random().toString(36).slice(2, 9);
-}
+function uid() { return Math.random().toString(36).slice(2, 9); }
 
 function generateQuoteNumber(companyName: string): string {
   const now = new Date();
@@ -76,11 +60,7 @@ function formatINR(n: number) {
   return n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-// ─── Main Component ───────────────────────────────────────────────────────────
+function todayISO() { return new Date().toISOString().slice(0, 10); }
 
 export default function QuotationPage() {
   const router = useRouter();
@@ -95,14 +75,12 @@ export default function QuotationPage() {
 
   const [companyId, setCompanyId] = useState("");
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-
   const [quoteNumber, setQuoteNumber] = useState("");
   const [quoteDate, setQuoteDate] = useState(todayISO());
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerContact, setCustomerContact] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
-
   const [systemType, setSystemType] = useState("");
   const [systemSizeKw, setSystemSizeKw] = useState("");
   const [panelType, setPanelType] = useState("");
@@ -111,7 +89,7 @@ export default function QuotationPage() {
   const [phase, setPhase] = useState("");
 
   const [items, setItems] = useState<LineItem[]>([
-    { id: uid(), categoryName: "", productName: "", description: "", unitPrice: "", quantity: "1", gstRate: "12", totalPrice: 0 },
+    { id: uid(), categoryName: "", productName: "", hsnCode: "", description: "", unitPrice: "", quantity: "1", gstRate: "12", totalPrice: 0 },
   ]);
 
   const [fixedCosts, setFixedCosts] = useState<FixedCost[]>(
@@ -128,6 +106,7 @@ export default function QuotationPage() {
 
   useEffect(() => {
     fetch("/api/companies").then((r) => r.json()).then(setCompanies).catch(() => {});
+    // Fetch categories WITH hsnCode
     fetch("/api/categories").then((r) => r.json()).then((d) => setCategories(Array.isArray(d) ? d : [])).catch(() => {});
     fetch("/api/products?pageSize=ALL").then((r) => r.json()).then((d) => setAllProducts(d.products || [])).catch(() => {});
   }, []);
@@ -161,6 +140,7 @@ export default function QuotationPage() {
           id: uid(),
           categoryName: it.categoryName || "",
           productName: it.productName,
+          hsnCode: it.hsnCode || "",
           description: it.description || "",
           unitPrice: String(it.unitPrice),
           quantity: String(it.quantity),
@@ -168,13 +148,9 @@ export default function QuotationPage() {
           totalPrice: Number(it.totalPrice),
         })));
         setFixedCosts(q.fixedCosts.map((fc: any) => ({
-          id: uid(),
-          label: fc.label,
-          cost: String(fc.cost),
-          rateNote: fc.rateNote || "",
-          gstRate: String(fc.gstRate),
-          total: Number(fc.total),
-          included: fc.included,
+          id: uid(), label: fc.label, cost: String(fc.cost),
+          rateNote: fc.rateNote || "", gstRate: String(fc.gstRate),
+          total: Number(fc.total), included: fc.included,
         })));
       })
       .catch(() => {});
@@ -187,8 +163,7 @@ export default function QuotationPage() {
   }, [companyId, companies, editId]);
 
   const outputWattageKw = panelCount && panelWattage
-    ? ((Number(panelCount) * Number(panelWattage)) / 1000).toFixed(2)
-    : "";
+    ? ((Number(panelCount) * Number(panelWattage)) / 1000).toFixed(2) : "";
 
   function updateItem(id: string, patch: Partial<LineItem>) {
     setItems((prev) =>
@@ -214,10 +189,7 @@ export default function QuotationPage() {
   }
 
   function addItem() {
-    setItems((prev) => [
-      ...prev,
-      { id: uid(), categoryName: "", productName: "", description: "", unitPrice: "", quantity: "1", gstRate: "12", totalPrice: 0 },
-    ]);
+    setItems((prev) => [...prev, { id: uid(), categoryName: "", productName: "", hsnCode: "", description: "", unitPrice: "", quantity: "1", gstRate: "12", totalPrice: 0 }]);
   }
 
   function removeItem(id: string) {
@@ -232,6 +204,7 @@ export default function QuotationPage() {
     updateItem(itemId, {
       productName: product.name,
       categoryName: cat?.name || "",
+      hsnCode: cat?.hsnCode || "",   // ← auto-fill HSN from category
       unitPrice: String(product.basePrice),
       gstRate: String(product.gstRate),
       description: product.description || "",
@@ -298,7 +271,9 @@ export default function QuotationPage() {
       finalPrice: finalPrice.toFixed(2), roundedPrice: roundedPrice.toFixed(2),
       advancePayment: advance.toFixed(2), balanceDue: balanceDue.toFixed(2),
       paymentType, receiverName, remarks, preparedBy, status,
-      items: items.filter((it) => it.categoryName.trim() !== "" && it.productName.trim() !== "").map((it, i) => ({ ...it, sortOrder: i })),
+      items: items
+        .filter((it) => it.categoryName.trim() !== "" && it.productName.trim() !== "")
+        .map((it, i) => ({ ...it, sortOrder: i })),  // hsnCode is already in the item object
       fixedCosts: fixedCosts.map((fc, i) => ({ ...fc, sortOrder: i })),
     };
   }
@@ -341,9 +316,7 @@ export default function QuotationPage() {
   }
 
   return (
-    // Note: -mx-4 counteracts the layout padding so this page can go full width
     <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 bg-gray-100 min-h-screen">
-      {/* Toast */}
       {toast && (
         <div className={`fixed right-4 top-4 z-[200] flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
           {toast.text}
@@ -351,7 +324,6 @@ export default function QuotationPage() {
         </div>
       )}
 
-      {/* Top bar */}
       <div className="bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between shadow">
         <h1 className="text-lg font-bold tracking-wide">Quotation System</h1>
         <Link href="/quotations/list" className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded flex items-center gap-1.5 transition">
@@ -364,10 +336,8 @@ export default function QuotationPage() {
 
       <div className="max-w-[1400px] mx-auto px-4 py-6 space-y-6">
 
-        {/* ── Row 1: Company Info + Customer Details ── */}
+        {/* Company + Customer */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-          {/* Company Information */}
           <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-6 py-3 flex items-center gap-2">
               <div className="h-6 w-6 bg-amber-400 rounded-full flex items-center justify-center text-white text-xs">🏢</div>
@@ -383,36 +353,25 @@ export default function QuotationPage() {
               </div>
               {selectedCompany && (
                 <>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Address:</label>
-                    <textarea className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly rows={2} value={selectedCompany.address || ""} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">GST Number:</label>
-                    <input className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly value={selectedCompany.gstNumber || ""} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Contact:</label>
-                    <input className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly value={selectedCompany.contact || ""} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Email:</label>
-                    <input className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly value={selectedCompany.email || ""} />
-                  </div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-1">Address:</label>
+                    <textarea className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly rows={2} value={selectedCompany.address || ""} /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-1">GST Number:</label>
+                    <input className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly value={selectedCompany.gstNumber || ""} /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-1">Contact:</label>
+                    <input className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly value={selectedCompany.contact || ""} /></div>
+                  <div><label className="block text-sm font-medium text-slate-700 mb-1">Email:</label>
+                    <input className="w-full border border-slate-200 bg-slate-50 rounded px-3 py-2 text-sm" readOnly value={selectedCompany.email || ""} /></div>
                   {selectedCompany.logoUrl && (
-                    <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Logo:</label>
+                    <div><label className="block text-sm font-medium text-slate-700 mb-1">Logo:</label>
                       <div className="h-20 w-20 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-white">
                         <img src={selectedCompany.logoUrl} alt="Logo" className="h-full w-full object-contain" />
-                      </div>
-                    </div>
+                      </div></div>
                   )}
                 </>
               )}
             </div>
           </div>
 
-          {/* Customer & Quotation Details */}
           <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
             <div className="border-b border-slate-200 px-6 py-3 flex items-center gap-2">
               <div className="h-6 w-6 bg-amber-400 rounded-full flex items-center justify-center text-white text-xs">👤</div>
@@ -424,98 +383,60 @@ export default function QuotationPage() {
                 <div className="flex gap-2">
                   <input className="flex-1 border border-slate-300 bg-slate-100 rounded px-3 py-2 text-sm" value={quoteNumber} readOnly />
                   <button type="button" onClick={() => selectedCompany && setQuoteNumber(generateQuoteNumber(selectedCompany.name))}
-                    className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 text-sm font-medium rounded flex items-center gap-1">
-                    ⚡ Generate
-                  </button>
+                    className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 text-sm font-medium rounded">⚡ Generate</button>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Date: <span className="text-red-500">*</span></label>
-                <input type="date" className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={quoteDate} onChange={(e) => setQuoteDate(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Customer Name: <span className="text-red-500">*</span></label>
-                <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Customer Address: <span className="text-red-500">*</span></label>
-                <textarea className="w-full border border-slate-300 rounded px-3 py-2 text-sm" rows={2} value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Contact Number: <span className="text-red-500">*</span></label>
-                <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerContact} onChange={(e) => setCustomerContact(e.target.value)} />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email: <span className="text-xs text-slate-400">(optional)</span></label>
-                <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} />
-              </div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Date: <span className="text-red-500">*</span></label>
+                <input type="date" className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={quoteDate} onChange={(e) => setQuoteDate(e.target.value)} /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Customer Name: <span className="text-red-500">*</span></label>
+                <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerName} onChange={(e) => setCustomerName(e.target.value)} /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Customer Address: <span className="text-red-500">*</span></label>
+                <textarea className="w-full border border-slate-300 rounded px-3 py-2 text-sm" rows={2} value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Contact Number: <span className="text-red-500">*</span></label>
+                <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerContact} onChange={(e) => setCustomerContact(e.target.value)} /></div>
+              <div><label className="block text-sm font-medium text-slate-700 mb-1">Email: <span className="text-xs text-slate-400">(optional)</span></label>
+                <input className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} /></div>
             </div>
           </div>
         </div>
 
-        {/* ── System Configuration ── */}
+        {/* System Config */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
           <div className="border-b border-slate-200 px-6 py-3 flex items-center gap-2">
             <span className="text-amber-500">⚙️</span>
             <h2 className="text-base font-bold text-[#1a237e]">System Configuration</h2>
           </div>
           <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">System Type <span className="text-red-500">*</span></label>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">System Type <span className="text-red-500">*</span></label>
               <select className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={systemType} onChange={(e) => setSystemType(e.target.value)}>
                 <option value="">-- Select System Type --</option>
                 {SYSTEM_TYPES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">System Size (KW) <span className="text-red-500">*</span></label>
-              <div className="flex">
-                <input type="number" className="flex-1 border border-slate-300 rounded-l px-3 py-2 text-sm" value={systemSizeKw} onChange={(e) => setSystemSizeKw(e.target.value)} />
-                <span className="border border-l-0 border-slate-300 rounded-r px-2 py-2 text-xs bg-slate-50 text-slate-500">KW</span>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Panel Type <span className="text-red-500">*</span></label>
+              </select></div>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">System Size (KW) <span className="text-red-500">*</span></label>
+              <div className="flex"><input type="number" className="flex-1 border border-slate-300 rounded-l px-3 py-2 text-sm" value={systemSizeKw} onChange={(e) => setSystemSizeKw(e.target.value)} />
+                <span className="border border-l-0 border-slate-300 rounded-r px-2 py-2 text-xs bg-slate-50 text-slate-500">KW</span></div></div>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">Panel Type <span className="text-red-500">*</span></label>
               <select className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={panelType} onChange={(e) => setPanelType(e.target.value)}>
                 <option value="">-- Select Panel Type --</option>
                 {PANEL_TYPES.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Panel Wattage (W) <span className="text-red-500">*</span></label>
-              <div className="flex">
-                <input type="number" className="flex-1 border border-slate-300 rounded-l px-3 py-2 text-sm" value={panelWattage} onChange={(e) => setPanelWattage(e.target.value)} />
-                <span className="border border-l-0 border-slate-300 rounded-r px-2 py-2 text-xs bg-slate-50 text-slate-500">W</span>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Number of Panels</label>
-              <input type="number" className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={panelCount} onChange={(e) => setPanelCount(e.target.value)} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Phase <span className="text-red-500">*</span></label>
+              </select></div>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">Panel Wattage (W) <span className="text-red-500">*</span></label>
+              <div className="flex"><input type="number" className="flex-1 border border-slate-300 rounded-l px-3 py-2 text-sm" value={panelWattage} onChange={(e) => setPanelWattage(e.target.value)} />
+                <span className="border border-l-0 border-slate-300 rounded-r px-2 py-2 text-xs bg-slate-50 text-slate-500">W</span></div></div>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">Number of Panels</label>
+              <input type="number" className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={panelCount} onChange={(e) => setPanelCount(e.target.value)} /></div>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">Phase <span className="text-red-500">*</span></label>
               <select className="w-full border border-slate-300 rounded px-3 py-2 text-sm" value={phase} onChange={(e) => setPhase(e.target.value)}>
                 <option value="">-- Select Phase --</option>
                 {PHASES.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Output Wattage (KW)</label>
-              <div className="flex">
-                <input className="flex-1 border border-slate-200 bg-slate-50 rounded-l px-3 py-2 text-sm" readOnly value={outputWattageKw} />
-                <span className="border border-l-0 border-slate-300 rounded-r px-2 py-2 text-xs bg-slate-50 text-slate-500">KW</span>
-              </div>
-            </div>
-            <div className="md:col-span-2 flex items-end">
-              <button type="button" className="bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 text-sm font-medium rounded flex items-center gap-2">
-                📋 Load Previous Quote
-                <span className="text-xs opacity-75 ml-1">Fill details to check for previous quotations</span>
-              </button>
-            </div>
+              </select></div>
+            <div><label className="block text-sm font-medium text-slate-700 mb-1">Output Wattage (KW)</label>
+              <div className="flex"><input className="flex-1 border border-slate-200 bg-slate-50 rounded-l px-3 py-2 text-sm" readOnly value={outputWattageKw} />
+                <span className="border border-l-0 border-slate-300 rounded-r px-2 py-2 text-xs bg-slate-50 text-slate-500">KW</span></div></div>
           </div>
         </div>
 
-        {/* ── Product Information ── */}
+        {/* Product Information */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
           <div className="border-b border-slate-200 px-6 py-3 flex items-center gap-2">
             <span className="text-amber-500">📦</span>
@@ -526,14 +447,15 @@ export default function QuotationPage() {
               <thead>
                 <tr className="bg-[#1a237e] text-white">
                   <th className="px-3 py-3 text-left text-xs font-semibold w-10">#</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-44">CATEGORY <span className="text-red-300">*</span></th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-48">PRODUCT <span className="text-red-300">*</span></th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-36">CATEGORY <span className="text-red-300">*</span></th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-44">PRODUCT <span className="text-red-300">*</span></th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-24">HSN/SAC</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold">DESCRIPTION</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-32">UNIT PRICE (₹)</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-24">QUANTITY</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-28">GST (%)</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-36">TOTAL PRICE (₹)</th>
-                  <th className="px-3 py-3 text-center text-xs font-semibold w-16">ACTION</th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-28">UNIT PRICE (₹)</th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-20">QTY</th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-24">GST (%)</th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-32">TOTAL (₹)</th>
+                  <th className="px-3 py-3 text-center text-xs font-semibold w-14">DEL</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -547,11 +469,15 @@ export default function QuotationPage() {
                       <td className="px-3 py-2 text-slate-500">{idx + 1}</td>
                       <td className="px-3 py-2">
                         <select className={`w-full border rounded px-2 py-1.5 text-sm ${rowErr.category ? "border-red-500 bg-red-50" : "border-slate-300"} focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                          value={item.categoryName} onChange={(e) => updateItem(item.id, { categoryName: e.target.value, productName: "", unitPrice: "", description: "" })}>
+                          value={item.categoryName}
+                          onChange={(e) => {
+                            const cat = categories.find((c) => c.name === e.target.value);
+                            updateItem(item.id, { categoryName: e.target.value, productName: "", unitPrice: "", description: "", hsnCode: cat?.hsnCode || "" });
+                          }}>
                           <option value="">Select Category</option>
                           {categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
                         </select>
-                        {rowErr.category && <p className="text-red-500 text-xs mt-1">Category is required</p>}
+                        {rowErr.category && <p className="text-red-500 text-xs mt-1">Required</p>}
                       </td>
                       <td className="px-3 py-2">
                         <select className={`w-full border rounded px-2 py-1.5 text-sm ${rowErr.product ? "border-red-500 bg-red-50" : "border-slate-300"} focus:outline-none focus:ring-1 focus:ring-blue-500`}
@@ -559,7 +485,13 @@ export default function QuotationPage() {
                           <option value="">{item.categoryName ? "Select Product" : "Select category first"}</option>
                           {catProducts.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
                         </select>
-                        {rowErr.product && <p className="text-red-500 text-xs mt-1">Product is required</p>}
+                        {rowErr.product && <p className="text-red-500 text-xs mt-1">Required</p>}
+                      </td>
+                      {/* HSN field - auto-filled, editable */}
+                      <td className="px-3 py-2">
+                        <input className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm font-mono"
+                          value={item.hsnCode} onChange={(e) => updateItem(item.id, { hsnCode: e.target.value })}
+                          placeholder="e.g. 85414300" />
                       </td>
                       <td className="px-3 py-2">
                         <textarea className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm resize-none" rows={1}
@@ -593,13 +525,13 @@ export default function QuotationPage() {
             </table>
           </div>
           <div className="px-6 py-3">
-            <button type="button" onClick={addItem} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded flex items-center gap-1">
+            <button type="button" onClick={addItem} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-medium rounded">
               + Add Product
             </button>
           </div>
         </div>
 
-        {/* ── Fixed Costs ── */}
+        {/* Fixed Costs */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
           <div className="border-b border-slate-200 px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -615,7 +547,7 @@ export default function QuotationPage() {
                   <th className="px-3 py-3 text-left text-xs font-semibold w-10">#</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold">ITEM</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold w-40">COST (₹)</th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold w-32">RATE</th>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-32">RATE NOTE</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold w-32">GST (%)</th>
                   <th className="px-3 py-3 text-left text-xs font-semibold w-36">TOTAL</th>
                   <th className="px-3 py-3 text-center text-xs font-semibold w-20">INCLUDE</th>
@@ -625,26 +557,16 @@ export default function QuotationPage() {
                 {fixedCosts.map((fc, idx) => (
                   <tr key={fc.id} className="hover:bg-slate-50">
                     <td className="px-3 py-2 text-slate-500">{idx + 1}</td>
-                    <td className="px-3 py-2">
-                      <input className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" value={fc.label} onChange={(e) => updateFC(fc.id, { label: e.target.value })} />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input type="number" className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" value={fc.cost} onChange={(e) => updateFC(fc.id, { cost: e.target.value })} />
-                    </td>
-                    <td className="px-3 py-2">
-                      <input className="w-full border border-slate-200 bg-slate-50 rounded px-2 py-1.5 text-sm" value={fc.rateNote} onChange={(e) => updateFC(fc.id, { rateNote: e.target.value })} />
-                    </td>
+                    <td className="px-3 py-2"><input className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" value={fc.label} onChange={(e) => updateFC(fc.id, { label: e.target.value })} /></td>
+                    <td className="px-3 py-2"><input type="number" className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" value={fc.cost} onChange={(e) => updateFC(fc.id, { cost: e.target.value })} /></td>
+                    <td className="px-3 py-2"><input className="w-full border border-slate-200 bg-slate-50 rounded px-2 py-1.5 text-sm" value={fc.rateNote} onChange={(e) => updateFC(fc.id, { rateNote: e.target.value })} /></td>
                     <td className="px-3 py-2">
                       <select className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm" value={fc.gstRate} onChange={(e) => updateFC(fc.id, { gstRate: e.target.value })}>
                         {GST_OPTIONS.map((g) => <option key={g} value={g}>{g}%</option>)}
                       </select>
                     </td>
-                    <td className="px-3 py-2">
-                      <input className="w-full border border-slate-200 bg-slate-100 rounded px-2 py-1.5 text-sm" readOnly value={formatINR(fc.total)} />
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      <input type="checkbox" className="h-4 w-4 accent-blue-600" checked={fc.included} onChange={(e) => updateFC(fc.id, { included: e.target.checked })} />
-                    </td>
+                    <td className="px-3 py-2"><input className="w-full border border-slate-200 bg-slate-100 rounded px-2 py-1.5 text-sm" readOnly value={formatINR(fc.total)} /></td>
+                    <td className="px-3 py-2 text-center"><input type="checkbox" className="h-4 w-4 accent-blue-600" checked={fc.included} onChange={(e) => updateFC(fc.id, { included: e.target.checked })} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -652,7 +574,7 @@ export default function QuotationPage() {
           </div>
         </div>
 
-        {/* ── Pricing Summary ── */}
+        {/* Pricing Summary */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
           <div className="border-b border-slate-200 px-6 py-3 flex items-center gap-2">
             <span className="text-amber-500">💰</span>
@@ -689,7 +611,6 @@ export default function QuotationPage() {
                 </select>
               </div>
             </div>
-
             <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Receiver Name: <span className="text-xs text-slate-400">(optional)</span></label>
@@ -700,26 +621,22 @@ export default function QuotationPage() {
                 <textarea className="w-full border border-slate-300 rounded px-3 py-2 text-sm" rows={3} value={remarks} onChange={(e) => setRemarks(e.target.value)} />
               </div>
             </div>
-
             {selectedCompany && (selectedCompany.bankName || selectedCompany.accountNumber) && (
               <div className="lg:col-span-2">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-slate-500">🏦</span>
-                  <h3 className="text-sm font-bold text-slate-700">Bank Details</h3>
-                </div>
                 <div className="border-l-4 border-blue-500 pl-4 bg-blue-50 rounded-r-lg py-3 pr-4 space-y-1 text-sm">
-                  {selectedCompany.accountName && <p><span className="font-semibold text-blue-800">Account Name:</span> <span className="text-slate-700">{selectedCompany.accountName}</span></p>}
-                  {selectedCompany.accountNumber && <p><span className="font-semibold text-blue-800">Account Number:</span> <span className="text-slate-700">{selectedCompany.accountNumber}</span></p>}
-                  {selectedCompany.bankName && <p><span className="font-semibold text-blue-800">Bank Name:</span> <span className="text-slate-700">{selectedCompany.bankName}</span></p>}
-                  {selectedCompany.branchName && <p><span className="font-semibold text-blue-800">Branch:</span> <span className="text-slate-700">{selectedCompany.branchName}</span></p>}
-                  {selectedCompany.ifscCode && <p><span className="font-semibold text-blue-800">IFSC Code:</span> <span className="text-slate-700">{selectedCompany.ifscCode}</span></p>}
+                  <p className="font-bold text-blue-800 text-xs uppercase mb-1">🏦 Bank Details</p>
+                  {selectedCompany.accountName && <p><span className="font-semibold text-blue-800">Account Name:</span> {selectedCompany.accountName}</p>}
+                  {selectedCompany.accountNumber && <p><span className="font-semibold text-blue-800">Account Number:</span> {selectedCompany.accountNumber}</p>}
+                  {selectedCompany.bankName && <p><span className="font-semibold text-blue-800">Bank:</span> {selectedCompany.bankName}</p>}
+                  {selectedCompany.branchName && <p><span className="font-semibold text-blue-800">Branch:</span> {selectedCompany.branchName}</p>}
+                  {selectedCompany.ifscCode && <p><span className="font-semibold text-blue-800">IFSC:</span> {selectedCompany.ifscCode}</p>}
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* ── Authorization & Signature ── */}
+        {/* Signature */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
           <div className="border-b border-slate-200 px-6 py-3 flex items-center gap-2">
             <span className="text-amber-500">✍️</span>
@@ -734,7 +651,6 @@ export default function QuotationPage() {
               <div className="border border-dashed border-slate-300 rounded-lg p-6 text-center">
                 <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">PREPARED BY</p>
                 <p className="text-base font-semibold text-slate-800">{preparedBy || "—"}</p>
-                <p className="text-xs text-slate-500 mt-1">Employee</p>
                 <p className="text-xs text-slate-400 mt-2">Date: {quoteDate}</p>
               </div>
               <div className="border border-dashed border-slate-300 rounded-lg p-6 text-center">
@@ -745,7 +661,7 @@ export default function QuotationPage() {
           </div>
         </div>
 
-        {/* ── Action Buttons ── */}
+        {/* Action Buttons */}
         <div className="flex items-center justify-center gap-4 pb-8">
           <button type="button" onClick={handleSave} disabled={saving}
             className="bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-8 py-2.5 rounded font-medium text-sm flex items-center gap-2">

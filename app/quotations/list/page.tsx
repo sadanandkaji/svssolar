@@ -5,14 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 type Quotation = {
-  id: number;
-  quoteNumber: string;
-  quoteDate: string;
-  customerName: string;
-  customerContact: string | null;
-  finalPrice: string;
-  status: string;
-  company: { name: string };
+  id: number; quoteNumber: string; quoteDate: string;
+  customerName: string; customerContact: string | null;
+  finalPrice: string; status: string; company: { name: string };
 };
 
 type PageSize = 10 | 20 | "ALL";
@@ -40,11 +35,8 @@ export default function QuotationListPage() {
       const data = await res.json();
       setQuotations(data.quotations || []);
       setTotalCount(data.totalCount || 0);
-    } catch {
-      showToast("err", "Failed to load quotations");
-    } finally {
-      setLoading(false);
-    }
+    } catch { showToast("err", "Failed to load quotations"); }
+    finally { setLoading(false); }
   }, [search, page, pageSize]);
 
   useEffect(() => { load(); }, [load]);
@@ -57,9 +49,8 @@ export default function QuotationListPage() {
   const pageNumbers = useMemo(() => {
     if (pageSize === "ALL" || totalPages <= 1) return [];
     const pages: (number | "...")[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
+    if (totalPages <= 7) { for (let i = 1; i <= totalPages; i++) pages.push(i); }
+    else {
       pages.push(1);
       if (page > 3) pages.push("...");
       for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) pages.push(i);
@@ -76,9 +67,7 @@ export default function QuotationListPage() {
       if (!res.ok) throw new Error();
       showToast("ok", "Quotation deleted");
       load();
-    } catch {
-      showToast("err", "Failed to delete");
-    }
+    } catch { showToast("err", "Failed to delete"); }
   }
 
   function statusColor(s: string) {
@@ -92,7 +81,6 @@ export default function QuotationListPage() {
   }
 
   return (
-    // Break out of layout padding like the quotation form page
     <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-6 bg-gray-100 min-h-screen">
       {toast && (
         <div className={`fixed right-4 top-4 z-[200] flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
@@ -101,7 +89,6 @@ export default function QuotationListPage() {
         </div>
       )}
 
-      {/* Top bar */}
       <div className="bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between shadow">
         <h1 className="text-lg font-bold tracking-wide">Quotation System</h1>
         <Link href="/quotations" className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded flex items-center gap-1.5 transition">
@@ -114,23 +101,12 @@ export default function QuotationListPage() {
           <div className="flex flex-col gap-3 border-b border-slate-200 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-base font-semibold text-slate-800">Quotations List</h2>
             <div className="flex flex-wrap items-center gap-2">
-              <select
-                value={String(pageSize)}
-                onChange={(e) => { const v = e.target.value; setPageSize(v === "ALL" ? "ALL" : Number(v) as PageSize); }}
-                className="border border-slate-300 rounded px-2 py-1 text-sm"
-              >
+              <select value={String(pageSize)} onChange={(e) => { const v = e.target.value; setPageSize(v === "ALL" ? "ALL" : Number(v) as PageSize); }} className="border border-slate-300 rounded px-2 py-1 text-sm">
                 {[10, 20, "ALL"].map((v) => <option key={v} value={v}>{v === "ALL" ? "All" : v}</option>)}
               </select>
               <span className="text-xs text-slate-600">entries</span>
-              <input
-                className="w-48 border border-slate-300 rounded px-3 py-1.5 text-sm"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              <Link href="/quotations" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-sm rounded font-medium">
-                + New
-              </Link>
+              <input className="w-48 border border-slate-300 rounded px-3 py-1.5 text-sm" placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} />
+              <Link href="/quotations" className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-sm rounded font-medium">+ New</Link>
             </div>
           </div>
 
@@ -155,42 +131,37 @@ export default function QuotationListPage() {
                     <td className="px-3 py-2.5 text-slate-700">{q.company.name}</td>
                     <td className="px-3 py-2.5 font-medium text-slate-800">{q.customerName}</td>
                     <td className="px-3 py-2.5 text-slate-600">{q.customerContact || "—"}</td>
-                    <td className="px-3 py-2.5 font-semibold text-slate-800">
-                      ₹{Number(q.finalPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}
-                    </td>
+                    <td className="px-3 py-2.5 font-semibold text-slate-800">₹{Number(q.finalPrice).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                     <td className="px-3 py-2.5">
-                      <span className={`inline-flex rounded px-2 py-0.5 text-xs font-semibold uppercase ${statusColor(q.status)}`}>
-                        {q.status}
-                      </span>
+                      <span className={`inline-flex rounded px-2 py-0.5 text-xs font-semibold uppercase ${statusColor(q.status)}`}>{q.status}</span>
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1">
-                        <Link
-                          href={`/quotations/${q.id}/preview`}
-                          className="flex h-7 w-7 items-center justify-center rounded bg-cyan-500 text-white hover:bg-cyan-600"
-                          title="Preview / Print"
-                        >
+                        {/* Preview */}
+                        <Link href={`/quotations/${q.id}/preview`}
+                          className="flex h-7 w-7 items-center justify-center rounded bg-cyan-500 text-white hover:bg-cyan-600" title="Preview">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-                            <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
-                            <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd" />
+                            <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/>
+                            <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd"/>
                           </svg>
                         </Link>
-                        <button
-                          onClick={() => router.push(`/quotations?edit=${q.id}`)}
-                          className="flex h-7 w-7 items-center justify-center rounded bg-amber-500 text-white hover:bg-amber-600"
-                          title="Edit"
-                        >
+                        {/* Invoice */}
+                        <Link href={`/quotations/${q.id}/invoice`}
+                          className="flex h-7 w-7 items-center justify-center rounded bg-violet-500 text-white hover:bg-violet-600 text-xs font-bold" title="Tax Invoice">
+                          ₹
+                        </Link>
+                        {/* Edit */}
+                        <button onClick={() => router.push(`/quotations?edit=${q.id}`)}
+                          className="flex h-7 w-7 items-center justify-center rounded bg-amber-500 text-white hover:bg-amber-600" title="Edit">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-                            <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.629-.629z" />
+                            <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.629-.629z"/>
                           </svg>
                         </button>
-                        <button
-                          onClick={() => handleDelete(q.id, q.quoteNumber)}
-                          className="flex h-7 w-7 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600"
-                          title="Delete"
-                        >
+                        {/* Delete */}
+                        <button onClick={() => handleDelete(q.id, q.quoteNumber)}
+                          className="flex h-7 w-7 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600" title="Delete">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-                            <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4z" clipRule="evenodd" />
+                            <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4z" clipRule="evenodd"/>
                           </svg>
                         </button>
                       </div>
