@@ -211,7 +211,7 @@ export default function QuotationPreviewPage() {
       </div>
 
       {/* ── Printable Document ── */}
-      <div className="max-w-[900px] mx-auto bg-white my-6 print:my-0 shadow-lg print:shadow-none font-sans text-sm text-slate-800 border border-slate-200 print:border-0">
+      <div className="quotation-root max-w-[900px] mx-auto bg-white my-6 print:my-0 shadow-lg print:shadow-none font-sans text-sm text-slate-800 border border-slate-200 print:border-0">
 
         {/* ── HEADER: Logo + Company Info ── */}
         <div className="flex items-start gap-4 p-6 pb-4 border-b-2 border-[#1a237e]">
@@ -467,14 +467,61 @@ export default function QuotationPreviewPage() {
         </div>
       </div>
 
-      {/* Print styles */}
       <style>{`
         @media print {
-          body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          @page {
+            size: A4 portrait;
+            margin: 6mm;
+          }
+          * { box-sizing: border-box !important; }
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           .print\\:hidden { display: none !important; }
-          .print\\:my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
-          .print\\:shadow-none { box-shadow: none !important; }
-          .print\\:border-0 { border: none !important; }
+
+          .quotation-root {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            border: none !important;
+            transform-origin: top left;
+          }
+
+          /* Shrink font sizes for print */
+          .quotation-root * {
+            font-size: 0.72rem !important;
+            line-height: 1.3 !important;
+          }
+          .quotation-root h1 { font-size: 1.3rem !important; }
+          .quotation-root .text-lg { font-size: 0.85rem !important; }
+
+          /* Tighten all spacing */
+          .quotation-root td, .quotation-root th { padding: 3px 6px !important; }
+          .quotation-root .p-6 { padding: 8px 12px !important; }
+          .quotation-root .px-6 { padding-left: 12px !important; padding-right: 12px !important; }
+          .quotation-root .px-5 { padding-left: 10px !important; padding-right: 10px !important; }
+          .quotation-root .py-4 { padding-top: 6px !important; padding-bottom: 6px !important; }
+          .quotation-root .py-3 { padding-top: 4px !important; padding-bottom: 4px !important; }
+          .quotation-root .py-6 { padding-top: 6px !important; padding-bottom: 6px !important; }
+          .quotation-root .pb-4 { padding-bottom: 6px !important; }
+          .quotation-root .mt-4 { margin-top: 5px !important; }
+          .quotation-root .mt-3 { margin-top: 4px !important; }
+          .quotation-root .mt-2 { margin-top: 3px !important; }
+          .quotation-root .mb-8 { margin-bottom: 10px !important; }
+          .quotation-root .gap-6 { gap: 8px !important; }
+          .quotation-root .h-20 { height: 56px !important; }
+          .quotation-root .w-20 { width: 56px !important; }
+
+          /* No page breaks anywhere */
+          .quotation-root { page-break-inside: avoid; break-inside: avoid; }
+          .quotation-root table { page-break-inside: avoid; break-inside: avoid; }
+          .quotation-root tr { page-break-inside: avoid; break-inside: avoid; }
+          .quotation-root div { page-break-inside: avoid; break-inside: avoid; }
         }
       `}</style>
     </>
