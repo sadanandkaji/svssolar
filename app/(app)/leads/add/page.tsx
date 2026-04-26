@@ -77,8 +77,6 @@ export default function AddLeadPage() {
           </h1>
           <div className="flex gap-2">
             <Link href="/leads/add"    className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">📋 Fill Form</Link>
-            <Link href="/leads/walkin" className="bg-teal-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">🚶 Walk-in Customer</Link>
-            <Link href="/leads/upload" className="bg-amber-500 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">📤 Upload Mobile Numbers</Link>
           </div>
         </div>
 

@@ -30,8 +30,6 @@ const NAV_ITEMS = [
 const LEADS_SUBNAV = [
   { href: "/leads",        label: "📋 All Leads"     },
   { href: "/leads/add",    label: "➕ Add Lead"       },
-  { href: "/leads/walkin", label: "🚶 Walk-in"        },
-  { href: "/leads/upload", label: "📤 Upload Numbers" },
 ];
 
 function RoleBadge({ role }: { role: string }) {

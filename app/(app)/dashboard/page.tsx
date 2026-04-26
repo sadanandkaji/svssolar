@@ -66,7 +66,6 @@ export default async function DashboardPage() {
           <StatCard title="Today's Entries"    value={stats.todayLeads}    accent="border-l-sky-500"    valueColor="text-sky-600"    href="/leads"      icon="📅" />
           <StatCard title="Pending"            value={stats.pendingLeads}  accent="border-l-yellow-500" valueColor="text-yellow-600" href="/leads"      icon="⏳" />
           <StatCard title="Today's Follow-Ups" value={stats.followUpLeads} accent="border-l-orange-500" valueColor="text-orange-600" href="/leads"      icon="🔔" />
-          <StatCard title="Walk-ins"           value={stats.walkinLeads}   accent="border-l-teal-500"   valueColor="text-teal-600"   href="/leads"      icon="🚶" />
         </div>
       </div>
 
@@ -98,8 +97,6 @@ export default async function DashboardPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <QuickAction title="All Leads"             description="View and manage all customer leads"   href="/leads"        icon="👥" color="hover:border-indigo-400" />
               <QuickAction title="Add Lead (Form)"       description="Add a new lead by filling the form"  href="/leads/add"    icon="📋" color="hover:border-sky-400" />
-              <QuickAction title="Walk-in Customer"      description="Quickly log a walk-in customer"      href="/leads/walkin" icon="🚶" color="hover:border-teal-400" />
-              <QuickAction title="Upload Mobile Numbers" description="Bulk upload mobile numbers as leads" href="/leads/upload" icon="📤" color="hover:border-orange-400" />
             </div>
           </div>
 

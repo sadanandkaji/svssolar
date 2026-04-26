@@ -28,14 +28,13 @@ export async function PUT(req: NextRequest) {
         return NextResponse.json({ error: "Current password is required to set a new password" }, { status: 400 });
       }
       const current = await prisma.employee.findUnique({ where: { id: user.id } });
-      if (!current || !verifyPassword(body.currentPassword, current.passwordHash)) {
+      if (!current || !(await verifyPassword(body.currentPassword, current.passwordHash))) {
         return NextResponse.json({ error: "Current password is incorrect" }, { status: 401 });
       }
       if (body.newPassword.length < 6) {
         return NextResponse.json({ error: "New password must be at least 6 characters" }, { status: 400 });
       }
-      updateData.passwordHash = hashPassword(body.newPassword);
-    }
+updateData.passwordHash = await hashPassword(body.newPassword);    }
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json({ error: "No changes provided" }, { status: 400 });
