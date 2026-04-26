@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         companyId: user.companyId,
         name: name.trim(),
         email: email.toLowerCase().trim(),
-        passwordHash: hashPassword(password),
+        passwordHash: await hashPassword(password),
         role: assignedRole,
       },
       select: {
