@@ -250,20 +250,22 @@ function LeadsTable({ leads, employees, onEdit, onDelete, loading, emptyMsg }: {
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function LeadsDashboard() {
-  const [allLeads, setAllLeads] = useState<Lead[]>([]);
+  // Server now splits for us — store them separately
+  const [followUpLeads, setFollowUpLeads] = useState<Lead[]>([]);
+  const [regularLeads,  setRegularLeads]  = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // ── Date range filter ──
+  // ── Date range filter (applies only to regularLeads) ──
   const [fromDate, setFromDate] = useState(todayISO());
-  const [toDate, setToDate]     = useState(todayISO());
+  const [toDate,   setToDate]   = useState(todayISO());
 
-  const [search, setSearch]           = useState("");
-  const [searchInput, setSearchInput] = useState("");
+  const [search,       setSearch]       = useState("");
+  const [searchInput,  setSearchInput]  = useState("");
   const [followupOpen, setFollowupOpen] = useState(true);
-  const [regularOpen, setRegularOpen]   = useState(true);
-  const [editingLead, setEditingLead]   = useState<Lead | null>(null);
-  const [employees, setEmployees]       = useState<{ id: number; name: string }[]>([]);
-  const [toast, setToast]               = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [regularOpen,  setRegularOpen]  = useState(true);
+  const [editingLead,  setEditingLead]  = useState<Lead | null>(null);
+  const [employees,    setEmployees]    = useState<{ id: number; name: string }[]>([]);
+  const [toast,        setToast]        = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   function showToast(type: "ok" | "err", text: string) {
     setToast({ type, text });
@@ -279,7 +281,9 @@ export default function LeadsDashboard() {
       if (search)   params.set("search",   search);
       const res  = await fetch(`/api/leads?${params}`);
       const data = await res.json();
-      setAllLeads(data.leads || []);
+      // Use pre-split arrays from the API
+      setFollowUpLeads(data.followUpLeads || []);
+      setRegularLeads(data.regularLeads  || []);
     } catch { showToast("err", "Failed to load leads"); }
     finally { setLoading(false); }
   }, [fromDate, toDate, search]);
@@ -292,6 +296,9 @@ export default function LeadsDashboard() {
       .then(d => setEmployees((d.employees || []).map((e: any) => ({ id: e.id, name: e.name }))))
       .catch(() => {});
   }, []);
+
+  // All leads combined (for CSV export)
+  const allLeads = useMemo(() => [...followUpLeads, ...regularLeads], [followUpLeads, regularLeads]);
 
   // Quick range presets
   function applyPreset(preset: "today" | "yesterday" | "week" | "month" | "all") {
@@ -314,16 +321,6 @@ export default function LeadsDashboard() {
     }
   }
 
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-
-  const followupLeads = useMemo(() => allLeads.filter(l => {
-    if (!l.followUpDate) return false;
-    const fd = new Date(l.followUpDate); fd.setHours(0, 0, 0, 0);
-    return fd.getTime() === today.getTime();
-  }), [allLeads]);
-
-  const regularLeads = useMemo(() => allLeads.filter(l => !l.followUpDate), [allLeads]);
-
   async function handleDelete(id: number) {
     if (!confirm("Delete this lead?")) return;
     await fetch(`/api/leads/${id}`, { method: "DELETE" });
@@ -332,10 +329,9 @@ export default function LeadsDashboard() {
   }
 
   function formatDateForExcel(d: string) {
-    // DD/MM/YYYY — Excel reads this correctly as a date
     const dt = new Date(d);
-    const dd = String(dt.getDate()).padStart(2, "0");
-    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const dd   = String(dt.getDate()).padStart(2, "0");
+    const mm   = String(dt.getMonth() + 1).padStart(2, "0");
     const yyyy = dt.getFullYear();
     return `${dd}/${mm}/${yyyy}`;
   }
@@ -344,7 +340,6 @@ export default function LeadsDashboard() {
     const header = ["Entry Date", "Mobile Number", "Customer Name", "Location", "District", "System Required", "Config (KW/HP)", "Status", "Remarks", "Telecaller", "Follow Up Date"];
     const rows = leads.map(l => [
       formatDateForExcel(l.entryDate),
-      // Prefix with tab character forces Excel to treat as text — prevents scientific notation
       "\t" + l.mobileNumber,
       l.customerName || "",
       l.location || "",
@@ -357,7 +352,6 @@ export default function LeadsDashboard() {
       l.followUpDate ? formatDateForExcel(l.followUpDate) : "",
     ]);
 
-    // Add BOM so Excel opens UTF-8 correctly (handles special chars)
     const BOM = "\uFEFF";
     const csv = BOM + [header, ...rows]
       .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(","))
@@ -437,7 +431,7 @@ export default function LeadsDashboard() {
               <button onClick={() => applyPreset("all")}       className={presetBtn + " border-indigo-300 text-indigo-600 hover:bg-indigo-50"}>All Time</button>
             </div>
 
-            {/* Result count badge */}
+            {/* Result count badge — shows combined total */}
             <div className="ml-auto pb-0.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                 {loading ? "..." : allLeads.length} leads found
@@ -486,24 +480,24 @@ export default function LeadsDashboard() {
           </div>
         </div>
 
-        {/* Today's Follow-Ups */}
+        {/* Today's Follow-Ups — always shows today's follow-ups regardless of date filter */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
           <button className="w-full flex items-center justify-between px-5 py-3 bg-slate-100 hover:bg-slate-200 transition"
             onClick={() => setFollowupOpen(p => !p)}>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-slate-700 text-sm">Today's Follow-Ups</span>
-              <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 font-bold">{followupLeads.length}</span>
+              <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 font-bold">{followUpLeads.length}</span>
             </div>
             <span className="text-slate-500 text-sm">{followupOpen ? "▲" : "▼"}</span>
           </button>
           {followupOpen && (
-            <LeadsTable leads={followupLeads} employees={employees}
+            <LeadsTable leads={followUpLeads} employees={employees}
               onEdit={setEditingLead} onDelete={handleDelete}
               loading={loading} emptyMsg="No follow-ups scheduled for today" />
           )}
         </div>
 
-        {/* Regular Numbers */}
+        {/* Regular Numbers — filtered by entryDate range */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
           <button className="w-full flex items-center justify-between px-5 py-3 bg-slate-100 hover:bg-slate-200 transition"
             onClick={() => setRegularOpen(p => !p)}>
