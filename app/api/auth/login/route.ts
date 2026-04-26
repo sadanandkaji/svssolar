@@ -1,32 +1,54 @@
 // app/api/auth/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyPassword, createSession, SESSION_COOKIE } from "@/lib/auth";
+import { verifyPassword, setSessionCookie } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const { email, password } = await req.json();
+    const body = await req.json();
+    const email: string = (body.email ?? "").trim().toLowerCase();
+    const password: string = body.password ?? "";
 
-    if (!email?.trim() || !password) {
-      return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Email and password are required." },
+        { status: 400 }
+      );
     }
 
     const employee = await prisma.employee.findUnique({
-      where: { email: email.toLowerCase().trim() },
+      where: { email },
       include: { company: true },
     });
 
+    // Generic error — never reveal whether the email exists
     if (!employee || !employee.isActive) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid email or password." },
+        { status: 401 }
+      );
     }
 
-    if (!verifyPassword(password, employee.passwordHash)) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
+    const passwordOk = await verifyPassword(password, employee.passwordHash);
+    if (!passwordOk) {
+      return NextResponse.json(
+        { error: "Invalid email or password." },
+        { status: 401 }
+      );
     }
 
-    const sessionId = await createSession(employee.id);
+    // Build session payload and set the JWT cookie
+    await setSessionCookie({
+      id: employee.id,
+      name: employee.name,
+      email: employee.email,
+      role: employee.role,
+      companyId: employee.companyId,
+      companyName: employee.company.name,
+      isOwner: employee.role === "OWNER",
+    });
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       user: {
         id: employee.id,
@@ -38,18 +60,11 @@ export async function POST(req: NextRequest) {
         isOwner: employee.role === "OWNER",
       },
     });
-
-    response.cookies.set(SESSION_COOKIE, sessionId, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60,
-      path: "/",
-    });
-
-    return response;
   } catch (err: any) {
-    console.error("Login error:", err);
-    return NextResponse.json({ error: "Login failed" }, { status: 500 });
+    console.error("[login] error:", err);
+    return NextResponse.json(
+      { error: "Internal server error. Please try again." },
+      { status: 500 }
+    );
   }
 }

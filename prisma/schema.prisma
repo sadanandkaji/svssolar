@@ -206,7 +206,7 @@ model QuotationItem {
   quotationId  Int
   categoryName String?
   productName  String
-  hsnCode      String?   // ← NEW: stored at quote time from category
+  hsnCode      String?
   description  String?
   unitPrice    Decimal   @db.Decimal(12, 2)
   quantity     Decimal   @default(1) @db.Decimal(10, 2)
@@ -224,7 +224,7 @@ model QuotationFixedCost {
   label       String
   cost        Decimal   @default(0) @db.Decimal(14, 2)
   rateNote    String?
-  hsnCode     String?   // ← NEW: optional HSN for fixed costs
+  hsnCode     String?
   gstRate     Decimal   @default(18) @db.Decimal(5, 2)
   total       Decimal   @default(0) @db.Decimal(14, 2)
   included    Boolean   @default(true)
@@ -251,8 +251,10 @@ model Employee {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  company  Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  sessions Session[]
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  sessions    Session[]
+  leadEntries CustomerLead[] @relation("AssignedTelecaller")
+  franchiseLeads CustomerLead[] @relation("AssignedFranchise")
 
   @@map("employees")
 }
@@ -266,4 +268,97 @@ model Session {
   employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+// ── CRM Lead Management ────────────────────────────────────────────────────────
+
+enum LeadType {
+  REGULAR   // uploaded / fill form
+  WALKIN    // walk-in customer
+}
+
+enum LeadStatus {
+  PENDING
+  BUSY
+  NOT_INTERESTED
+  INTERESTED_REQUIRED_QUOTATION
+  QUOTATION_PROVIDED
+  OUTSIDE_LIMIT
+  COMPLETED
+  CONFIRMED_MOVED_TO_SALES
+}
+
+enum QuotationProvided {
+  NOT_PROVIDED
+  PROVIDED
+  NA
+}
+
+enum RequiredFor {
+  DOMESTIC
+  COMMERCIAL
+  NA
+}
+
+enum SiteType {
+  ROOF_TOP
+  SHED_SHEET
+  CONCRETE
+  GROUND_MOUNTED
+  NA
+}
+
+enum CallBackStatus {
+  NO
+  YES
+  NA
+}
+
+enum SystemRequired {
+  ON_GRID
+  OFF_GRID
+  HYBRID
+  SOLAR_PUMP
+  NA
+}
+
+model CustomerLead {
+  id                Int               @id @default(autoincrement())
+
+  // Customer Info
+  entryDate         DateTime          @default(now())
+  mobileNumber      String
+  customerName      String?
+  location          String?
+  district          String?
+  region            String            @default("North")
+  systemRequirements String?          // free text e.g. "5KW On Grid"
+  configuration     String?           // KW/HP value
+
+  // Type
+  leadType          LeadType          @default(REGULAR)
+
+  // Status & Follow-up
+  status            LeadStatus        @default(PENDING)
+  remarks           String?
+  quotation         QuotationProvided @default(NOT_PROVIDED)
+  callBackStatus    CallBackStatus    @default(NO)
+  followUpDate      DateTime?
+
+  // System Details
+  systemRequired    SystemRequired?
+  requiredFor       RequiredFor       @default(DOMESTIC)
+  siteType          SiteType          @default(ROOF_TOP)
+
+  // Assignment
+  assignedTelecallerId Int?
+  assignedFranchiseId  Int?
+
+  assignedTelecaller Employee? @relation("AssignedTelecaller", fields: [assignedTelecallerId], references: [id])
+  assignedFranchise  Employee? @relation("AssignedFranchise", fields: [assignedFranchiseId], references: [id])
+
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@map("customer_leads")
 }

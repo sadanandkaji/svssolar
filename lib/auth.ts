@@ -1,55 +1,26 @@
 // lib/auth.ts
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { randomBytes, createHash } from "crypto";
+import bcrypt from "bcryptjs";
+import { SignJWT, jwtVerify } from "jose";
 
 export const SESSION_COOKIE = "svs_session";
-const SESSION_DAYS = 7;
 
-// ─── Password hashing ─────────────────────────────────────────────────────────
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET ?? "svs-solar-secret-change-in-production-32chars!"
+);
 
-export function hashPassword(password: string): string {
-  return createHash("sha256")
-    .update("SVS_SALT_2024_" + password)
-    .digest("hex");
+// ─── Password hashing (bcrypt) ────────────────────────────────────────────────
+
+export async function hashPassword(password: string): Promise<string> {
+  return bcrypt.hash(password, 12);
 }
 
-export function verifyPassword(password: string, hash: string): boolean {
-  return hashPassword(password) === hash;
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash);
 }
 
-// ─── Session management ───────────────────────────────────────────────────────
-
-export async function createSession(employeeId: number): Promise<string> {
-  const sessionId = randomBytes(32).toString("hex");
-  const expiresAt = new Date(Date.now() + SESSION_DAYS * 24 * 60 * 60 * 1000);
-  await prisma.session.create({ data: { id: sessionId, employeeId, expiresAt } });
-  return sessionId;
-}
-
-export async function getSession() {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!sessionId) return null;
-
-  const session = await prisma.session.findUnique({
-    where: { id: sessionId },
-    include: { employee: { include: { company: true } } },
-  });
-
-  if (!session || session.expiresAt < new Date()) {
-    if (session) await prisma.session.delete({ where: { id: sessionId } }).catch(() => {});
-    return null;
-  }
-
-  return session;
-}
-
-export async function deleteSession(sessionId: string) {
-  await prisma.session.delete({ where: { id: sessionId } }).catch(() => {});
-}
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ─── JWT session ──────────────────────────────────────────────────────────────
 
 export type SessionUser = {
   id: number;
@@ -61,16 +32,55 @@ export type SessionUser = {
   isOwner: boolean;
 };
 
+export async function createSessionToken(user: SessionUser): Promise<string> {
+  return new SignJWT({ ...user })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(JWT_SECRET);
+}
+
+export async function verifySessionToken(token: string): Promise<SessionUser | null> {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload as unknown as SessionUser;
+  } catch {
+    return null;
+  }
+}
+
+// ─── Cookie helpers ───────────────────────────────────────────────────────────
+
+export async function setSessionCookie(user: SessionUser) {
+  const token = await createSessionToken(user);
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
+}
+
+export async function clearSessionCookie() {
+  const cookieStore = await cookies();
+  cookieStore.set(SESSION_COOKIE, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+  });
+}
+
+export async function getSession(): Promise<SessionUser | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
+  return verifySessionToken(token);
+}
+
 export async function requireAuth(): Promise<SessionUser | null> {
-  const session = await getSession();
-  if (!session) return null;
-  return {
-    id: session.employee.id,
-    name: session.employee.name,
-    email: session.employee.email,
-    role: session.employee.role,
-    companyId: session.employee.companyId,
-    companyName: session.employee.company.name,
-    isOwner: session.employee.role === "OWNER",
-  };
+  return getSession();
 }

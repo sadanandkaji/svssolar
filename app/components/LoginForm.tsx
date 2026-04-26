@@ -1,32 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+// components/LoginForm.tsx
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-function LoginForm() {
-  const router = useRouter();
+function LoginFormInner() {
   const searchParams = useSearchParams();
-  const from = searchParams.get("from") || "/";
+  const rawFrom = searchParams.get("from") || "/dashboard";
+  // Never redirect back to root (infinite loop) or API routes
+  const from = rawFrom === "/" || rawFrom.startsWith("/api") ? "/dashboard" : rawFrom;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [checking, setChecking] = useState(true);
-
-  // Redirect if already logged in
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => { if (r.ok) router.replace(from); })
-      .finally(() => setChecking(false));
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!email.trim() || !password) { setError("Please enter your email and password."); return; }
+
+    if (!email.trim() || !password) {
+      setError("Please enter your email and password.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/auth/login", {
@@ -34,22 +32,16 @@ function LoginForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: email.trim(), password }),
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Login failed");
-      router.replace(from);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
+
+      // Hard redirect — ensures the new cookie is sent with the next request
+      window.location.href = from;
+    } catch (err: any) {
+      setError(err.message);
       setLoading(false);
     }
-  }
-
-  if (checking) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-rose-200 border-t-rose-600" />
-      </div>
-    );
   }
 
   return (
@@ -62,7 +54,6 @@ function LoginForm() {
       </div>
 
       <div className="relative w-full max-w-[400px]">
-
         {/* Brand mark */}
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-600 shadow-lg shadow-rose-200">
@@ -80,8 +71,6 @@ function LoginForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="px-8 pb-8 pt-5 space-y-4">
-
-            {/* Error */}
             {error && (
               <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-700">
                 <svg className="mt-0.5 h-4 w-4 shrink-0 text-red-500" viewBox="0 0 20 20" fill="currentColor">
@@ -181,10 +170,10 @@ function LoginForm() {
   );
 }
 
-export default function LoginPage() {
+export default function LoginForm() {
   return (
     <Suspense>
-      <LoginForm />
+      <LoginFormInner />
     </Suspense>
   );
 }

@@ -78,6 +78,11 @@ export type Employee = $Result.DefaultSelection<Prisma.$EmployeePayload>
  * 
  */
 export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
+/**
+ * Model CustomerLead
+ * 
+ */
+export type CustomerLead = $Result.DefaultSelection<Prisma.$CustomerLeadPayload>
 
 /**
  * Enums
@@ -135,6 +140,77 @@ export const EmployeeRole: {
 
 export type EmployeeRole = (typeof EmployeeRole)[keyof typeof EmployeeRole]
 
+
+export const LeadType: {
+  REGULAR: 'REGULAR',
+  WALKIN: 'WALKIN'
+};
+
+export type LeadType = (typeof LeadType)[keyof typeof LeadType]
+
+
+export const LeadStatus: {
+  PENDING: 'PENDING',
+  BUSY: 'BUSY',
+  NOT_INTERESTED: 'NOT_INTERESTED',
+  INTERESTED_REQUIRED_QUOTATION: 'INTERESTED_REQUIRED_QUOTATION',
+  QUOTATION_PROVIDED: 'QUOTATION_PROVIDED',
+  OUTSIDE_LIMIT: 'OUTSIDE_LIMIT',
+  COMPLETED: 'COMPLETED',
+  CONFIRMED_MOVED_TO_SALES: 'CONFIRMED_MOVED_TO_SALES'
+};
+
+export type LeadStatus = (typeof LeadStatus)[keyof typeof LeadStatus]
+
+
+export const QuotationProvided: {
+  NOT_PROVIDED: 'NOT_PROVIDED',
+  PROVIDED: 'PROVIDED',
+  NA: 'NA'
+};
+
+export type QuotationProvided = (typeof QuotationProvided)[keyof typeof QuotationProvided]
+
+
+export const CallBackStatus: {
+  NO: 'NO',
+  YES: 'YES',
+  NA: 'NA'
+};
+
+export type CallBackStatus = (typeof CallBackStatus)[keyof typeof CallBackStatus]
+
+
+export const SystemRequired: {
+  ON_GRID: 'ON_GRID',
+  OFF_GRID: 'OFF_GRID',
+  HYBRID: 'HYBRID',
+  SOLAR_PUMP: 'SOLAR_PUMP',
+  NA: 'NA'
+};
+
+export type SystemRequired = (typeof SystemRequired)[keyof typeof SystemRequired]
+
+
+export const RequiredFor: {
+  DOMESTIC: 'DOMESTIC',
+  COMMERCIAL: 'COMMERCIAL',
+  NA: 'NA'
+};
+
+export type RequiredFor = (typeof RequiredFor)[keyof typeof RequiredFor]
+
+
+export const SiteType: {
+  ROOF_TOP: 'ROOF_TOP',
+  SHED_SHEET: 'SHED_SHEET',
+  CONCRETE: 'CONCRETE',
+  GROUND_MOUNTED: 'GROUND_MOUNTED',
+  NA: 'NA'
+};
+
+export type SiteType = (typeof SiteType)[keyof typeof SiteType]
+
 }
 
 export type AttributeType = $Enums.AttributeType
@@ -160,6 +236,34 @@ export const QuotationStatus: typeof $Enums.QuotationStatus
 export type EmployeeRole = $Enums.EmployeeRole
 
 export const EmployeeRole: typeof $Enums.EmployeeRole
+
+export type LeadType = $Enums.LeadType
+
+export const LeadType: typeof $Enums.LeadType
+
+export type LeadStatus = $Enums.LeadStatus
+
+export const LeadStatus: typeof $Enums.LeadStatus
+
+export type QuotationProvided = $Enums.QuotationProvided
+
+export const QuotationProvided: typeof $Enums.QuotationProvided
+
+export type CallBackStatus = $Enums.CallBackStatus
+
+export const CallBackStatus: typeof $Enums.CallBackStatus
+
+export type SystemRequired = $Enums.SystemRequired
+
+export const SystemRequired: typeof $Enums.SystemRequired
+
+export type RequiredFor = $Enums.RequiredFor
+
+export const RequiredFor: typeof $Enums.RequiredFor
+
+export type SiteType = $Enums.SiteType
+
+export const SiteType: typeof $Enums.SiteType
 
 /**
  * ##  Prisma Client ʲˢ
@@ -413,6 +517,16 @@ export class PrismaClient<
     * ```
     */
   get session(): Prisma.SessionDelegate<ExtArgs>;
+
+  /**
+   * `prisma.customerLead`: Exposes CRUD operations for the **CustomerLead** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CustomerLeads
+    * const customerLeads = await prisma.customerLead.findMany()
+    * ```
+    */
+  get customerLead(): Prisma.CustomerLeadDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -866,7 +980,8 @@ export namespace Prisma {
     QuotationItem: 'QuotationItem',
     QuotationFixedCost: 'QuotationFixedCost',
     Employee: 'Employee',
-    Session: 'Session'
+    Session: 'Session',
+    CustomerLead: 'CustomerLead'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -882,7 +997,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "category" | "categoryAttribute" | "product" | "productAttributeValue" | "warehouse" | "inventoryItem" | "uniqueBarcode" | "company" | "quotation" | "quotationItem" | "quotationFixedCost" | "employee" | "session"
+      modelProps: "category" | "categoryAttribute" | "product" | "productAttributeValue" | "warehouse" | "inventoryItem" | "uniqueBarcode" | "company" | "quotation" | "quotationItem" | "quotationFixedCost" | "employee" | "session" | "customerLead"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1796,6 +1911,76 @@ export namespace Prisma {
           }
         }
       }
+      CustomerLead: {
+        payload: Prisma.$CustomerLeadPayload<ExtArgs>
+        fields: Prisma.CustomerLeadFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CustomerLeadFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CustomerLeadFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>
+          }
+          findFirst: {
+            args: Prisma.CustomerLeadFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CustomerLeadFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>
+          }
+          findMany: {
+            args: Prisma.CustomerLeadFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>[]
+          }
+          create: {
+            args: Prisma.CustomerLeadCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>
+          }
+          createMany: {
+            args: Prisma.CustomerLeadCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CustomerLeadCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>[]
+          }
+          delete: {
+            args: Prisma.CustomerLeadDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>
+          }
+          update: {
+            args: Prisma.CustomerLeadUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>
+          }
+          deleteMany: {
+            args: Prisma.CustomerLeadDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CustomerLeadUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CustomerLeadUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CustomerLeadPayload>
+          }
+          aggregate: {
+            args: Prisma.CustomerLeadAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCustomerLead>
+          }
+          groupBy: {
+            args: Prisma.CustomerLeadGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CustomerLeadGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CustomerLeadCountArgs<ExtArgs>
+            result: $Utils.Optional<CustomerLeadCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2180,10 +2365,14 @@ export namespace Prisma {
 
   export type EmployeeCountOutputType = {
     sessions: number
+    leadEntries: number
+    franchiseLeads: number
   }
 
   export type EmployeeCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | EmployeeCountOutputTypeCountSessionsArgs
+    leadEntries?: boolean | EmployeeCountOutputTypeCountLeadEntriesArgs
+    franchiseLeads?: boolean | EmployeeCountOutputTypeCountFranchiseLeadsArgs
   }
 
   // Custom InputTypes
@@ -2202,6 +2391,20 @@ export namespace Prisma {
    */
   export type EmployeeCountOutputTypeCountSessionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SessionWhereInput
+  }
+
+  /**
+   * EmployeeCountOutputType without action
+   */
+  export type EmployeeCountOutputTypeCountLeadEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerLeadWhereInput
+  }
+
+  /**
+   * EmployeeCountOutputType without action
+   */
+  export type EmployeeCountOutputTypeCountFranchiseLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerLeadWhereInput
   }
 
 
@@ -14147,6 +14350,8 @@ export namespace Prisma {
     updatedAt?: boolean
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     sessions?: boolean | Employee$sessionsArgs<ExtArgs>
+    leadEntries?: boolean | Employee$leadEntriesArgs<ExtArgs>
+    franchiseLeads?: boolean | Employee$franchiseLeadsArgs<ExtArgs>
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["employee"]>
 
@@ -14178,6 +14383,8 @@ export namespace Prisma {
   export type EmployeeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | CompanyDefaultArgs<ExtArgs>
     sessions?: boolean | Employee$sessionsArgs<ExtArgs>
+    leadEntries?: boolean | Employee$leadEntriesArgs<ExtArgs>
+    franchiseLeads?: boolean | Employee$franchiseLeadsArgs<ExtArgs>
     _count?: boolean | EmployeeCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type EmployeeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14189,6 +14396,8 @@ export namespace Prisma {
     objects: {
       company: Prisma.$CompanyPayload<ExtArgs>
       sessions: Prisma.$SessionPayload<ExtArgs>[]
+      leadEntries: Prisma.$CustomerLeadPayload<ExtArgs>[]
+      franchiseLeads: Prisma.$CustomerLeadPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -14566,6 +14775,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     company<T extends CompanyDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CompanyDefaultArgs<ExtArgs>>): Prisma__CompanyClient<$Result.GetResult<Prisma.$CompanyPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     sessions<T extends Employee$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Employee$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany"> | Null>
+    leadEntries<T extends Employee$leadEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Employee$leadEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findMany"> | Null>
+    franchiseLeads<T extends Employee$franchiseLeadsArgs<ExtArgs> = {}>(args?: Subset<T, Employee$franchiseLeadsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14939,6 +15150,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SessionScalarFieldEnum | SessionScalarFieldEnum[]
+  }
+
+  /**
+   * Employee.leadEntries
+   */
+  export type Employee$leadEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    where?: CustomerLeadWhereInput
+    orderBy?: CustomerLeadOrderByWithRelationInput | CustomerLeadOrderByWithRelationInput[]
+    cursor?: CustomerLeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerLeadScalarFieldEnum | CustomerLeadScalarFieldEnum[]
+  }
+
+  /**
+   * Employee.franchiseLeads
+   */
+  export type Employee$franchiseLeadsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    where?: CustomerLeadWhereInput
+    orderBy?: CustomerLeadOrderByWithRelationInput | CustomerLeadOrderByWithRelationInput[]
+    cursor?: CustomerLeadWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CustomerLeadScalarFieldEnum | CustomerLeadScalarFieldEnum[]
   }
 
   /**
@@ -15912,6 +16163,1221 @@ export namespace Prisma {
 
 
   /**
+   * Model CustomerLead
+   */
+
+  export type AggregateCustomerLead = {
+    _count: CustomerLeadCountAggregateOutputType | null
+    _avg: CustomerLeadAvgAggregateOutputType | null
+    _sum: CustomerLeadSumAggregateOutputType | null
+    _min: CustomerLeadMinAggregateOutputType | null
+    _max: CustomerLeadMaxAggregateOutputType | null
+  }
+
+  export type CustomerLeadAvgAggregateOutputType = {
+    id: number | null
+    assignedTelecallerId: number | null
+    assignedFranchiseId: number | null
+  }
+
+  export type CustomerLeadSumAggregateOutputType = {
+    id: number | null
+    assignedTelecallerId: number | null
+    assignedFranchiseId: number | null
+  }
+
+  export type CustomerLeadMinAggregateOutputType = {
+    id: number | null
+    entryDate: Date | null
+    mobileNumber: string | null
+    customerName: string | null
+    location: string | null
+    district: string | null
+    region: string | null
+    systemRequirements: string | null
+    configuration: string | null
+    leadType: $Enums.LeadType | null
+    status: $Enums.LeadStatus | null
+    remarks: string | null
+    quotation: $Enums.QuotationProvided | null
+    callBackStatus: $Enums.CallBackStatus | null
+    followUpDate: Date | null
+    systemRequired: $Enums.SystemRequired | null
+    requiredFor: $Enums.RequiredFor | null
+    siteType: $Enums.SiteType | null
+    assignedTelecallerId: number | null
+    assignedFranchiseId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerLeadMaxAggregateOutputType = {
+    id: number | null
+    entryDate: Date | null
+    mobileNumber: string | null
+    customerName: string | null
+    location: string | null
+    district: string | null
+    region: string | null
+    systemRequirements: string | null
+    configuration: string | null
+    leadType: $Enums.LeadType | null
+    status: $Enums.LeadStatus | null
+    remarks: string | null
+    quotation: $Enums.QuotationProvided | null
+    callBackStatus: $Enums.CallBackStatus | null
+    followUpDate: Date | null
+    systemRequired: $Enums.SystemRequired | null
+    requiredFor: $Enums.RequiredFor | null
+    siteType: $Enums.SiteType | null
+    assignedTelecallerId: number | null
+    assignedFranchiseId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CustomerLeadCountAggregateOutputType = {
+    id: number
+    entryDate: number
+    mobileNumber: number
+    customerName: number
+    location: number
+    district: number
+    region: number
+    systemRequirements: number
+    configuration: number
+    leadType: number
+    status: number
+    remarks: number
+    quotation: number
+    callBackStatus: number
+    followUpDate: number
+    systemRequired: number
+    requiredFor: number
+    siteType: number
+    assignedTelecallerId: number
+    assignedFranchiseId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CustomerLeadAvgAggregateInputType = {
+    id?: true
+    assignedTelecallerId?: true
+    assignedFranchiseId?: true
+  }
+
+  export type CustomerLeadSumAggregateInputType = {
+    id?: true
+    assignedTelecallerId?: true
+    assignedFranchiseId?: true
+  }
+
+  export type CustomerLeadMinAggregateInputType = {
+    id?: true
+    entryDate?: true
+    mobileNumber?: true
+    customerName?: true
+    location?: true
+    district?: true
+    region?: true
+    systemRequirements?: true
+    configuration?: true
+    leadType?: true
+    status?: true
+    remarks?: true
+    quotation?: true
+    callBackStatus?: true
+    followUpDate?: true
+    systemRequired?: true
+    requiredFor?: true
+    siteType?: true
+    assignedTelecallerId?: true
+    assignedFranchiseId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerLeadMaxAggregateInputType = {
+    id?: true
+    entryDate?: true
+    mobileNumber?: true
+    customerName?: true
+    location?: true
+    district?: true
+    region?: true
+    systemRequirements?: true
+    configuration?: true
+    leadType?: true
+    status?: true
+    remarks?: true
+    quotation?: true
+    callBackStatus?: true
+    followUpDate?: true
+    systemRequired?: true
+    requiredFor?: true
+    siteType?: true
+    assignedTelecallerId?: true
+    assignedFranchiseId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CustomerLeadCountAggregateInputType = {
+    id?: true
+    entryDate?: true
+    mobileNumber?: true
+    customerName?: true
+    location?: true
+    district?: true
+    region?: true
+    systemRequirements?: true
+    configuration?: true
+    leadType?: true
+    status?: true
+    remarks?: true
+    quotation?: true
+    callBackStatus?: true
+    followUpDate?: true
+    systemRequired?: true
+    requiredFor?: true
+    siteType?: true
+    assignedTelecallerId?: true
+    assignedFranchiseId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CustomerLeadAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CustomerLead to aggregate.
+     */
+    where?: CustomerLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerLeads to fetch.
+     */
+    orderBy?: CustomerLeadOrderByWithRelationInput | CustomerLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CustomerLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerLeads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CustomerLeads
+    **/
+    _count?: true | CustomerLeadCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CustomerLeadAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CustomerLeadSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CustomerLeadMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CustomerLeadMaxAggregateInputType
+  }
+
+  export type GetCustomerLeadAggregateType<T extends CustomerLeadAggregateArgs> = {
+        [P in keyof T & keyof AggregateCustomerLead]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCustomerLead[P]>
+      : GetScalarType<T[P], AggregateCustomerLead[P]>
+  }
+
+
+
+
+  export type CustomerLeadGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CustomerLeadWhereInput
+    orderBy?: CustomerLeadOrderByWithAggregationInput | CustomerLeadOrderByWithAggregationInput[]
+    by: CustomerLeadScalarFieldEnum[] | CustomerLeadScalarFieldEnum
+    having?: CustomerLeadScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CustomerLeadCountAggregateInputType | true
+    _avg?: CustomerLeadAvgAggregateInputType
+    _sum?: CustomerLeadSumAggregateInputType
+    _min?: CustomerLeadMinAggregateInputType
+    _max?: CustomerLeadMaxAggregateInputType
+  }
+
+  export type CustomerLeadGroupByOutputType = {
+    id: number
+    entryDate: Date
+    mobileNumber: string
+    customerName: string | null
+    location: string | null
+    district: string | null
+    region: string
+    systemRequirements: string | null
+    configuration: string | null
+    leadType: $Enums.LeadType
+    status: $Enums.LeadStatus
+    remarks: string | null
+    quotation: $Enums.QuotationProvided
+    callBackStatus: $Enums.CallBackStatus
+    followUpDate: Date | null
+    systemRequired: $Enums.SystemRequired | null
+    requiredFor: $Enums.RequiredFor
+    siteType: $Enums.SiteType
+    assignedTelecallerId: number | null
+    assignedFranchiseId: number | null
+    createdAt: Date
+    updatedAt: Date
+    _count: CustomerLeadCountAggregateOutputType | null
+    _avg: CustomerLeadAvgAggregateOutputType | null
+    _sum: CustomerLeadSumAggregateOutputType | null
+    _min: CustomerLeadMinAggregateOutputType | null
+    _max: CustomerLeadMaxAggregateOutputType | null
+  }
+
+  type GetCustomerLeadGroupByPayload<T extends CustomerLeadGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CustomerLeadGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CustomerLeadGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CustomerLeadGroupByOutputType[P]>
+            : GetScalarType<T[P], CustomerLeadGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CustomerLeadSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    entryDate?: boolean
+    mobileNumber?: boolean
+    customerName?: boolean
+    location?: boolean
+    district?: boolean
+    region?: boolean
+    systemRequirements?: boolean
+    configuration?: boolean
+    leadType?: boolean
+    status?: boolean
+    remarks?: boolean
+    quotation?: boolean
+    callBackStatus?: boolean
+    followUpDate?: boolean
+    systemRequired?: boolean
+    requiredFor?: boolean
+    siteType?: boolean
+    assignedTelecallerId?: boolean
+    assignedFranchiseId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    assignedTelecaller?: boolean | CustomerLead$assignedTelecallerArgs<ExtArgs>
+    assignedFranchise?: boolean | CustomerLead$assignedFranchiseArgs<ExtArgs>
+  }, ExtArgs["result"]["customerLead"]>
+
+  export type CustomerLeadSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    entryDate?: boolean
+    mobileNumber?: boolean
+    customerName?: boolean
+    location?: boolean
+    district?: boolean
+    region?: boolean
+    systemRequirements?: boolean
+    configuration?: boolean
+    leadType?: boolean
+    status?: boolean
+    remarks?: boolean
+    quotation?: boolean
+    callBackStatus?: boolean
+    followUpDate?: boolean
+    systemRequired?: boolean
+    requiredFor?: boolean
+    siteType?: boolean
+    assignedTelecallerId?: boolean
+    assignedFranchiseId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    assignedTelecaller?: boolean | CustomerLead$assignedTelecallerArgs<ExtArgs>
+    assignedFranchise?: boolean | CustomerLead$assignedFranchiseArgs<ExtArgs>
+  }, ExtArgs["result"]["customerLead"]>
+
+  export type CustomerLeadSelectScalar = {
+    id?: boolean
+    entryDate?: boolean
+    mobileNumber?: boolean
+    customerName?: boolean
+    location?: boolean
+    district?: boolean
+    region?: boolean
+    systemRequirements?: boolean
+    configuration?: boolean
+    leadType?: boolean
+    status?: boolean
+    remarks?: boolean
+    quotation?: boolean
+    callBackStatus?: boolean
+    followUpDate?: boolean
+    systemRequired?: boolean
+    requiredFor?: boolean
+    siteType?: boolean
+    assignedTelecallerId?: boolean
+    assignedFranchiseId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CustomerLeadInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    assignedTelecaller?: boolean | CustomerLead$assignedTelecallerArgs<ExtArgs>
+    assignedFranchise?: boolean | CustomerLead$assignedFranchiseArgs<ExtArgs>
+  }
+  export type CustomerLeadIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    assignedTelecaller?: boolean | CustomerLead$assignedTelecallerArgs<ExtArgs>
+    assignedFranchise?: boolean | CustomerLead$assignedFranchiseArgs<ExtArgs>
+  }
+
+  export type $CustomerLeadPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CustomerLead"
+    objects: {
+      assignedTelecaller: Prisma.$EmployeePayload<ExtArgs> | null
+      assignedFranchise: Prisma.$EmployeePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      entryDate: Date
+      mobileNumber: string
+      customerName: string | null
+      location: string | null
+      district: string | null
+      region: string
+      systemRequirements: string | null
+      configuration: string | null
+      leadType: $Enums.LeadType
+      status: $Enums.LeadStatus
+      remarks: string | null
+      quotation: $Enums.QuotationProvided
+      callBackStatus: $Enums.CallBackStatus
+      followUpDate: Date | null
+      systemRequired: $Enums.SystemRequired | null
+      requiredFor: $Enums.RequiredFor
+      siteType: $Enums.SiteType
+      assignedTelecallerId: number | null
+      assignedFranchiseId: number | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["customerLead"]>
+    composites: {}
+  }
+
+  type CustomerLeadGetPayload<S extends boolean | null | undefined | CustomerLeadDefaultArgs> = $Result.GetResult<Prisma.$CustomerLeadPayload, S>
+
+  type CustomerLeadCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<CustomerLeadFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: CustomerLeadCountAggregateInputType | true
+    }
+
+  export interface CustomerLeadDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CustomerLead'], meta: { name: 'CustomerLead' } }
+    /**
+     * Find zero or one CustomerLead that matches the filter.
+     * @param {CustomerLeadFindUniqueArgs} args - Arguments to find a CustomerLead
+     * @example
+     * // Get one CustomerLead
+     * const customerLead = await prisma.customerLead.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CustomerLeadFindUniqueArgs>(args: SelectSubset<T, CustomerLeadFindUniqueArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one CustomerLead that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {CustomerLeadFindUniqueOrThrowArgs} args - Arguments to find a CustomerLead
+     * @example
+     * // Get one CustomerLead
+     * const customerLead = await prisma.customerLead.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CustomerLeadFindUniqueOrThrowArgs>(args: SelectSubset<T, CustomerLeadFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first CustomerLead that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadFindFirstArgs} args - Arguments to find a CustomerLead
+     * @example
+     * // Get one CustomerLead
+     * const customerLead = await prisma.customerLead.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CustomerLeadFindFirstArgs>(args?: SelectSubset<T, CustomerLeadFindFirstArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first CustomerLead that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadFindFirstOrThrowArgs} args - Arguments to find a CustomerLead
+     * @example
+     * // Get one CustomerLead
+     * const customerLead = await prisma.customerLead.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CustomerLeadFindFirstOrThrowArgs>(args?: SelectSubset<T, CustomerLeadFindFirstOrThrowArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more CustomerLeads that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CustomerLeads
+     * const customerLeads = await prisma.customerLead.findMany()
+     * 
+     * // Get first 10 CustomerLeads
+     * const customerLeads = await prisma.customerLead.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const customerLeadWithIdOnly = await prisma.customerLead.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CustomerLeadFindManyArgs>(args?: SelectSubset<T, CustomerLeadFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a CustomerLead.
+     * @param {CustomerLeadCreateArgs} args - Arguments to create a CustomerLead.
+     * @example
+     * // Create one CustomerLead
+     * const CustomerLead = await prisma.customerLead.create({
+     *   data: {
+     *     // ... data to create a CustomerLead
+     *   }
+     * })
+     * 
+     */
+    create<T extends CustomerLeadCreateArgs>(args: SelectSubset<T, CustomerLeadCreateArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many CustomerLeads.
+     * @param {CustomerLeadCreateManyArgs} args - Arguments to create many CustomerLeads.
+     * @example
+     * // Create many CustomerLeads
+     * const customerLead = await prisma.customerLead.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CustomerLeadCreateManyArgs>(args?: SelectSubset<T, CustomerLeadCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CustomerLeads and returns the data saved in the database.
+     * @param {CustomerLeadCreateManyAndReturnArgs} args - Arguments to create many CustomerLeads.
+     * @example
+     * // Create many CustomerLeads
+     * const customerLead = await prisma.customerLead.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CustomerLeads and only return the `id`
+     * const customerLeadWithIdOnly = await prisma.customerLead.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CustomerLeadCreateManyAndReturnArgs>(args?: SelectSubset<T, CustomerLeadCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a CustomerLead.
+     * @param {CustomerLeadDeleteArgs} args - Arguments to delete one CustomerLead.
+     * @example
+     * // Delete one CustomerLead
+     * const CustomerLead = await prisma.customerLead.delete({
+     *   where: {
+     *     // ... filter to delete one CustomerLead
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CustomerLeadDeleteArgs>(args: SelectSubset<T, CustomerLeadDeleteArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one CustomerLead.
+     * @param {CustomerLeadUpdateArgs} args - Arguments to update one CustomerLead.
+     * @example
+     * // Update one CustomerLead
+     * const customerLead = await prisma.customerLead.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CustomerLeadUpdateArgs>(args: SelectSubset<T, CustomerLeadUpdateArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more CustomerLeads.
+     * @param {CustomerLeadDeleteManyArgs} args - Arguments to filter CustomerLeads to delete.
+     * @example
+     * // Delete a few CustomerLeads
+     * const { count } = await prisma.customerLead.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CustomerLeadDeleteManyArgs>(args?: SelectSubset<T, CustomerLeadDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CustomerLeads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CustomerLeads
+     * const customerLead = await prisma.customerLead.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CustomerLeadUpdateManyArgs>(args: SelectSubset<T, CustomerLeadUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CustomerLead.
+     * @param {CustomerLeadUpsertArgs} args - Arguments to update or create a CustomerLead.
+     * @example
+     * // Update or create a CustomerLead
+     * const customerLead = await prisma.customerLead.upsert({
+     *   create: {
+     *     // ... data to create a CustomerLead
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CustomerLead we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CustomerLeadUpsertArgs>(args: SelectSubset<T, CustomerLeadUpsertArgs<ExtArgs>>): Prisma__CustomerLeadClient<$Result.GetResult<Prisma.$CustomerLeadPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of CustomerLeads.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadCountArgs} args - Arguments to filter CustomerLeads to count.
+     * @example
+     * // Count the number of CustomerLeads
+     * const count = await prisma.customerLead.count({
+     *   where: {
+     *     // ... the filter for the CustomerLeads we want to count
+     *   }
+     * })
+    **/
+    count<T extends CustomerLeadCountArgs>(
+      args?: Subset<T, CustomerLeadCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CustomerLeadCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CustomerLead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CustomerLeadAggregateArgs>(args: Subset<T, CustomerLeadAggregateArgs>): Prisma.PrismaPromise<GetCustomerLeadAggregateType<T>>
+
+    /**
+     * Group by CustomerLead.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CustomerLeadGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CustomerLeadGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CustomerLeadGroupByArgs['orderBy'] }
+        : { orderBy?: CustomerLeadGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CustomerLeadGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCustomerLeadGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CustomerLead model
+   */
+  readonly fields: CustomerLeadFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CustomerLead.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CustomerLeadClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    assignedTelecaller<T extends CustomerLead$assignedTelecallerArgs<ExtArgs> = {}>(args?: Subset<T, CustomerLead$assignedTelecallerArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    assignedFranchise<T extends CustomerLead$assignedFranchiseArgs<ExtArgs> = {}>(args?: Subset<T, CustomerLead$assignedFranchiseArgs<ExtArgs>>): Prisma__EmployeeClient<$Result.GetResult<Prisma.$EmployeePayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CustomerLead model
+   */ 
+  interface CustomerLeadFieldRefs {
+    readonly id: FieldRef<"CustomerLead", 'Int'>
+    readonly entryDate: FieldRef<"CustomerLead", 'DateTime'>
+    readonly mobileNumber: FieldRef<"CustomerLead", 'String'>
+    readonly customerName: FieldRef<"CustomerLead", 'String'>
+    readonly location: FieldRef<"CustomerLead", 'String'>
+    readonly district: FieldRef<"CustomerLead", 'String'>
+    readonly region: FieldRef<"CustomerLead", 'String'>
+    readonly systemRequirements: FieldRef<"CustomerLead", 'String'>
+    readonly configuration: FieldRef<"CustomerLead", 'String'>
+    readonly leadType: FieldRef<"CustomerLead", 'LeadType'>
+    readonly status: FieldRef<"CustomerLead", 'LeadStatus'>
+    readonly remarks: FieldRef<"CustomerLead", 'String'>
+    readonly quotation: FieldRef<"CustomerLead", 'QuotationProvided'>
+    readonly callBackStatus: FieldRef<"CustomerLead", 'CallBackStatus'>
+    readonly followUpDate: FieldRef<"CustomerLead", 'DateTime'>
+    readonly systemRequired: FieldRef<"CustomerLead", 'SystemRequired'>
+    readonly requiredFor: FieldRef<"CustomerLead", 'RequiredFor'>
+    readonly siteType: FieldRef<"CustomerLead", 'SiteType'>
+    readonly assignedTelecallerId: FieldRef<"CustomerLead", 'Int'>
+    readonly assignedFranchiseId: FieldRef<"CustomerLead", 'Int'>
+    readonly createdAt: FieldRef<"CustomerLead", 'DateTime'>
+    readonly updatedAt: FieldRef<"CustomerLead", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CustomerLead findUnique
+   */
+  export type CustomerLeadFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerLead to fetch.
+     */
+    where: CustomerLeadWhereUniqueInput
+  }
+
+  /**
+   * CustomerLead findUniqueOrThrow
+   */
+  export type CustomerLeadFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerLead to fetch.
+     */
+    where: CustomerLeadWhereUniqueInput
+  }
+
+  /**
+   * CustomerLead findFirst
+   */
+  export type CustomerLeadFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerLead to fetch.
+     */
+    where?: CustomerLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerLeads to fetch.
+     */
+    orderBy?: CustomerLeadOrderByWithRelationInput | CustomerLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CustomerLeads.
+     */
+    cursor?: CustomerLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerLeads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerLeads.
+     */
+    distinct?: CustomerLeadScalarFieldEnum | CustomerLeadScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerLead findFirstOrThrow
+   */
+  export type CustomerLeadFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerLead to fetch.
+     */
+    where?: CustomerLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerLeads to fetch.
+     */
+    orderBy?: CustomerLeadOrderByWithRelationInput | CustomerLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CustomerLeads.
+     */
+    cursor?: CustomerLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerLeads.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CustomerLeads.
+     */
+    distinct?: CustomerLeadScalarFieldEnum | CustomerLeadScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerLead findMany
+   */
+  export type CustomerLeadFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * Filter, which CustomerLeads to fetch.
+     */
+    where?: CustomerLeadWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CustomerLeads to fetch.
+     */
+    orderBy?: CustomerLeadOrderByWithRelationInput | CustomerLeadOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CustomerLeads.
+     */
+    cursor?: CustomerLeadWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CustomerLeads from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CustomerLeads.
+     */
+    skip?: number
+    distinct?: CustomerLeadScalarFieldEnum | CustomerLeadScalarFieldEnum[]
+  }
+
+  /**
+   * CustomerLead create
+   */
+  export type CustomerLeadCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CustomerLead.
+     */
+    data: XOR<CustomerLeadCreateInput, CustomerLeadUncheckedCreateInput>
+  }
+
+  /**
+   * CustomerLead createMany
+   */
+  export type CustomerLeadCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CustomerLeads.
+     */
+    data: CustomerLeadCreateManyInput | CustomerLeadCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CustomerLead createManyAndReturn
+   */
+  export type CustomerLeadCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many CustomerLeads.
+     */
+    data: CustomerLeadCreateManyInput | CustomerLeadCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CustomerLead update
+   */
+  export type CustomerLeadUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CustomerLead.
+     */
+    data: XOR<CustomerLeadUpdateInput, CustomerLeadUncheckedUpdateInput>
+    /**
+     * Choose, which CustomerLead to update.
+     */
+    where: CustomerLeadWhereUniqueInput
+  }
+
+  /**
+   * CustomerLead updateMany
+   */
+  export type CustomerLeadUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CustomerLeads.
+     */
+    data: XOR<CustomerLeadUpdateManyMutationInput, CustomerLeadUncheckedUpdateManyInput>
+    /**
+     * Filter which CustomerLeads to update
+     */
+    where?: CustomerLeadWhereInput
+  }
+
+  /**
+   * CustomerLead upsert
+   */
+  export type CustomerLeadUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CustomerLead to update in case it exists.
+     */
+    where: CustomerLeadWhereUniqueInput
+    /**
+     * In case the CustomerLead found by the `where` argument doesn't exist, create a new CustomerLead with this data.
+     */
+    create: XOR<CustomerLeadCreateInput, CustomerLeadUncheckedCreateInput>
+    /**
+     * In case the CustomerLead was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CustomerLeadUpdateInput, CustomerLeadUncheckedUpdateInput>
+  }
+
+  /**
+   * CustomerLead delete
+   */
+  export type CustomerLeadDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+    /**
+     * Filter which CustomerLead to delete.
+     */
+    where: CustomerLeadWhereUniqueInput
+  }
+
+  /**
+   * CustomerLead deleteMany
+   */
+  export type CustomerLeadDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CustomerLeads to delete
+     */
+    where?: CustomerLeadWhereInput
+  }
+
+  /**
+   * CustomerLead.assignedTelecaller
+   */
+  export type CustomerLead$assignedTelecallerArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Employee
+     */
+    select?: EmployeeSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeInclude<ExtArgs> | null
+    where?: EmployeeWhereInput
+  }
+
+  /**
+   * CustomerLead.assignedFranchise
+   */
+  export type CustomerLead$assignedFranchiseArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Employee
+     */
+    select?: EmployeeSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: EmployeeInclude<ExtArgs> | null
+    where?: EmployeeWhereInput
+  }
+
+  /**
+   * CustomerLead without action
+   */
+  export type CustomerLeadDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CustomerLead
+     */
+    select?: CustomerLeadSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CustomerLeadInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16129,6 +17595,34 @@ export namespace Prisma {
   export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
 
 
+  export const CustomerLeadScalarFieldEnum: {
+    id: 'id',
+    entryDate: 'entryDate',
+    mobileNumber: 'mobileNumber',
+    customerName: 'customerName',
+    location: 'location',
+    district: 'district',
+    region: 'region',
+    systemRequirements: 'systemRequirements',
+    configuration: 'configuration',
+    leadType: 'leadType',
+    status: 'status',
+    remarks: 'remarks',
+    quotation: 'quotation',
+    callBackStatus: 'callBackStatus',
+    followUpDate: 'followUpDate',
+    systemRequired: 'systemRequired',
+    requiredFor: 'requiredFor',
+    siteType: 'siteType',
+    assignedTelecallerId: 'assignedTelecallerId',
+    assignedFranchiseId: 'assignedFranchiseId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CustomerLeadScalarFieldEnum = (typeof CustomerLeadScalarFieldEnum)[keyof typeof CustomerLeadScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -16302,6 +17796,104 @@ export namespace Prisma {
    * Reference to a field of type 'EmployeeRole[]'
    */
   export type ListEnumEmployeeRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EmployeeRole[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'LeadType'
+   */
+  export type EnumLeadTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadType'>
+    
+
+
+  /**
+   * Reference to a field of type 'LeadType[]'
+   */
+  export type ListEnumLeadTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'LeadStatus'
+   */
+  export type EnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'LeadStatus[]'
+   */
+  export type ListEnumLeadStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LeadStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuotationProvided'
+   */
+  export type EnumQuotationProvidedFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuotationProvided'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuotationProvided[]'
+   */
+  export type ListEnumQuotationProvidedFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuotationProvided[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'CallBackStatus'
+   */
+  export type EnumCallBackStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CallBackStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'CallBackStatus[]'
+   */
+  export type ListEnumCallBackStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CallBackStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'SystemRequired'
+   */
+  export type EnumSystemRequiredFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SystemRequired'>
+    
+
+
+  /**
+   * Reference to a field of type 'SystemRequired[]'
+   */
+  export type ListEnumSystemRequiredFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SystemRequired[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'RequiredFor'
+   */
+  export type EnumRequiredForFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequiredFor'>
+    
+
+
+  /**
+   * Reference to a field of type 'RequiredFor[]'
+   */
+  export type ListEnumRequiredForFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RequiredFor[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'SiteType'
+   */
+  export type EnumSiteTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SiteType'>
+    
+
+
+  /**
+   * Reference to a field of type 'SiteType[]'
+   */
+  export type ListEnumSiteTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'SiteType[]'>
     
 
 
@@ -17280,6 +18872,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Employee"> | Date | string
     company?: XOR<CompanyRelationFilter, CompanyWhereInput>
     sessions?: SessionListRelationFilter
+    leadEntries?: CustomerLeadListRelationFilter
+    franchiseLeads?: CustomerLeadListRelationFilter
   }
 
   export type EmployeeOrderByWithRelationInput = {
@@ -17294,6 +18888,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     company?: CompanyOrderByWithRelationInput
     sessions?: SessionOrderByRelationAggregateInput
+    leadEntries?: CustomerLeadOrderByRelationAggregateInput
+    franchiseLeads?: CustomerLeadOrderByRelationAggregateInput
   }
 
   export type EmployeeWhereUniqueInput = Prisma.AtLeast<{
@@ -17311,6 +18907,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Employee"> | Date | string
     company?: XOR<CompanyRelationFilter, CompanyWhereInput>
     sessions?: SessionListRelationFilter
+    leadEntries?: CustomerLeadListRelationFilter
+    franchiseLeads?: CustomerLeadListRelationFilter
   }, "id" | "email">
 
   export type EmployeeOrderByWithAggregationInput = {
@@ -17395,6 +18993,151 @@ export namespace Prisma {
     employeeId?: IntWithAggregatesFilter<"Session"> | number
     expiresAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
+  }
+
+  export type CustomerLeadWhereInput = {
+    AND?: CustomerLeadWhereInput | CustomerLeadWhereInput[]
+    OR?: CustomerLeadWhereInput[]
+    NOT?: CustomerLeadWhereInput | CustomerLeadWhereInput[]
+    id?: IntFilter<"CustomerLead"> | number
+    entryDate?: DateTimeFilter<"CustomerLead"> | Date | string
+    mobileNumber?: StringFilter<"CustomerLead"> | string
+    customerName?: StringNullableFilter<"CustomerLead"> | string | null
+    location?: StringNullableFilter<"CustomerLead"> | string | null
+    district?: StringNullableFilter<"CustomerLead"> | string | null
+    region?: StringFilter<"CustomerLead"> | string
+    systemRequirements?: StringNullableFilter<"CustomerLead"> | string | null
+    configuration?: StringNullableFilter<"CustomerLead"> | string | null
+    leadType?: EnumLeadTypeFilter<"CustomerLead"> | $Enums.LeadType
+    status?: EnumLeadStatusFilter<"CustomerLead"> | $Enums.LeadStatus
+    remarks?: StringNullableFilter<"CustomerLead"> | string | null
+    quotation?: EnumQuotationProvidedFilter<"CustomerLead"> | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFilter<"CustomerLead"> | $Enums.CallBackStatus
+    followUpDate?: DateTimeNullableFilter<"CustomerLead"> | Date | string | null
+    systemRequired?: EnumSystemRequiredNullableFilter<"CustomerLead"> | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFilter<"CustomerLead"> | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFilter<"CustomerLead"> | $Enums.SiteType
+    assignedTelecallerId?: IntNullableFilter<"CustomerLead"> | number | null
+    assignedFranchiseId?: IntNullableFilter<"CustomerLead"> | number | null
+    createdAt?: DateTimeFilter<"CustomerLead"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerLead"> | Date | string
+    assignedTelecaller?: XOR<EmployeeNullableRelationFilter, EmployeeWhereInput> | null
+    assignedFranchise?: XOR<EmployeeNullableRelationFilter, EmployeeWhereInput> | null
+  }
+
+  export type CustomerLeadOrderByWithRelationInput = {
+    id?: SortOrder
+    entryDate?: SortOrder
+    mobileNumber?: SortOrder
+    customerName?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    region?: SortOrder
+    systemRequirements?: SortOrderInput | SortOrder
+    configuration?: SortOrderInput | SortOrder
+    leadType?: SortOrder
+    status?: SortOrder
+    remarks?: SortOrderInput | SortOrder
+    quotation?: SortOrder
+    callBackStatus?: SortOrder
+    followUpDate?: SortOrderInput | SortOrder
+    systemRequired?: SortOrderInput | SortOrder
+    requiredFor?: SortOrder
+    siteType?: SortOrder
+    assignedTelecallerId?: SortOrderInput | SortOrder
+    assignedFranchiseId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    assignedTelecaller?: EmployeeOrderByWithRelationInput
+    assignedFranchise?: EmployeeOrderByWithRelationInput
+  }
+
+  export type CustomerLeadWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: CustomerLeadWhereInput | CustomerLeadWhereInput[]
+    OR?: CustomerLeadWhereInput[]
+    NOT?: CustomerLeadWhereInput | CustomerLeadWhereInput[]
+    entryDate?: DateTimeFilter<"CustomerLead"> | Date | string
+    mobileNumber?: StringFilter<"CustomerLead"> | string
+    customerName?: StringNullableFilter<"CustomerLead"> | string | null
+    location?: StringNullableFilter<"CustomerLead"> | string | null
+    district?: StringNullableFilter<"CustomerLead"> | string | null
+    region?: StringFilter<"CustomerLead"> | string
+    systemRequirements?: StringNullableFilter<"CustomerLead"> | string | null
+    configuration?: StringNullableFilter<"CustomerLead"> | string | null
+    leadType?: EnumLeadTypeFilter<"CustomerLead"> | $Enums.LeadType
+    status?: EnumLeadStatusFilter<"CustomerLead"> | $Enums.LeadStatus
+    remarks?: StringNullableFilter<"CustomerLead"> | string | null
+    quotation?: EnumQuotationProvidedFilter<"CustomerLead"> | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFilter<"CustomerLead"> | $Enums.CallBackStatus
+    followUpDate?: DateTimeNullableFilter<"CustomerLead"> | Date | string | null
+    systemRequired?: EnumSystemRequiredNullableFilter<"CustomerLead"> | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFilter<"CustomerLead"> | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFilter<"CustomerLead"> | $Enums.SiteType
+    assignedTelecallerId?: IntNullableFilter<"CustomerLead"> | number | null
+    assignedFranchiseId?: IntNullableFilter<"CustomerLead"> | number | null
+    createdAt?: DateTimeFilter<"CustomerLead"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerLead"> | Date | string
+    assignedTelecaller?: XOR<EmployeeNullableRelationFilter, EmployeeWhereInput> | null
+    assignedFranchise?: XOR<EmployeeNullableRelationFilter, EmployeeWhereInput> | null
+  }, "id">
+
+  export type CustomerLeadOrderByWithAggregationInput = {
+    id?: SortOrder
+    entryDate?: SortOrder
+    mobileNumber?: SortOrder
+    customerName?: SortOrderInput | SortOrder
+    location?: SortOrderInput | SortOrder
+    district?: SortOrderInput | SortOrder
+    region?: SortOrder
+    systemRequirements?: SortOrderInput | SortOrder
+    configuration?: SortOrderInput | SortOrder
+    leadType?: SortOrder
+    status?: SortOrder
+    remarks?: SortOrderInput | SortOrder
+    quotation?: SortOrder
+    callBackStatus?: SortOrder
+    followUpDate?: SortOrderInput | SortOrder
+    systemRequired?: SortOrderInput | SortOrder
+    requiredFor?: SortOrder
+    siteType?: SortOrder
+    assignedTelecallerId?: SortOrderInput | SortOrder
+    assignedFranchiseId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CustomerLeadCountOrderByAggregateInput
+    _avg?: CustomerLeadAvgOrderByAggregateInput
+    _max?: CustomerLeadMaxOrderByAggregateInput
+    _min?: CustomerLeadMinOrderByAggregateInput
+    _sum?: CustomerLeadSumOrderByAggregateInput
+  }
+
+  export type CustomerLeadScalarWhereWithAggregatesInput = {
+    AND?: CustomerLeadScalarWhereWithAggregatesInput | CustomerLeadScalarWhereWithAggregatesInput[]
+    OR?: CustomerLeadScalarWhereWithAggregatesInput[]
+    NOT?: CustomerLeadScalarWhereWithAggregatesInput | CustomerLeadScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"CustomerLead"> | number
+    entryDate?: DateTimeWithAggregatesFilter<"CustomerLead"> | Date | string
+    mobileNumber?: StringWithAggregatesFilter<"CustomerLead"> | string
+    customerName?: StringNullableWithAggregatesFilter<"CustomerLead"> | string | null
+    location?: StringNullableWithAggregatesFilter<"CustomerLead"> | string | null
+    district?: StringNullableWithAggregatesFilter<"CustomerLead"> | string | null
+    region?: StringWithAggregatesFilter<"CustomerLead"> | string
+    systemRequirements?: StringNullableWithAggregatesFilter<"CustomerLead"> | string | null
+    configuration?: StringNullableWithAggregatesFilter<"CustomerLead"> | string | null
+    leadType?: EnumLeadTypeWithAggregatesFilter<"CustomerLead"> | $Enums.LeadType
+    status?: EnumLeadStatusWithAggregatesFilter<"CustomerLead"> | $Enums.LeadStatus
+    remarks?: StringNullableWithAggregatesFilter<"CustomerLead"> | string | null
+    quotation?: EnumQuotationProvidedWithAggregatesFilter<"CustomerLead"> | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusWithAggregatesFilter<"CustomerLead"> | $Enums.CallBackStatus
+    followUpDate?: DateTimeNullableWithAggregatesFilter<"CustomerLead"> | Date | string | null
+    systemRequired?: EnumSystemRequiredNullableWithAggregatesFilter<"CustomerLead"> | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForWithAggregatesFilter<"CustomerLead"> | $Enums.RequiredFor
+    siteType?: EnumSiteTypeWithAggregatesFilter<"CustomerLead"> | $Enums.SiteType
+    assignedTelecallerId?: IntNullableWithAggregatesFilter<"CustomerLead"> | number | null
+    assignedFranchiseId?: IntNullableWithAggregatesFilter<"CustomerLead"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"CustomerLead"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CustomerLead"> | Date | string
   }
 
   export type CategoryCreateInput = {
@@ -18427,6 +20170,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     company: CompanyCreateNestedOneWithoutEmployeesInput
     sessions?: SessionCreateNestedManyWithoutEmployeeInput
+    leadEntries?: CustomerLeadCreateNestedManyWithoutAssignedTelecallerInput
+    franchiseLeads?: CustomerLeadCreateNestedManyWithoutAssignedFranchiseInput
   }
 
   export type EmployeeUncheckedCreateInput = {
@@ -18440,6 +20185,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutEmployeeInput
+    leadEntries?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedTelecallerInput
+    franchiseLeads?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedFranchiseInput
   }
 
   export type EmployeeUpdateInput = {
@@ -18452,6 +20199,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutEmployeesNestedInput
     sessions?: SessionUpdateManyWithoutEmployeeNestedInput
+    leadEntries?: CustomerLeadUpdateManyWithoutAssignedTelecallerNestedInput
+    franchiseLeads?: CustomerLeadUpdateManyWithoutAssignedFranchiseNestedInput
   }
 
   export type EmployeeUncheckedUpdateInput = {
@@ -18465,6 +20214,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutEmployeeNestedInput
+    leadEntries?: CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerNestedInput
+    franchiseLeads?: CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseNestedInput
   }
 
   export type EmployeeCreateManyInput = {
@@ -18547,6 +20298,176 @@ export namespace Prisma {
     employeeId?: IntFieldUpdateOperationsInput | number
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadCreateInput = {
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedTelecaller?: EmployeeCreateNestedOneWithoutLeadEntriesInput
+    assignedFranchise?: EmployeeCreateNestedOneWithoutFranchiseLeadsInput
+  }
+
+  export type CustomerLeadUncheckedCreateInput = {
+    id?: number
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    assignedTelecallerId?: number | null
+    assignedFranchiseId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerLeadUpdateInput = {
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedTelecaller?: EmployeeUpdateOneWithoutLeadEntriesNestedInput
+    assignedFranchise?: EmployeeUpdateOneWithoutFranchiseLeadsNestedInput
+  }
+
+  export type CustomerLeadUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    assignedTelecallerId?: NullableIntFieldUpdateOperationsInput | number | null
+    assignedFranchiseId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadCreateManyInput = {
+    id?: number
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    assignedTelecallerId?: number | null
+    assignedFranchiseId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerLeadUpdateManyMutationInput = {
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    assignedTelecallerId?: NullableIntFieldUpdateOperationsInput | number | null
+    assignedFranchiseId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -19592,7 +21513,17 @@ export namespace Prisma {
     none?: SessionWhereInput
   }
 
+  export type CustomerLeadListRelationFilter = {
+    every?: CustomerLeadWhereInput
+    some?: CustomerLeadWhereInput
+    none?: CustomerLeadWhereInput
+  }
+
   export type SessionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type CustomerLeadOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19684,6 +21615,242 @@ export namespace Prisma {
 
   export type SessionSumOrderByAggregateInput = {
     employeeId?: SortOrder
+  }
+
+  export type EnumLeadTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeFilter<$PrismaModel> | $Enums.LeadType
+  }
+
+  export type EnumLeadStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadStatus | EnumLeadStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadStatusFilter<$PrismaModel> | $Enums.LeadStatus
+  }
+
+  export type EnumQuotationProvidedFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuotationProvided | EnumQuotationProvidedFieldRefInput<$PrismaModel>
+    in?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuotationProvidedFilter<$PrismaModel> | $Enums.QuotationProvided
+  }
+
+  export type EnumCallBackStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.CallBackStatus | EnumCallBackStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCallBackStatusFilter<$PrismaModel> | $Enums.CallBackStatus
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type EnumSystemRequiredNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.SystemRequired | EnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSystemRequiredNullableFilter<$PrismaModel> | $Enums.SystemRequired | null
+  }
+
+  export type EnumRequiredForFilter<$PrismaModel = never> = {
+    equals?: $Enums.RequiredFor | EnumRequiredForFieldRefInput<$PrismaModel>
+    in?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    not?: NestedEnumRequiredForFilter<$PrismaModel> | $Enums.RequiredFor
+  }
+
+  export type EnumSiteTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SiteType | EnumSiteTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSiteTypeFilter<$PrismaModel> | $Enums.SiteType
+  }
+
+  export type EmployeeNullableRelationFilter = {
+    is?: EmployeeWhereInput | null
+    isNot?: EmployeeWhereInput | null
+  }
+
+  export type CustomerLeadCountOrderByAggregateInput = {
+    id?: SortOrder
+    entryDate?: SortOrder
+    mobileNumber?: SortOrder
+    customerName?: SortOrder
+    location?: SortOrder
+    district?: SortOrder
+    region?: SortOrder
+    systemRequirements?: SortOrder
+    configuration?: SortOrder
+    leadType?: SortOrder
+    status?: SortOrder
+    remarks?: SortOrder
+    quotation?: SortOrder
+    callBackStatus?: SortOrder
+    followUpDate?: SortOrder
+    systemRequired?: SortOrder
+    requiredFor?: SortOrder
+    siteType?: SortOrder
+    assignedTelecallerId?: SortOrder
+    assignedFranchiseId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerLeadAvgOrderByAggregateInput = {
+    id?: SortOrder
+    assignedTelecallerId?: SortOrder
+    assignedFranchiseId?: SortOrder
+  }
+
+  export type CustomerLeadMaxOrderByAggregateInput = {
+    id?: SortOrder
+    entryDate?: SortOrder
+    mobileNumber?: SortOrder
+    customerName?: SortOrder
+    location?: SortOrder
+    district?: SortOrder
+    region?: SortOrder
+    systemRequirements?: SortOrder
+    configuration?: SortOrder
+    leadType?: SortOrder
+    status?: SortOrder
+    remarks?: SortOrder
+    quotation?: SortOrder
+    callBackStatus?: SortOrder
+    followUpDate?: SortOrder
+    systemRequired?: SortOrder
+    requiredFor?: SortOrder
+    siteType?: SortOrder
+    assignedTelecallerId?: SortOrder
+    assignedFranchiseId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerLeadMinOrderByAggregateInput = {
+    id?: SortOrder
+    entryDate?: SortOrder
+    mobileNumber?: SortOrder
+    customerName?: SortOrder
+    location?: SortOrder
+    district?: SortOrder
+    region?: SortOrder
+    systemRequirements?: SortOrder
+    configuration?: SortOrder
+    leadType?: SortOrder
+    status?: SortOrder
+    remarks?: SortOrder
+    quotation?: SortOrder
+    callBackStatus?: SortOrder
+    followUpDate?: SortOrder
+    systemRequired?: SortOrder
+    requiredFor?: SortOrder
+    siteType?: SortOrder
+    assignedTelecallerId?: SortOrder
+    assignedFranchiseId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CustomerLeadSumOrderByAggregateInput = {
+    id?: SortOrder
+    assignedTelecallerId?: SortOrder
+    assignedFranchiseId?: SortOrder
+  }
+
+  export type EnumLeadTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeWithAggregatesFilter<$PrismaModel> | $Enums.LeadType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLeadTypeFilter<$PrismaModel>
+    _max?: NestedEnumLeadTypeFilter<$PrismaModel>
+  }
+
+  export type EnumLeadStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadStatus | EnumLeadStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadStatusWithAggregatesFilter<$PrismaModel> | $Enums.LeadStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLeadStatusFilter<$PrismaModel>
+    _max?: NestedEnumLeadStatusFilter<$PrismaModel>
+  }
+
+  export type EnumQuotationProvidedWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuotationProvided | EnumQuotationProvidedFieldRefInput<$PrismaModel>
+    in?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuotationProvidedWithAggregatesFilter<$PrismaModel> | $Enums.QuotationProvided
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuotationProvidedFilter<$PrismaModel>
+    _max?: NestedEnumQuotationProvidedFilter<$PrismaModel>
+  }
+
+  export type EnumCallBackStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CallBackStatus | EnumCallBackStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCallBackStatusWithAggregatesFilter<$PrismaModel> | $Enums.CallBackStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCallBackStatusFilter<$PrismaModel>
+    _max?: NestedEnumCallBackStatusFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type EnumSystemRequiredNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SystemRequired | EnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSystemRequiredNullableWithAggregatesFilter<$PrismaModel> | $Enums.SystemRequired | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumSystemRequiredNullableFilter<$PrismaModel>
+    _max?: NestedEnumSystemRequiredNullableFilter<$PrismaModel>
+  }
+
+  export type EnumRequiredForWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RequiredFor | EnumRequiredForFieldRefInput<$PrismaModel>
+    in?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    not?: NestedEnumRequiredForWithAggregatesFilter<$PrismaModel> | $Enums.RequiredFor
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRequiredForFilter<$PrismaModel>
+    _max?: NestedEnumRequiredForFilter<$PrismaModel>
+  }
+
+  export type EnumSiteTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SiteType | EnumSiteTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSiteTypeWithAggregatesFilter<$PrismaModel> | $Enums.SiteType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSiteTypeFilter<$PrismaModel>
+    _max?: NestedEnumSiteTypeFilter<$PrismaModel>
   }
 
   export type CategoryAttributeCreateNestedManyWithoutCategoryInput = {
@@ -20313,11 +22480,39 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type CustomerLeadCreateNestedManyWithoutAssignedTelecallerInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedTelecallerInput, CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput> | CustomerLeadCreateWithoutAssignedTelecallerInput[] | CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput | CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput[]
+    createMany?: CustomerLeadCreateManyAssignedTelecallerInputEnvelope
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+  }
+
+  export type CustomerLeadCreateNestedManyWithoutAssignedFranchiseInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedFranchiseInput, CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput> | CustomerLeadCreateWithoutAssignedFranchiseInput[] | CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput | CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput[]
+    createMany?: CustomerLeadCreateManyAssignedFranchiseInputEnvelope
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutEmployeeInput = {
     create?: XOR<SessionCreateWithoutEmployeeInput, SessionUncheckedCreateWithoutEmployeeInput> | SessionCreateWithoutEmployeeInput[] | SessionUncheckedCreateWithoutEmployeeInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutEmployeeInput | SessionCreateOrConnectWithoutEmployeeInput[]
     createMany?: SessionCreateManyEmployeeInputEnvelope
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
+  }
+
+  export type CustomerLeadUncheckedCreateNestedManyWithoutAssignedTelecallerInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedTelecallerInput, CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput> | CustomerLeadCreateWithoutAssignedTelecallerInput[] | CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput | CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput[]
+    createMany?: CustomerLeadCreateManyAssignedTelecallerInputEnvelope
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+  }
+
+  export type CustomerLeadUncheckedCreateNestedManyWithoutAssignedFranchiseInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedFranchiseInput, CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput> | CustomerLeadCreateWithoutAssignedFranchiseInput[] | CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput | CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput[]
+    createMany?: CustomerLeadCreateManyAssignedFranchiseInputEnvelope
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
   }
 
   export type EnumEmployeeRoleFieldUpdateOperationsInput = {
@@ -20346,6 +22541,34 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type CustomerLeadUpdateManyWithoutAssignedTelecallerNestedInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedTelecallerInput, CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput> | CustomerLeadCreateWithoutAssignedTelecallerInput[] | CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput | CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput[]
+    upsert?: CustomerLeadUpsertWithWhereUniqueWithoutAssignedTelecallerInput | CustomerLeadUpsertWithWhereUniqueWithoutAssignedTelecallerInput[]
+    createMany?: CustomerLeadCreateManyAssignedTelecallerInputEnvelope
+    set?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    disconnect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    delete?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    update?: CustomerLeadUpdateWithWhereUniqueWithoutAssignedTelecallerInput | CustomerLeadUpdateWithWhereUniqueWithoutAssignedTelecallerInput[]
+    updateMany?: CustomerLeadUpdateManyWithWhereWithoutAssignedTelecallerInput | CustomerLeadUpdateManyWithWhereWithoutAssignedTelecallerInput[]
+    deleteMany?: CustomerLeadScalarWhereInput | CustomerLeadScalarWhereInput[]
+  }
+
+  export type CustomerLeadUpdateManyWithoutAssignedFranchiseNestedInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedFranchiseInput, CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput> | CustomerLeadCreateWithoutAssignedFranchiseInput[] | CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput | CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput[]
+    upsert?: CustomerLeadUpsertWithWhereUniqueWithoutAssignedFranchiseInput | CustomerLeadUpsertWithWhereUniqueWithoutAssignedFranchiseInput[]
+    createMany?: CustomerLeadCreateManyAssignedFranchiseInputEnvelope
+    set?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    disconnect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    delete?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    update?: CustomerLeadUpdateWithWhereUniqueWithoutAssignedFranchiseInput | CustomerLeadUpdateWithWhereUniqueWithoutAssignedFranchiseInput[]
+    updateMany?: CustomerLeadUpdateManyWithWhereWithoutAssignedFranchiseInput | CustomerLeadUpdateManyWithWhereWithoutAssignedFranchiseInput[]
+    deleteMany?: CustomerLeadScalarWhereInput | CustomerLeadScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutEmployeeNestedInput = {
     create?: XOR<SessionCreateWithoutEmployeeInput, SessionUncheckedCreateWithoutEmployeeInput> | SessionCreateWithoutEmployeeInput[] | SessionUncheckedCreateWithoutEmployeeInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutEmployeeInput | SessionCreateOrConnectWithoutEmployeeInput[]
@@ -20360,6 +22583,34 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerNestedInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedTelecallerInput, CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput> | CustomerLeadCreateWithoutAssignedTelecallerInput[] | CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput | CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput[]
+    upsert?: CustomerLeadUpsertWithWhereUniqueWithoutAssignedTelecallerInput | CustomerLeadUpsertWithWhereUniqueWithoutAssignedTelecallerInput[]
+    createMany?: CustomerLeadCreateManyAssignedTelecallerInputEnvelope
+    set?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    disconnect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    delete?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    update?: CustomerLeadUpdateWithWhereUniqueWithoutAssignedTelecallerInput | CustomerLeadUpdateWithWhereUniqueWithoutAssignedTelecallerInput[]
+    updateMany?: CustomerLeadUpdateManyWithWhereWithoutAssignedTelecallerInput | CustomerLeadUpdateManyWithWhereWithoutAssignedTelecallerInput[]
+    deleteMany?: CustomerLeadScalarWhereInput | CustomerLeadScalarWhereInput[]
+  }
+
+  export type CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseNestedInput = {
+    create?: XOR<CustomerLeadCreateWithoutAssignedFranchiseInput, CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput> | CustomerLeadCreateWithoutAssignedFranchiseInput[] | CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput[]
+    connectOrCreate?: CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput | CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput[]
+    upsert?: CustomerLeadUpsertWithWhereUniqueWithoutAssignedFranchiseInput | CustomerLeadUpsertWithWhereUniqueWithoutAssignedFranchiseInput[]
+    createMany?: CustomerLeadCreateManyAssignedFranchiseInputEnvelope
+    set?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    disconnect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    delete?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    connect?: CustomerLeadWhereUniqueInput | CustomerLeadWhereUniqueInput[]
+    update?: CustomerLeadUpdateWithWhereUniqueWithoutAssignedFranchiseInput | CustomerLeadUpdateWithWhereUniqueWithoutAssignedFranchiseInput[]
+    updateMany?: CustomerLeadUpdateManyWithWhereWithoutAssignedFranchiseInput | CustomerLeadUpdateManyWithWhereWithoutAssignedFranchiseInput[]
+    deleteMany?: CustomerLeadScalarWhereInput | CustomerLeadScalarWhereInput[]
+  }
+
   export type EmployeeCreateNestedOneWithoutSessionsInput = {
     create?: XOR<EmployeeCreateWithoutSessionsInput, EmployeeUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: EmployeeCreateOrConnectWithoutSessionsInput
@@ -20372,6 +22623,70 @@ export namespace Prisma {
     upsert?: EmployeeUpsertWithoutSessionsInput
     connect?: EmployeeWhereUniqueInput
     update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutSessionsInput, EmployeeUpdateWithoutSessionsInput>, EmployeeUncheckedUpdateWithoutSessionsInput>
+  }
+
+  export type EmployeeCreateNestedOneWithoutLeadEntriesInput = {
+    create?: XOR<EmployeeCreateWithoutLeadEntriesInput, EmployeeUncheckedCreateWithoutLeadEntriesInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutLeadEntriesInput
+    connect?: EmployeeWhereUniqueInput
+  }
+
+  export type EmployeeCreateNestedOneWithoutFranchiseLeadsInput = {
+    create?: XOR<EmployeeCreateWithoutFranchiseLeadsInput, EmployeeUncheckedCreateWithoutFranchiseLeadsInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutFranchiseLeadsInput
+    connect?: EmployeeWhereUniqueInput
+  }
+
+  export type EnumLeadTypeFieldUpdateOperationsInput = {
+    set?: $Enums.LeadType
+  }
+
+  export type EnumLeadStatusFieldUpdateOperationsInput = {
+    set?: $Enums.LeadStatus
+  }
+
+  export type EnumQuotationProvidedFieldUpdateOperationsInput = {
+    set?: $Enums.QuotationProvided
+  }
+
+  export type EnumCallBackStatusFieldUpdateOperationsInput = {
+    set?: $Enums.CallBackStatus
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type NullableEnumSystemRequiredFieldUpdateOperationsInput = {
+    set?: $Enums.SystemRequired | null
+  }
+
+  export type EnumRequiredForFieldUpdateOperationsInput = {
+    set?: $Enums.RequiredFor
+  }
+
+  export type EnumSiteTypeFieldUpdateOperationsInput = {
+    set?: $Enums.SiteType
+  }
+
+  export type EmployeeUpdateOneWithoutLeadEntriesNestedInput = {
+    create?: XOR<EmployeeCreateWithoutLeadEntriesInput, EmployeeUncheckedCreateWithoutLeadEntriesInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutLeadEntriesInput
+    upsert?: EmployeeUpsertWithoutLeadEntriesInput
+    disconnect?: EmployeeWhereInput | boolean
+    delete?: EmployeeWhereInput | boolean
+    connect?: EmployeeWhereUniqueInput
+    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutLeadEntriesInput, EmployeeUpdateWithoutLeadEntriesInput>, EmployeeUncheckedUpdateWithoutLeadEntriesInput>
+  }
+
+  export type EmployeeUpdateOneWithoutFranchiseLeadsNestedInput = {
+    create?: XOR<EmployeeCreateWithoutFranchiseLeadsInput, EmployeeUncheckedCreateWithoutFranchiseLeadsInput>
+    connectOrCreate?: EmployeeCreateOrConnectWithoutFranchiseLeadsInput
+    upsert?: EmployeeUpsertWithoutFranchiseLeadsInput
+    disconnect?: EmployeeWhereInput | boolean
+    delete?: EmployeeWhereInput | boolean
+    connect?: EmployeeWhereUniqueInput
+    update?: XOR<XOR<EmployeeUpdateToOneWithWhereWithoutFranchiseLeadsInput, EmployeeUpdateWithoutFranchiseLeadsInput>, EmployeeUncheckedUpdateWithoutFranchiseLeadsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -20704,6 +23019,150 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumEmployeeRoleFilter<$PrismaModel>
     _max?: NestedEnumEmployeeRoleFilter<$PrismaModel>
+  }
+
+  export type NestedEnumLeadTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeFilter<$PrismaModel> | $Enums.LeadType
+  }
+
+  export type NestedEnumLeadStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadStatus | EnumLeadStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadStatusFilter<$PrismaModel> | $Enums.LeadStatus
+  }
+
+  export type NestedEnumQuotationProvidedFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuotationProvided | EnumQuotationProvidedFieldRefInput<$PrismaModel>
+    in?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuotationProvidedFilter<$PrismaModel> | $Enums.QuotationProvided
+  }
+
+  export type NestedEnumCallBackStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.CallBackStatus | EnumCallBackStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCallBackStatusFilter<$PrismaModel> | $Enums.CallBackStatus
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type NestedEnumSystemRequiredNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.SystemRequired | EnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSystemRequiredNullableFilter<$PrismaModel> | $Enums.SystemRequired | null
+  }
+
+  export type NestedEnumRequiredForFilter<$PrismaModel = never> = {
+    equals?: $Enums.RequiredFor | EnumRequiredForFieldRefInput<$PrismaModel>
+    in?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    not?: NestedEnumRequiredForFilter<$PrismaModel> | $Enums.RequiredFor
+  }
+
+  export type NestedEnumSiteTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.SiteType | EnumSiteTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSiteTypeFilter<$PrismaModel> | $Enums.SiteType
+  }
+
+  export type NestedEnumLeadTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadType | EnumLeadTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadType[] | ListEnumLeadTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadTypeWithAggregatesFilter<$PrismaModel> | $Enums.LeadType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLeadTypeFilter<$PrismaModel>
+    _max?: NestedEnumLeadTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumLeadStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.LeadStatus | EnumLeadStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.LeadStatus[] | ListEnumLeadStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumLeadStatusWithAggregatesFilter<$PrismaModel> | $Enums.LeadStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumLeadStatusFilter<$PrismaModel>
+    _max?: NestedEnumLeadStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumQuotationProvidedWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuotationProvided | EnumQuotationProvidedFieldRefInput<$PrismaModel>
+    in?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuotationProvided[] | ListEnumQuotationProvidedFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuotationProvidedWithAggregatesFilter<$PrismaModel> | $Enums.QuotationProvided
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuotationProvidedFilter<$PrismaModel>
+    _max?: NestedEnumQuotationProvidedFilter<$PrismaModel>
+  }
+
+  export type NestedEnumCallBackStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.CallBackStatus | EnumCallBackStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.CallBackStatus[] | ListEnumCallBackStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumCallBackStatusWithAggregatesFilter<$PrismaModel> | $Enums.CallBackStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumCallBackStatusFilter<$PrismaModel>
+    _max?: NestedEnumCallBackStatusFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSystemRequiredNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SystemRequired | EnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    in?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.SystemRequired[] | ListEnumSystemRequiredFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumSystemRequiredNullableWithAggregatesFilter<$PrismaModel> | $Enums.SystemRequired | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumSystemRequiredNullableFilter<$PrismaModel>
+    _max?: NestedEnumSystemRequiredNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumRequiredForWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.RequiredFor | EnumRequiredForFieldRefInput<$PrismaModel>
+    in?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    notIn?: $Enums.RequiredFor[] | ListEnumRequiredForFieldRefInput<$PrismaModel>
+    not?: NestedEnumRequiredForWithAggregatesFilter<$PrismaModel> | $Enums.RequiredFor
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumRequiredForFilter<$PrismaModel>
+    _max?: NestedEnumRequiredForFilter<$PrismaModel>
+  }
+
+  export type NestedEnumSiteTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.SiteType | EnumSiteTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.SiteType[] | ListEnumSiteTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumSiteTypeWithAggregatesFilter<$PrismaModel> | $Enums.SiteType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumSiteTypeFilter<$PrismaModel>
+    _max?: NestedEnumSiteTypeFilter<$PrismaModel>
   }
 
   export type CategoryAttributeCreateWithoutCategoryInput = {
@@ -21505,6 +23964,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutEmployeeInput
+    leadEntries?: CustomerLeadCreateNestedManyWithoutAssignedTelecallerInput
+    franchiseLeads?: CustomerLeadCreateNestedManyWithoutAssignedFranchiseInput
   }
 
   export type EmployeeUncheckedCreateWithoutCompanyInput = {
@@ -21517,6 +23978,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutEmployeeInput
+    leadEntries?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedTelecallerInput
+    franchiseLeads?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedFranchiseInput
   }
 
   export type EmployeeCreateOrConnectWithoutCompanyInput = {
@@ -22199,6 +24662,120 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CustomerLeadCreateWithoutAssignedTelecallerInput = {
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedFranchise?: EmployeeCreateNestedOneWithoutFranchiseLeadsInput
+  }
+
+  export type CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput = {
+    id?: number
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    assignedFranchiseId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerLeadCreateOrConnectWithoutAssignedTelecallerInput = {
+    where: CustomerLeadWhereUniqueInput
+    create: XOR<CustomerLeadCreateWithoutAssignedTelecallerInput, CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput>
+  }
+
+  export type CustomerLeadCreateManyAssignedTelecallerInputEnvelope = {
+    data: CustomerLeadCreateManyAssignedTelecallerInput | CustomerLeadCreateManyAssignedTelecallerInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CustomerLeadCreateWithoutAssignedFranchiseInput = {
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignedTelecaller?: EmployeeCreateNestedOneWithoutLeadEntriesInput
+  }
+
+  export type CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput = {
+    id?: number
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    assignedTelecallerId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerLeadCreateOrConnectWithoutAssignedFranchiseInput = {
+    where: CustomerLeadWhereUniqueInput
+    create: XOR<CustomerLeadCreateWithoutAssignedFranchiseInput, CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput>
+  }
+
+  export type CustomerLeadCreateManyAssignedFranchiseInputEnvelope = {
+    data: CustomerLeadCreateManyAssignedFranchiseInput | CustomerLeadCreateManyAssignedFranchiseInput[]
+    skipDuplicates?: boolean
+  }
+
   export type CompanyUpsertWithoutEmployeesInput = {
     update: XOR<CompanyUpdateWithoutEmployeesInput, CompanyUncheckedUpdateWithoutEmployeesInput>
     create: XOR<CompanyCreateWithoutEmployeesInput, CompanyUncheckedCreateWithoutEmployeesInput>
@@ -22273,6 +24850,66 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Session"> | Date | string
   }
 
+  export type CustomerLeadUpsertWithWhereUniqueWithoutAssignedTelecallerInput = {
+    where: CustomerLeadWhereUniqueInput
+    update: XOR<CustomerLeadUpdateWithoutAssignedTelecallerInput, CustomerLeadUncheckedUpdateWithoutAssignedTelecallerInput>
+    create: XOR<CustomerLeadCreateWithoutAssignedTelecallerInput, CustomerLeadUncheckedCreateWithoutAssignedTelecallerInput>
+  }
+
+  export type CustomerLeadUpdateWithWhereUniqueWithoutAssignedTelecallerInput = {
+    where: CustomerLeadWhereUniqueInput
+    data: XOR<CustomerLeadUpdateWithoutAssignedTelecallerInput, CustomerLeadUncheckedUpdateWithoutAssignedTelecallerInput>
+  }
+
+  export type CustomerLeadUpdateManyWithWhereWithoutAssignedTelecallerInput = {
+    where: CustomerLeadScalarWhereInput
+    data: XOR<CustomerLeadUpdateManyMutationInput, CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerInput>
+  }
+
+  export type CustomerLeadScalarWhereInput = {
+    AND?: CustomerLeadScalarWhereInput | CustomerLeadScalarWhereInput[]
+    OR?: CustomerLeadScalarWhereInput[]
+    NOT?: CustomerLeadScalarWhereInput | CustomerLeadScalarWhereInput[]
+    id?: IntFilter<"CustomerLead"> | number
+    entryDate?: DateTimeFilter<"CustomerLead"> | Date | string
+    mobileNumber?: StringFilter<"CustomerLead"> | string
+    customerName?: StringNullableFilter<"CustomerLead"> | string | null
+    location?: StringNullableFilter<"CustomerLead"> | string | null
+    district?: StringNullableFilter<"CustomerLead"> | string | null
+    region?: StringFilter<"CustomerLead"> | string
+    systemRequirements?: StringNullableFilter<"CustomerLead"> | string | null
+    configuration?: StringNullableFilter<"CustomerLead"> | string | null
+    leadType?: EnumLeadTypeFilter<"CustomerLead"> | $Enums.LeadType
+    status?: EnumLeadStatusFilter<"CustomerLead"> | $Enums.LeadStatus
+    remarks?: StringNullableFilter<"CustomerLead"> | string | null
+    quotation?: EnumQuotationProvidedFilter<"CustomerLead"> | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFilter<"CustomerLead"> | $Enums.CallBackStatus
+    followUpDate?: DateTimeNullableFilter<"CustomerLead"> | Date | string | null
+    systemRequired?: EnumSystemRequiredNullableFilter<"CustomerLead"> | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFilter<"CustomerLead"> | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFilter<"CustomerLead"> | $Enums.SiteType
+    assignedTelecallerId?: IntNullableFilter<"CustomerLead"> | number | null
+    assignedFranchiseId?: IntNullableFilter<"CustomerLead"> | number | null
+    createdAt?: DateTimeFilter<"CustomerLead"> | Date | string
+    updatedAt?: DateTimeFilter<"CustomerLead"> | Date | string
+  }
+
+  export type CustomerLeadUpsertWithWhereUniqueWithoutAssignedFranchiseInput = {
+    where: CustomerLeadWhereUniqueInput
+    update: XOR<CustomerLeadUpdateWithoutAssignedFranchiseInput, CustomerLeadUncheckedUpdateWithoutAssignedFranchiseInput>
+    create: XOR<CustomerLeadCreateWithoutAssignedFranchiseInput, CustomerLeadUncheckedCreateWithoutAssignedFranchiseInput>
+  }
+
+  export type CustomerLeadUpdateWithWhereUniqueWithoutAssignedFranchiseInput = {
+    where: CustomerLeadWhereUniqueInput
+    data: XOR<CustomerLeadUpdateWithoutAssignedFranchiseInput, CustomerLeadUncheckedUpdateWithoutAssignedFranchiseInput>
+  }
+
+  export type CustomerLeadUpdateManyWithWhereWithoutAssignedFranchiseInput = {
+    where: CustomerLeadScalarWhereInput
+    data: XOR<CustomerLeadUpdateManyMutationInput, CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseInput>
+  }
+
   export type EmployeeCreateWithoutSessionsInput = {
     name: string
     email: string
@@ -22282,6 +24919,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     company: CompanyCreateNestedOneWithoutEmployeesInput
+    leadEntries?: CustomerLeadCreateNestedManyWithoutAssignedTelecallerInput
+    franchiseLeads?: CustomerLeadCreateNestedManyWithoutAssignedFranchiseInput
   }
 
   export type EmployeeUncheckedCreateWithoutSessionsInput = {
@@ -22294,6 +24933,8 @@ export namespace Prisma {
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
+    leadEntries?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedTelecallerInput
+    franchiseLeads?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedFranchiseInput
   }
 
   export type EmployeeCreateOrConnectWithoutSessionsInput = {
@@ -22321,6 +24962,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     company?: CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+    leadEntries?: CustomerLeadUpdateManyWithoutAssignedTelecallerNestedInput
+    franchiseLeads?: CustomerLeadUpdateManyWithoutAssignedFranchiseNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutSessionsInput = {
@@ -22333,6 +24976,148 @@ export namespace Prisma {
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    leadEntries?: CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerNestedInput
+    franchiseLeads?: CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseNestedInput
+  }
+
+  export type EmployeeCreateWithoutLeadEntriesInput = {
+    name: string
+    email: string
+    passwordHash: string
+    role?: $Enums.EmployeeRole
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutEmployeesInput
+    sessions?: SessionCreateNestedManyWithoutEmployeeInput
+    franchiseLeads?: CustomerLeadCreateNestedManyWithoutAssignedFranchiseInput
+  }
+
+  export type EmployeeUncheckedCreateWithoutLeadEntriesInput = {
+    id?: number
+    companyId: number
+    name: string
+    email: string
+    passwordHash: string
+    role?: $Enums.EmployeeRole
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutEmployeeInput
+    franchiseLeads?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedFranchiseInput
+  }
+
+  export type EmployeeCreateOrConnectWithoutLeadEntriesInput = {
+    where: EmployeeWhereUniqueInput
+    create: XOR<EmployeeCreateWithoutLeadEntriesInput, EmployeeUncheckedCreateWithoutLeadEntriesInput>
+  }
+
+  export type EmployeeCreateWithoutFranchiseLeadsInput = {
+    name: string
+    email: string
+    passwordHash: string
+    role?: $Enums.EmployeeRole
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    company: CompanyCreateNestedOneWithoutEmployeesInput
+    sessions?: SessionCreateNestedManyWithoutEmployeeInput
+    leadEntries?: CustomerLeadCreateNestedManyWithoutAssignedTelecallerInput
+  }
+
+  export type EmployeeUncheckedCreateWithoutFranchiseLeadsInput = {
+    id?: number
+    companyId: number
+    name: string
+    email: string
+    passwordHash: string
+    role?: $Enums.EmployeeRole
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutEmployeeInput
+    leadEntries?: CustomerLeadUncheckedCreateNestedManyWithoutAssignedTelecallerInput
+  }
+
+  export type EmployeeCreateOrConnectWithoutFranchiseLeadsInput = {
+    where: EmployeeWhereUniqueInput
+    create: XOR<EmployeeCreateWithoutFranchiseLeadsInput, EmployeeUncheckedCreateWithoutFranchiseLeadsInput>
+  }
+
+  export type EmployeeUpsertWithoutLeadEntriesInput = {
+    update: XOR<EmployeeUpdateWithoutLeadEntriesInput, EmployeeUncheckedUpdateWithoutLeadEntriesInput>
+    create: XOR<EmployeeCreateWithoutLeadEntriesInput, EmployeeUncheckedCreateWithoutLeadEntriesInput>
+    where?: EmployeeWhereInput
+  }
+
+  export type EmployeeUpdateToOneWithWhereWithoutLeadEntriesInput = {
+    where?: EmployeeWhereInput
+    data: XOR<EmployeeUpdateWithoutLeadEntriesInput, EmployeeUncheckedUpdateWithoutLeadEntriesInput>
+  }
+
+  export type EmployeeUpdateWithoutLeadEntriesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+    sessions?: SessionUpdateManyWithoutEmployeeNestedInput
+    franchiseLeads?: CustomerLeadUpdateManyWithoutAssignedFranchiseNestedInput
+  }
+
+  export type EmployeeUncheckedUpdateWithoutLeadEntriesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    companyId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutEmployeeNestedInput
+    franchiseLeads?: CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseNestedInput
+  }
+
+  export type EmployeeUpsertWithoutFranchiseLeadsInput = {
+    update: XOR<EmployeeUpdateWithoutFranchiseLeadsInput, EmployeeUncheckedUpdateWithoutFranchiseLeadsInput>
+    create: XOR<EmployeeCreateWithoutFranchiseLeadsInput, EmployeeUncheckedCreateWithoutFranchiseLeadsInput>
+    where?: EmployeeWhereInput
+  }
+
+  export type EmployeeUpdateToOneWithWhereWithoutFranchiseLeadsInput = {
+    where?: EmployeeWhereInput
+    data: XOR<EmployeeUpdateWithoutFranchiseLeadsInput, EmployeeUncheckedUpdateWithoutFranchiseLeadsInput>
+  }
+
+  export type EmployeeUpdateWithoutFranchiseLeadsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    company?: CompanyUpdateOneRequiredWithoutEmployeesNestedInput
+    sessions?: SessionUpdateManyWithoutEmployeeNestedInput
+    leadEntries?: CustomerLeadUpdateManyWithoutAssignedTelecallerNestedInput
+  }
+
+  export type EmployeeUncheckedUpdateWithoutFranchiseLeadsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    companyId?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: StringFieldUpdateOperationsInput | string
+    role?: EnumEmployeeRoleFieldUpdateOperationsInput | $Enums.EmployeeRole
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutEmployeeNestedInput
+    leadEntries?: CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerNestedInput
   }
 
   export type CategoryAttributeCreateManyCategoryInput = {
@@ -22708,6 +25493,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutEmployeeNestedInput
+    leadEntries?: CustomerLeadUpdateManyWithoutAssignedTelecallerNestedInput
+    franchiseLeads?: CustomerLeadUpdateManyWithoutAssignedFranchiseNestedInput
   }
 
   export type EmployeeUncheckedUpdateWithoutCompanyInput = {
@@ -22720,6 +25507,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutEmployeeNestedInput
+    leadEntries?: CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerNestedInput
+    franchiseLeads?: CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseNestedInput
   }
 
   export type EmployeeUncheckedUpdateManyWithoutCompanyInput = {
@@ -22837,6 +25626,54 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type CustomerLeadCreateManyAssignedTelecallerInput = {
+    id?: number
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    assignedFranchiseId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CustomerLeadCreateManyAssignedFranchiseInput = {
+    id?: number
+    entryDate?: Date | string
+    mobileNumber: string
+    customerName?: string | null
+    location?: string | null
+    district?: string | null
+    region?: string
+    systemRequirements?: string | null
+    configuration?: string | null
+    leadType?: $Enums.LeadType
+    status?: $Enums.LeadStatus
+    remarks?: string | null
+    quotation?: $Enums.QuotationProvided
+    callBackStatus?: $Enums.CallBackStatus
+    followUpDate?: Date | string | null
+    systemRequired?: $Enums.SystemRequired | null
+    requiredFor?: $Enums.RequiredFor
+    siteType?: $Enums.SiteType
+    assignedTelecallerId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SessionUpdateWithoutEmployeeInput = {
     id?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22853,6 +25690,148 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadUpdateWithoutAssignedTelecallerInput = {
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedFranchise?: EmployeeUpdateOneWithoutFranchiseLeadsNestedInput
+  }
+
+  export type CustomerLeadUncheckedUpdateWithoutAssignedTelecallerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    assignedFranchiseId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadUncheckedUpdateManyWithoutAssignedTelecallerInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    assignedFranchiseId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadUpdateWithoutAssignedFranchiseInput = {
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignedTelecaller?: EmployeeUpdateOneWithoutLeadEntriesNestedInput
+  }
+
+  export type CustomerLeadUncheckedUpdateWithoutAssignedFranchiseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    assignedTelecallerId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CustomerLeadUncheckedUpdateManyWithoutAssignedFranchiseInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    entryDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    mobileNumber?: StringFieldUpdateOperationsInput | string
+    customerName?: NullableStringFieldUpdateOperationsInput | string | null
+    location?: NullableStringFieldUpdateOperationsInput | string | null
+    district?: NullableStringFieldUpdateOperationsInput | string | null
+    region?: StringFieldUpdateOperationsInput | string
+    systemRequirements?: NullableStringFieldUpdateOperationsInput | string | null
+    configuration?: NullableStringFieldUpdateOperationsInput | string | null
+    leadType?: EnumLeadTypeFieldUpdateOperationsInput | $Enums.LeadType
+    status?: EnumLeadStatusFieldUpdateOperationsInput | $Enums.LeadStatus
+    remarks?: NullableStringFieldUpdateOperationsInput | string | null
+    quotation?: EnumQuotationProvidedFieldUpdateOperationsInput | $Enums.QuotationProvided
+    callBackStatus?: EnumCallBackStatusFieldUpdateOperationsInput | $Enums.CallBackStatus
+    followUpDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    systemRequired?: NullableEnumSystemRequiredFieldUpdateOperationsInput | $Enums.SystemRequired | null
+    requiredFor?: EnumRequiredForFieldUpdateOperationsInput | $Enums.RequiredFor
+    siteType?: EnumSiteTypeFieldUpdateOperationsInput | $Enums.SiteType
+    assignedTelecallerId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 
@@ -22940,6 +25919,10 @@ export namespace Prisma {
      * @deprecated Use SessionDefaultArgs instead
      */
     export type SessionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = SessionDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use CustomerLeadDefaultArgs instead
+     */
+    export type CustomerLeadArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = CustomerLeadDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

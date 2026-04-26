@@ -184,7 +184,7 @@ export default function CompanyPage() {
   useEffect(() => {
     async function init() {
       const meRes = await fetch("/api/auth/me");
-      if (!meRes.ok) { router.replace("/login"); return; }
+      if (!meRes.ok) { router.replace("/dashboard"); return; }
       const user: SessionUser = await meRes.json();
       setCurrentUser(user);
       setCredForm(emptyCredForm(user));

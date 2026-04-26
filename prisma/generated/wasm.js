@@ -287,6 +287,31 @@ exports.Prisma.SessionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CustomerLeadScalarFieldEnum = {
+  id: 'id',
+  entryDate: 'entryDate',
+  mobileNumber: 'mobileNumber',
+  customerName: 'customerName',
+  location: 'location',
+  district: 'district',
+  region: 'region',
+  systemRequirements: 'systemRequirements',
+  configuration: 'configuration',
+  leadType: 'leadType',
+  status: 'status',
+  remarks: 'remarks',
+  quotation: 'quotation',
+  callBackStatus: 'callBackStatus',
+  followUpDate: 'followUpDate',
+  systemRequired: 'systemRequired',
+  requiredFor: 'requiredFor',
+  siteType: 'siteType',
+  assignedTelecallerId: 'assignedTelecallerId',
+  assignedFranchiseId: 'assignedFranchiseId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -336,6 +361,56 @@ exports.EmployeeRole = exports.$Enums.EmployeeRole = {
   STAFF: 'STAFF'
 };
 
+exports.LeadType = exports.$Enums.LeadType = {
+  REGULAR: 'REGULAR',
+  WALKIN: 'WALKIN'
+};
+
+exports.LeadStatus = exports.$Enums.LeadStatus = {
+  PENDING: 'PENDING',
+  BUSY: 'BUSY',
+  NOT_INTERESTED: 'NOT_INTERESTED',
+  INTERESTED_REQUIRED_QUOTATION: 'INTERESTED_REQUIRED_QUOTATION',
+  QUOTATION_PROVIDED: 'QUOTATION_PROVIDED',
+  OUTSIDE_LIMIT: 'OUTSIDE_LIMIT',
+  COMPLETED: 'COMPLETED',
+  CONFIRMED_MOVED_TO_SALES: 'CONFIRMED_MOVED_TO_SALES'
+};
+
+exports.QuotationProvided = exports.$Enums.QuotationProvided = {
+  NOT_PROVIDED: 'NOT_PROVIDED',
+  PROVIDED: 'PROVIDED',
+  NA: 'NA'
+};
+
+exports.CallBackStatus = exports.$Enums.CallBackStatus = {
+  NO: 'NO',
+  YES: 'YES',
+  NA: 'NA'
+};
+
+exports.SystemRequired = exports.$Enums.SystemRequired = {
+  ON_GRID: 'ON_GRID',
+  OFF_GRID: 'OFF_GRID',
+  HYBRID: 'HYBRID',
+  SOLAR_PUMP: 'SOLAR_PUMP',
+  NA: 'NA'
+};
+
+exports.RequiredFor = exports.$Enums.RequiredFor = {
+  DOMESTIC: 'DOMESTIC',
+  COMMERCIAL: 'COMMERCIAL',
+  NA: 'NA'
+};
+
+exports.SiteType = exports.$Enums.SiteType = {
+  ROOF_TOP: 'ROOF_TOP',
+  SHED_SHEET: 'SHED_SHEET',
+  CONCRETE: 'CONCRETE',
+  GROUND_MOUNTED: 'GROUND_MOUNTED',
+  NA: 'NA'
+};
+
 exports.Prisma.ModelName = {
   Category: 'Category',
   CategoryAttribute: 'CategoryAttribute',
@@ -349,7 +424,8 @@ exports.Prisma.ModelName = {
   QuotationItem: 'QuotationItem',
   QuotationFixedCost: 'QuotationFixedCost',
   Employee: 'Employee',
-  Session: 'Session'
+  Session: 'Session',
+  CustomerLead: 'CustomerLead'
 };
 
 /**
