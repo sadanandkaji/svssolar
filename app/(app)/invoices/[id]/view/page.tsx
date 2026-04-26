@@ -37,7 +37,7 @@ type Invoice = {
     gstNumber: string | null; contact: string | null; email: string | null;
     logoUrl: string | null; bankName: string | null; branchName: string | null;
     accountName: string | null; accountNumber: string | null; ifscCode: string | null;
-    upiId: string | null;
+    upiId: string | null; upiQrUrl: string | null;
   };
   items: Array<{
     id: number; productName: string; hsnCode: string | null;
@@ -84,21 +84,20 @@ function splitGst(items: Invoice["items"], fixedCosts: Invoice["fixedCosts"]) {
   fixedCosts.filter(fc=>fc.included).forEach(fc=>proc(Number(fc.cost),fc.gstRate));
   return g;
 }
-
 function statusBadge(s: string) {
   const map: Record<string,string> = {
-    ISSUED: "bg-blue-100 text-blue-700 border-blue-200",
-    PAID: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    ISSUED:    "bg-blue-100 text-blue-700 border-blue-200",
+    PAID:      "bg-emerald-100 text-emerald-700 border-emerald-200",
     CANCELLED: "bg-red-100 text-red-700 border-red-200",
-    DRAFT: "bg-slate-100 text-slate-600 border-slate-200",
+    DRAFT:     "bg-slate-100 text-slate-600 border-slate-200",
   };
   return map[s] || map.DRAFT;
 }
 
 export default function InvoiceViewPage() {
-  const { id } = useParams<{id:string}>();
-  const router = useRouter();
-  const [inv, setInv] = useState<Invoice|null>(null);
+  const { id }  = useParams<{id:string}>();
+  const router  = useRouter();
+  const [inv,     setInv]     = useState<Invoice|null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(()=>{
@@ -120,27 +119,20 @@ export default function InvoiceViewPage() {
     </div>
   );
 
-  const gstGroups = splitGst(inv.items, inv.fixedCosts);
+  const gstGroups   = splitGst(inv.items, inv.fixedCosts);
+  const hasBankInfo = !!(inv.company.bankName || inv.company.accountNumber);
+  const hasUpi      = !!(inv.company.upiId || inv.company.upiQrUrl);
+
   const allItems = [
     ...inv.items.map((it,i)=>({
-      sno: i+1,
-      name: it.productName,
-      hsn: it.hsnCode || "—",
-      desc: it.description,
-      qty: Number(it.quantity),
-      unitPrice: Number(it.unitPrice),
-      gstRate: Number(it.gstRate),
+      sno: i+1, name: it.productName, hsn: it.hsnCode||"—", desc: it.description,
+      qty: Number(it.quantity), unitPrice: Number(it.unitPrice), gstRate: Number(it.gstRate),
       gstAmt: Number(it.unitPrice)*Number(it.quantity)*(Number(it.gstRate)/100),
       baseTotal: Number(it.unitPrice)*Number(it.quantity),
     })),
     ...inv.fixedCosts.filter(fc=>fc.included).map((fc,i)=>({
-      sno: inv.items.length+i+1,
-      name: fc.label,
-      hsn: fc.hsnCode || "—",
-      desc: fc.rateNote||null,
-      qty: 1,
-      unitPrice: Number(fc.cost),
-      gstRate: Number(fc.gstRate),
+      sno: inv.items.length+i+1, name: fc.label, hsn: fc.hsnCode||"—", desc: fc.rateNote||null,
+      qty: 1, unitPrice: Number(fc.cost), gstRate: Number(fc.gstRate),
       gstAmt: Number(fc.cost)*(Number(fc.gstRate)/100),
       baseTotal: Number(fc.cost),
     })),
@@ -152,14 +144,12 @@ export default function InvoiceViewPage() {
   const discountAmt  = Number(inv.discountAmount);
   const roundOff     = roundedPrice-(taxableTotal+gstTotal-discountAmt);
 
-  // Bank details rows — now includes UPI ID
   const bankRows: [string, string | null][] = [
     ["Account Name", inv.company.accountName],
     ["Account No.",  inv.company.accountNumber],
     ["Bank",         inv.company.bankName],
     ["Branch",       inv.company.branchName],
     ["IFSC",         inv.company.ifscCode],
-    ["UPI ID",       inv.company.upiId],
   ];
 
   return (
@@ -171,23 +161,17 @@ export default function InvoiceViewPage() {
           <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold uppercase ${statusBadge(inv.status)}`}>
             {inv.status}
           </span>
-          <button
-            onClick={()=>router.push(`/invoices/${id}/edit?edit=${id}`)}
-            className="bg-amber-500 hover:bg-amber-600 px-4 py-1.5 rounded text-sm font-medium transition"
-          >
+          <button onClick={()=>router.push(`/invoices/${id}/edit`)}
+            className="bg-amber-500 hover:bg-amber-600 px-4 py-1.5 rounded text-sm font-medium transition">
             ✏️ Edit
           </button>
-          <button
-            onClick={()=>window.print()}
-            className="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded text-sm font-medium transition"
-          >
+          <button onClick={()=>window.print()}
+            className="bg-emerald-600 hover:bg-emerald-700 px-4 py-1.5 rounded text-sm font-medium transition">
             🖨️ Print / PDF
           </button>
           {inv.quotation && (
-            <Link
-              href={`/quotations/${inv.quotationId}/preview`}
-              className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded text-sm font-medium transition"
-            >
+            <Link href={`/quotations/${inv.quotationId}/preview`}
+              className="bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded text-sm font-medium transition">
               📄 View Quotation
             </Link>
           )}
@@ -209,7 +193,7 @@ export default function InvoiceViewPage() {
           <div className="flex-1">
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">{inv.company.name}</h1>
             {inv.company.ownerName && <p className="text-sm text-slate-600 mt-0.5">Proprietor: {inv.company.ownerName}</p>}
-            {inv.company.address && <p className="text-xs text-slate-600 mt-1 max-w-lg leading-relaxed">{inv.company.address}</p>}
+            {inv.company.address   && <p className="text-xs text-slate-600 mt-1 max-w-lg leading-relaxed">{inv.company.address}</p>}
             <div className="flex flex-wrap gap-x-4 mt-1.5 text-xs text-slate-700">
               {inv.company.contact   && <span><strong>Mobile:</strong> {inv.company.contact}</span>}
               {inv.company.gstNumber && <span><strong>GSTIN:</strong> {inv.company.gstNumber}</span>}
@@ -244,15 +228,14 @@ export default function InvoiceViewPage() {
                 <span className="font-medium text-slate-700">{inv.preparedBy}</span>
               </div>
             )}
-            {/* System config if present */}
             {(inv.systemType || inv.systemSizeKw) && (
               <div className="mt-3 pt-2 border-t border-slate-100">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-1.5">System Configuration</p>
                 <div className="space-y-0.5 text-xs">
-                  {inv.systemType    && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">System:</span><span className="text-slate-700">{inv.systemType}</span></div>}
-                  {inv.systemSizeKw  && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">Size:</span><span className="text-slate-700">{inv.systemSizeKw} KW</span></div>}
-                  {inv.panelType     && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">Panel:</span><span className="text-slate-700">{inv.panelType}{inv.panelWattage ? ` · ${inv.panelWattage}W` : ""}{inv.panelCount ? ` × ${inv.panelCount}` : ""}</span></div>}
-                  {inv.phase         && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">Phase:</span><span className="text-slate-700">{inv.phase}</span></div>}
+                  {inv.systemType   && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">System:</span><span className="text-slate-700">{inv.systemType}</span></div>}
+                  {inv.systemSizeKw && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">Size:</span><span className="text-slate-700">{inv.systemSizeKw} KW</span></div>}
+                  {inv.panelType    && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">Panel:</span><span className="text-slate-700">{inv.panelType}{inv.panelWattage?` · ${inv.panelWattage}W`:""}{inv.panelCount?` × ${inv.panelCount}`:""}</span></div>}
+                  {inv.phase        && <div className="flex gap-2"><span className="font-medium text-slate-600 w-24 shrink-0">Phase:</span><span className="text-slate-700">{inv.phase}</span></div>}
                 </div>
               </div>
             )}
@@ -310,12 +293,13 @@ export default function InvoiceViewPage() {
 
         {/* Tax Summary + Payment */}
         <div className="grid grid-cols-2 gap-0 border-t border-slate-200">
-          {/* Left: Payment */}
+
+          {/* Left: Payment details */}
           <div className="px-6 py-5 border-r border-slate-200">
             <p className="font-bold text-slate-800 mb-3 text-sm uppercase tracking-wide">Payment Details</p>
             <div className="space-y-1.5 text-sm">
               {inv.paymentType && (
-                <div className="flex gap-2"><span className="text-slate-500 w-32 shrink-0">Payment Mode:</span><span className="font-medium">{inv.paymentType}</span></div>
+                <div className="flex gap-2"><span className="text-slate-500 w-32 shrink-0">Payment Mode:</span><span className="font-semibold text-slate-800">{inv.paymentType}</span></div>
               )}
               {Number(inv.advancePayment)>0 && (
                 <div className="flex gap-2"><span className="text-slate-500 w-32 shrink-0">Advance Paid:</span><span className="font-medium">₹ {fmt(inv.advancePayment)}</span></div>
@@ -328,18 +312,47 @@ export default function InvoiceViewPage() {
               )}
             </div>
 
-            {/* Bank Details — includes UPI ID */}
-            {(inv.company.bankName || inv.company.accountNumber || inv.company.upiId) && (
+            {/* ── Bank Details: always show if present ── */}
+            {hasBankInfo && (
               <div className="mt-4 pt-3 border-t border-slate-100">
                 <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Bank Details</p>
-                {bankRows.filter(([, val]) => val).map(([label, val]) => (
+                {bankRows.filter(([,v])=>v).map(([label,val])=>(
                   <div key={label} className="flex gap-2 text-xs mb-1">
                     <span className="text-slate-500 w-24 shrink-0">{label}:</span>
-                    <span className={`font-medium text-slate-800 font-mono${label === "UPI ID" ? " text-violet-700" : ""}`}>
-                      {val}
-                    </span>
+                    <span className="font-medium text-slate-800 font-mono">{val}</span>
                   </div>
                 ))}
+                {/* UPI ID as text row below bank details */}
+                {inv.company.upiId && (
+                  <div className="flex gap-2 text-xs mb-1 pt-1 mt-1 border-t border-slate-100">
+                    <span className="text-slate-500 w-24 shrink-0">UPI ID:</span>
+                    <span className="font-medium font-mono text-violet-700">{inv.company.upiId}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── UPI QR Code: always show whenever upiQrUrl is set ── */}
+            {inv.company.upiQrUrl && (
+              <div className="mt-4 pt-3 border-t border-slate-100">
+                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">UPI QR Code</p>
+                <div className="flex items-start gap-3">
+                  <div className="shrink-0 text-center">
+                    <img
+                      src={inv.company.upiQrUrl}
+                      alt="UPI QR Code"
+                      className="h-24 w-24 object-contain rounded-lg border border-violet-200 bg-white p-1"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-0.5">Scan to Pay</p>
+                  </div>
+                  {inv.company.upiId && (
+                    <div className="flex-1 min-w-0 pt-1">
+                      <p className="text-xs text-slate-500 mb-0.5">UPI ID</p>
+                      <p className="font-mono font-bold text-violet-700 text-sm break-all">{inv.company.upiId}</p>
+                      <p className="text-xs text-slate-400 mt-1">Pay using PhonePe, GPay, Paytm or any UPI app</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
@@ -350,7 +363,6 @@ export default function InvoiceViewPage() {
               </div>
             )}
 
-            {/* Total in words */}
             <div className="mt-4 pt-3 border-t border-slate-100">
               <p className="text-xs font-bold text-slate-700">Total Amount (in words)</p>
               <p className="text-xs text-slate-600 mt-0.5 italic">{numberToWords(roundedPrice)}</p>
@@ -363,7 +375,7 @@ export default function InvoiceViewPage() {
               <tbody className="divide-y divide-slate-100">
                 <tr><td className="py-1.5 text-slate-600">Taxable Amount</td><td className="py-1.5 text-right font-mono font-medium">₹ {fmt(taxableTotal)}</td></tr>
                 {Object.entries(gstGroups).map(([rate,vals])=>{
-                  const half = Number(rate)/2;
+                  const half=Number(rate)/2;
                   return <React.Fragment key={rate}>
                     <tr><td className="py-1.5 text-slate-600">CGST @{half}%</td><td className="py-1.5 text-right font-mono font-medium">₹ {fmt(vals.cgst)}</td></tr>
                     <tr><td className="py-1.5 text-slate-600">SGST @{half}%</td><td className="py-1.5 text-right font-mono font-medium">₹ {fmt(vals.sgst)}</td></tr>
@@ -377,8 +389,6 @@ export default function InvoiceViewPage() {
                 )}
               </tbody>
             </table>
-
-            {/* Total box */}
             <div className="border-t-2 border-violet-700 mt-2 pt-3 flex justify-between items-center">
               <span className="font-bold text-slate-800 text-base">Total Amount</span>
               <span className="font-bold text-violet-700 text-xl font-mono">₹ {fmt(roundedPrice)}</span>

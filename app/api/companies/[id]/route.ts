@@ -8,12 +8,10 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function GET(_req: NextRequest, { params }: Ctx) {
   const user = await requireAuth();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   const { id } = await params;
   const company = await prisma.company.findUnique({ where: { id: Number(id) } });
-  if (!company || company.id !== user.companyId) {
+  if (!company || company.id !== user.companyId)
     return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
   return NextResponse.json(company);
 }
 
@@ -43,7 +41,8 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
         accountName:   body.accountName?.trim()   || null,
         accountNumber: body.accountNumber?.trim() || null,
         ifscCode:      body.ifscCode?.trim()      || null,
-        upiId:         body.upiId?.trim()         || null,  // ← new
+        upiId:         body.upiId?.trim()         || null,
+        upiQrUrl:      body.upiQrUrl?.trim()      || null,  // ← new
       },
     });
     return NextResponse.json(company);
@@ -66,12 +65,9 @@ export async function DELETE(_req: NextRequest, { params }: Ctx) {
     if (numId !== user.companyId) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const quotationCount = await prisma.quotation.count({ where: { companyId: numId } });
-    if (quotationCount > 0) {
-      return NextResponse.json(
-        { error: `Cannot delete — this company has ${quotationCount} quotation(s) linked to it.` },
-        { status: 409 }
-      );
-    }
+    if (quotationCount > 0)
+      return NextResponse.json({ error: `Cannot delete — this company has ${quotationCount} quotation(s) linked to it.` }, { status: 409 });
+
     await prisma.company.delete({ where: { id: numId } });
     return NextResponse.json({ success: true });
   } catch (err: any) {

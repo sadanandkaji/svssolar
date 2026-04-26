@@ -9865,6 +9865,7 @@ export namespace Prisma {
     accountNumber: string | null
     ifscCode: string | null
     upiId: string | null
+    upiQrUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9884,6 +9885,7 @@ export namespace Prisma {
     accountNumber: string | null
     ifscCode: string | null
     upiId: string | null
+    upiQrUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9903,6 +9905,7 @@ export namespace Prisma {
     accountNumber: number
     ifscCode: number
     upiId: number
+    upiQrUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9932,6 +9935,7 @@ export namespace Prisma {
     accountNumber?: true
     ifscCode?: true
     upiId?: true
+    upiQrUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9951,6 +9955,7 @@ export namespace Prisma {
     accountNumber?: true
     ifscCode?: true
     upiId?: true
+    upiQrUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9970,6 +9975,7 @@ export namespace Prisma {
     accountNumber?: true
     ifscCode?: true
     upiId?: true
+    upiQrUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -10076,6 +10082,7 @@ export namespace Prisma {
     accountNumber: string | null
     ifscCode: string | null
     upiId: string | null
+    upiQrUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: CompanyCountAggregateOutputType | null
@@ -10114,6 +10121,7 @@ export namespace Prisma {
     accountNumber?: boolean
     ifscCode?: boolean
     upiId?: boolean
+    upiQrUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     quotations?: boolean | Company$quotationsArgs<ExtArgs>
@@ -10137,6 +10145,7 @@ export namespace Prisma {
     accountNumber?: boolean
     ifscCode?: boolean
     upiId?: boolean
+    upiQrUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["company"]>
@@ -10156,6 +10165,7 @@ export namespace Prisma {
     accountNumber?: boolean
     ifscCode?: boolean
     upiId?: boolean
+    upiQrUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
@@ -10190,6 +10200,7 @@ export namespace Prisma {
       accountNumber: string | null
       ifscCode: string | null
       upiId: string | null
+      upiQrUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["company"]>
@@ -10602,6 +10613,7 @@ export namespace Prisma {
     readonly accountNumber: FieldRef<"Company", 'String'>
     readonly ifscCode: FieldRef<"Company", 'String'>
     readonly upiId: FieldRef<"Company", 'String'>
+    readonly upiQrUrl: FieldRef<"Company", 'String'>
     readonly createdAt: FieldRef<"Company", 'DateTime'>
     readonly updatedAt: FieldRef<"Company", 'DateTime'>
   }
@@ -21387,6 +21399,7 @@ export namespace Prisma {
     accountNumber: 'accountNumber',
     ifscCode: 'ifscCode',
     upiId: 'upiId',
+    upiQrUrl: 'upiQrUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -22385,6 +22398,7 @@ export namespace Prisma {
     accountNumber?: StringNullableFilter<"Company"> | string | null
     ifscCode?: StringNullableFilter<"Company"> | string | null
     upiId?: StringNullableFilter<"Company"> | string | null
+    upiQrUrl?: StringNullableFilter<"Company"> | string | null
     createdAt?: DateTimeFilter<"Company"> | Date | string
     updatedAt?: DateTimeFilter<"Company"> | Date | string
     quotations?: QuotationListRelationFilter
@@ -22407,6 +22421,7 @@ export namespace Prisma {
     accountNumber?: SortOrderInput | SortOrder
     ifscCode?: SortOrderInput | SortOrder
     upiId?: SortOrderInput | SortOrder
+    upiQrUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     quotations?: QuotationOrderByRelationAggregateInput
@@ -22432,6 +22447,7 @@ export namespace Prisma {
     accountNumber?: StringNullableFilter<"Company"> | string | null
     ifscCode?: StringNullableFilter<"Company"> | string | null
     upiId?: StringNullableFilter<"Company"> | string | null
+    upiQrUrl?: StringNullableFilter<"Company"> | string | null
     createdAt?: DateTimeFilter<"Company"> | Date | string
     updatedAt?: DateTimeFilter<"Company"> | Date | string
     quotations?: QuotationListRelationFilter
@@ -22454,6 +22470,7 @@ export namespace Prisma {
     accountNumber?: SortOrderInput | SortOrder
     ifscCode?: SortOrderInput | SortOrder
     upiId?: SortOrderInput | SortOrder
+    upiQrUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: CompanyCountOrderByAggregateInput
@@ -22481,6 +22498,7 @@ export namespace Prisma {
     accountNumber?: StringNullableWithAggregatesFilter<"Company"> | string | null
     ifscCode?: StringNullableWithAggregatesFilter<"Company"> | string | null
     upiId?: StringNullableWithAggregatesFilter<"Company"> | string | null
+    upiQrUrl?: StringNullableWithAggregatesFilter<"Company"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Company"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Company"> | Date | string
   }
@@ -23980,6 +23998,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotations?: QuotationCreateNestedManyWithoutCompanyInput
@@ -24002,6 +24021,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
@@ -24023,6 +24043,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotations?: QuotationUpdateManyWithoutCompanyNestedInput
@@ -24045,6 +24066,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
@@ -24067,6 +24089,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -24085,6 +24108,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24104,6 +24128,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -25900,6 +25925,7 @@ export namespace Prisma {
     accountNumber?: SortOrder
     ifscCode?: SortOrder
     upiId?: SortOrder
+    upiQrUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25923,6 +25949,7 @@ export namespace Prisma {
     accountNumber?: SortOrder
     ifscCode?: SortOrder
     upiId?: SortOrder
+    upiQrUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -25942,6 +25969,7 @@ export namespace Prisma {
     accountNumber?: SortOrder
     ifscCode?: SortOrder
     upiId?: SortOrder
+    upiQrUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -29572,6 +29600,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     employees?: EmployeeCreateNestedManyWithoutCompanyInput
@@ -29593,6 +29622,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     employees?: EmployeeUncheckedCreateNestedManyWithoutCompanyInput
@@ -29771,6 +29801,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUpdateManyWithoutCompanyNestedInput
@@ -29792,6 +29823,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     employees?: EmployeeUncheckedUpdateManyWithoutCompanyNestedInput
@@ -30339,6 +30371,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotations?: QuotationCreateNestedManyWithoutCompanyInput
@@ -30360,6 +30393,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
@@ -30544,6 +30578,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotations?: QuotationUpdateManyWithoutCompanyNestedInput
@@ -30565,6 +30600,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput
@@ -30958,6 +30994,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotations?: QuotationCreateNestedManyWithoutCompanyInput
@@ -30979,6 +31016,7 @@ export namespace Prisma {
     accountNumber?: string | null
     ifscCode?: string | null
     upiId?: string | null
+    upiQrUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     quotations?: QuotationUncheckedCreateNestedManyWithoutCompanyInput
@@ -31151,6 +31189,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotations?: QuotationUpdateManyWithoutCompanyNestedInput
@@ -31172,6 +31211,7 @@ export namespace Prisma {
     accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
     ifscCode?: NullableStringFieldUpdateOperationsInput | string | null
     upiId?: NullableStringFieldUpdateOperationsInput | string | null
+    upiQrUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     quotations?: QuotationUncheckedUpdateManyWithoutCompanyNestedInput

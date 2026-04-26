@@ -158,7 +158,8 @@ model Company {
   accountName   String?
   accountNumber String?
   ifscCode      String?
-  upiId         String?     // ← UPI ID for payments
+  upiId         String?     // UPI ID text (e.g. svssolar@okaxis)
+  upiQrUrl      String?     // UPI QR code image URL
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
@@ -212,7 +213,7 @@ model Quotation {
   company    Company              @relation(fields: [companyId], references: [id])
   items      QuotationItem[]
   fixedCosts QuotationFixedCost[]
-  invoice    Invoice?             // auto-created when status = SAVED
+  invoice    Invoice?
 
   @@map("quotations")
 }
@@ -266,7 +267,6 @@ model Invoice {
   invoiceNumber String        @unique
   invoiceDate   DateTime      @default(now())
 
-  // Linked to quotation if auto-created (null = standalone invoice)
   quotationId   Int?          @unique
   quotation     Quotation?    @relation(fields: [quotationId], references: [id], onDelete: SetNull)
 
@@ -431,28 +431,28 @@ enum SystemRequired {
 }
 
 model CustomerLead {
-  id                 Int               @id @default(autoincrement())
-  entryDate          DateTime          @default(now())
-  mobileNumber       String
-  customerName       String?
-  location           String?
-  district           String?
-  region             String            @default("North")
-  systemRequirements String?
-  configuration      String?
-  leadType           LeadType          @default(REGULAR)
-  status             LeadStatus        @default(PENDING)
-  remarks            String?
-  quotation          QuotationProvided @default(NOT_PROVIDED)
-  callBackStatus     CallBackStatus    @default(NO)
-  followUpDate       DateTime?
-  systemRequired     SystemRequired?
-  requiredFor        RequiredFor       @default(DOMESTIC)
-  siteType           SiteType          @default(ROOF_TOP)
+  id                   Int               @id @default(autoincrement())
+  entryDate            DateTime          @default(now())
+  mobileNumber         String
+  customerName         String?
+  location             String?
+  district             String?
+  region               String            @default("North")
+  systemRequirements   String?
+  configuration        String?
+  leadType             LeadType          @default(REGULAR)
+  status               LeadStatus        @default(PENDING)
+  remarks              String?
+  quotation            QuotationProvided @default(NOT_PROVIDED)
+  callBackStatus       CallBackStatus    @default(NO)
+  followUpDate         DateTime?
+  systemRequired       SystemRequired?
+  requiredFor          RequiredFor       @default(DOMESTIC)
+  siteType             SiteType          @default(ROOF_TOP)
   assignedTelecallerId Int?
   assignedFranchiseId  Int?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
   assignedTelecaller Employee? @relation("AssignedTelecaller", fields: [assignedTelecallerId], references: [id])
   assignedFranchise  Employee? @relation("AssignedFranchise", fields: [assignedFranchiseId], references: [id])

@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-// ── Types ──────────────────────────────────────────────────────────────────────
 type Lead = {
   id: number;
   entryDate: string;
@@ -24,38 +23,35 @@ type Lead = {
   requiredFor: string;
   siteType: string;
   assignedTelecaller: { id: number; name: string } | null;
-  assignedFranchise: { id: number; name: string } | null;
+  assignedFranchise:  { id: number; name: string } | null;
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  PENDING: "Pending",
-  BUSY: "Busy",
-  NOT_INTERESTED: "Not Interested",
-  INTERESTED_REQUIRED_QUOTATION: "Interested - Required Quotation",
-  QUOTATION_PROVIDED: "Quotation Provided",
-  OUTSIDE_LIMIT: "Out Side our limit",
-  COMPLETED: "Completed",
-  CONFIRMED_MOVED_TO_SALES: "Confirmed and moved to sales",
+  PENDING:                      "Pending",
+  BUSY:                         "Busy",
+  NOT_INTERESTED:               "Not Interested",
+  INTERESTED_REQUIRED_QUOTATION:"Interested - Required Quotation",
+  QUOTATION_PROVIDED:           "Quotation Provided",
+  OUTSIDE_LIMIT:                "Out Side our limit",
+  COMPLETED:                    "Completed",
+  CONFIRMED_MOVED_TO_SALES:     "Confirmed and moved to sales",
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  PENDING: "bg-yellow-100 text-yellow-700",
-  BUSY: "bg-orange-100 text-orange-700",
-  NOT_INTERESTED: "bg-red-100 text-red-700",
-  INTERESTED_REQUIRED_QUOTATION: "bg-blue-100 text-blue-700",
-  QUOTATION_PROVIDED: "bg-purple-100 text-purple-700",
-  OUTSIDE_LIMIT: "bg-gray-100 text-gray-600",
-  COMPLETED: "bg-green-100 text-green-700",
-  CONFIRMED_MOVED_TO_SALES: "bg-emerald-100 text-emerald-700",
+  PENDING:                      "bg-yellow-100 text-yellow-700",
+  BUSY:                         "bg-orange-100 text-orange-700",
+  NOT_INTERESTED:               "bg-red-100 text-red-700",
+  INTERESTED_REQUIRED_QUOTATION:"bg-blue-100 text-blue-700",
+  QUOTATION_PROVIDED:           "bg-purple-100 text-purple-700",
+  OUTSIDE_LIMIT:                "bg-gray-100 text-gray-600",
+  COMPLETED:                    "bg-green-100 text-green-700",
+  CONFIRMED_MOVED_TO_SALES:     "bg-emerald-100 text-emerald-700",
 };
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
-
-function todayISO() {
-  return new Date().toISOString().slice(0, 10);
-}
+function todayISO() { return new Date().toISOString().slice(0, 10); }
 
 // ── Edit Modal ─────────────────────────────────────────────────────────────────
 function EditLeadModal({ lead, employees, onClose, onSaved }: {
@@ -65,20 +61,22 @@ function EditLeadModal({ lead, employees, onClose, onSaved }: {
   onSaved: () => void;
 }) {
   const [form, setForm] = useState({
-    status: lead.status,
-    remarks: lead.remarks || "",
-    quotation: lead.quotation,
-    callBackStatus: lead.callBackStatus,
-    followUpDate: lead.followUpDate ? lead.followUpDate.slice(0, 10) : "",
-    systemRequired: lead.systemRequired || "",
-    requiredFor: lead.requiredFor,
-    siteType: lead.siteType,
-    configuration: lead.configuration || "",
-    location: lead.location || "",
-    district: lead.district || "",
-    customerName: lead.customerName || "",
+    status:              lead.status,
+    remarks:             lead.remarks       || "",
+    quotation:           lead.quotation,
+    callBackStatus:      lead.callBackStatus,
+    followUpDate:        lead.followUpDate ? lead.followUpDate.slice(0, 10) : "",
+    systemRequired:      lead.systemRequired || "",
+    requiredFor:         lead.requiredFor,
+    siteType:            lead.siteType,
+    configuration:       lead.configuration || "",
+    location:            lead.location      || "",
+    district:            lead.district      || "",
+    customerName:        lead.customerName  || "",
+    mobileNumber:        lead.mobileNumber,
+    systemRequirements:  lead.systemRequirements || "",
     assignedTelecallerId: lead.assignedTelecaller?.id?.toString() || "",
-    assignedFranchiseId: lead.assignedFranchise?.id?.toString() || "",
+    assignedFranchiseId:  lead.assignedFranchise?.id?.toString()  || "",
   });
   const [saving, setSaving] = useState(false);
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
@@ -91,10 +89,10 @@ function EditLeadModal({ lead, employees, onClose, onSaved }: {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
-          systemRequired: form.systemRequired || null,
-          followUpDate: form.followUpDate || null,
+          systemRequired:       form.systemRequired       || null,
+          followUpDate:         form.followUpDate         || null,
           assignedTelecallerId: form.assignedTelecallerId || null,
-          assignedFranchiseId: form.assignedFranchiseId || null,
+          assignedFranchiseId:  form.assignedFranchiseId  || null,
         }),
       });
       onSaved();
@@ -109,12 +107,16 @@ function EditLeadModal({ lead, employees, onClose, onSaved }: {
           <button onClick={onClose} className="text-white/70 hover:text-white text-xl">✕</button>
         </div>
         <div className="p-6 grid grid-cols-2 gap-4 text-sm">
+          <div><label className="block font-medium text-slate-600 mb-1">Mobile Number</label>
+            <input className="w-full border rounded px-3 py-2" value={form.mobileNumber} onChange={e => set("mobileNumber", e.target.value)} /></div>
           <div><label className="block font-medium text-slate-600 mb-1">Customer Name</label>
             <input className="w-full border rounded px-3 py-2" value={form.customerName} onChange={e => set("customerName", e.target.value)} /></div>
           <div><label className="block font-medium text-slate-600 mb-1">Location</label>
             <input className="w-full border rounded px-3 py-2" value={form.location} onChange={e => set("location", e.target.value)} /></div>
           <div><label className="block font-medium text-slate-600 mb-1">District</label>
             <input className="w-full border rounded px-3 py-2" value={form.district} onChange={e => set("district", e.target.value)} /></div>
+          <div><label className="block font-medium text-slate-600 mb-1">System Requirements</label>
+            <input className="w-full border rounded px-3 py-2" value={form.systemRequirements} onChange={e => set("systemRequirements", e.target.value)} /></div>
           <div><label className="block font-medium text-slate-600 mb-1">Configuration (KW/HP)</label>
             <input className="w-full border rounded px-3 py-2" value={form.configuration} onChange={e => set("configuration", e.target.value)} /></div>
           <div><label className="block font-medium text-slate-600 mb-1">Status</label>
@@ -158,16 +160,7 @@ function EditLeadModal({ lead, employees, onClose, onSaved }: {
               <option value="GROUND_MOUNTED">Ground Mounted</option>
               <option value="NA">NA</option>
             </select></div>
-          <div><label className="block font-medium text-slate-600 mb-1">Assign Telecaller</label>
-            <select className="w-full border rounded px-3 py-2" value={form.assignedTelecallerId} onChange={e => set("assignedTelecallerId", e.target.value)}>
-              <option value="">-- Select --</option>
-              {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select></div>
-          <div><label className="block font-medium text-slate-600 mb-1">Assign Franchise</label>
-            <select className="w-full border rounded px-3 py-2" value={form.assignedFranchiseId} onChange={e => set("assignedFranchiseId", e.target.value)}>
-              <option value="">-- Select --</option>
-              {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select></div>
+          
           <div className="col-span-2"><label className="block font-medium text-slate-600 mb-1">Remarks</label>
             <textarea className="w-full border rounded px-3 py-2 resize-none" rows={3} value={form.remarks} onChange={e => set("remarks", e.target.value)} /></div>
         </div>
@@ -182,7 +175,7 @@ function EditLeadModal({ lead, employees, onClose, onSaved }: {
   );
 }
 
-// ── Table ──────────────────────────────────────────────────────────────────────
+// ── Leads Table ────────────────────────────────────────────────────────────────
 function LeadsTable({ leads, employees, onEdit, onDelete, loading, emptyMsg }: {
   leads: Lead[];
   employees: { id: number; name: string }[];
@@ -197,9 +190,7 @@ function LeadsTable({ leads, employees, onEdit, onDelete, loading, emptyMsg }: {
       <table className="min-w-full text-xs">
         <thead>
           <tr className="border-b border-slate-200 bg-slate-50">
-            {cols.map(c => (
-              <th key={c} className="px-3 py-2.5 text-left font-semibold text-slate-600 whitespace-nowrap">{c}</th>
-            ))}
+            {cols.map(c => <th key={c} className="px-3 py-2.5 text-left font-semibold text-slate-600 whitespace-nowrap">{c}</th>)}
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -226,14 +217,12 @@ function LeadsTable({ leads, employees, onEdit, onDelete, loading, emptyMsg }: {
               <td className="px-3 py-2.5 whitespace-nowrap text-slate-600">{l.followUpDate ? formatDate(l.followUpDate) : "—"}</td>
               <td className="px-3 py-2.5">
                 <div className="flex gap-1">
-                  <button onClick={() => onEdit(l)}
-                    className="flex h-6 w-6 items-center justify-center rounded bg-amber-500 text-white hover:bg-amber-600" title="Edit">
+                  <button onClick={() => onEdit(l)} className="flex h-6 w-6 items-center justify-center rounded bg-amber-500 text-white hover:bg-amber-600" title="Edit">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
                       <path d="M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.629-.629z" />
                     </svg>
                   </button>
-                  <button onClick={() => onDelete(l.id)}
-                    className="flex h-6 w-6 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600" title="Delete">
+                  <button onClick={() => onDelete(l.id)} className="flex h-6 w-6 items-center justify-center rounded bg-red-500 text-white hover:bg-red-600" title="Delete">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3 w-3">
                       <path fillRule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4z" clipRule="evenodd" />
                     </svg>
@@ -250,15 +239,12 @@ function LeadsTable({ leads, employees, onEdit, onDelete, loading, emptyMsg }: {
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function LeadsDashboard() {
-  // Server now splits for us — store them separately
   const [followUpLeads, setFollowUpLeads] = useState<Lead[]>([]);
   const [regularLeads,  setRegularLeads]  = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading,       setLoading]       = useState(false);
 
-  // ── Date range filter (applies only to regularLeads) ──
-  const [fromDate, setFromDate] = useState(todayISO());
-  const [toDate,   setToDate]   = useState(todayISO());
-
+  const [fromDate,     setFromDate]     = useState(todayISO());
+  const [toDate,       setToDate]       = useState(todayISO());
   const [search,       setSearch]       = useState("");
   const [searchInput,  setSearchInput]  = useState("");
   const [followupOpen, setFollowupOpen] = useState(true);
@@ -281,7 +267,6 @@ export default function LeadsDashboard() {
       if (search)   params.set("search",   search);
       const res  = await fetch(`/api/leads?${params}`);
       const data = await res.json();
-      // Use pre-split arrays from the API
       setFollowUpLeads(data.followUpLeads || []);
       setRegularLeads(data.regularLeads  || []);
     } catch { showToast("err", "Failed to load leads"); }
@@ -297,26 +282,22 @@ export default function LeadsDashboard() {
       .catch(() => {});
   }, []);
 
-  // All leads combined (for CSV export)
   const allLeads = useMemo(() => [...followUpLeads, ...regularLeads], [followUpLeads, regularLeads]);
 
-  // Quick range presets
   function applyPreset(preset: "today" | "yesterday" | "week" | "month" | "all") {
     const now = new Date();
     if (preset === "today") {
-      const t = todayISO();
-      setFromDate(t); setToDate(t);
+      const t = todayISO(); setFromDate(t); setToDate(t);
     } else if (preset === "yesterday") {
       const y = new Date(now); y.setDate(y.getDate() - 1);
-      const yISO = y.toISOString().slice(0, 10);
-      setFromDate(yISO); setToDate(yISO);
+      const iso = y.toISOString().slice(0, 10); setFromDate(iso); setToDate(iso);
     } else if (preset === "week") {
       const w = new Date(now); w.setDate(w.getDate() - 6);
       setFromDate(w.toISOString().slice(0, 10)); setToDate(todayISO());
     } else if (preset === "month") {
       const m = new Date(now.getFullYear(), now.getMonth(), 1);
       setFromDate(m.toISOString().slice(0, 10)); setToDate(todayISO());
-    } else if (preset === "all") {
+    } else {
       setFromDate(""); setToDate("");
     }
   }
@@ -330,39 +311,30 @@ export default function LeadsDashboard() {
 
   function formatDateForExcel(d: string) {
     const dt = new Date(d);
-    const dd   = String(dt.getDate()).padStart(2, "0");
-    const mm   = String(dt.getMonth() + 1).padStart(2, "0");
-    const yyyy = dt.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
+    return `${String(dt.getDate()).padStart(2,"0")}/${String(dt.getMonth()+1).padStart(2,"0")}/${dt.getFullYear()}`;
   }
 
-  function exportCSV(leads: Lead[]) {
-    const header = ["Entry Date", "Mobile Number", "Customer Name", "Location", "District", "System Required", "Config (KW/HP)", "Status", "Remarks", "Telecaller", "Follow Up Date"];
-    const rows = leads.map(l => [
+  function exportCSV() {
+    const header = ["Entry Date","Mobile Number","Customer Name","Location","District","System Required","Config (KW/HP)","Status","Remarks","Telecaller","Follow Up Date"];
+    const rows = allLeads.map(l => [
       formatDateForExcel(l.entryDate),
       "\t" + l.mobileNumber,
       l.customerName || "",
-      l.location || "",
-      l.district || "",
-      l.systemRequirements || (l.systemRequired ? l.systemRequired.replace(/_/g, " ") : ""),
+      l.location     || "",
+      l.district     || "",
+      l.systemRequirements || (l.systemRequired ? l.systemRequired.replace(/_/g," ") : ""),
       l.configuration || "",
       STATUS_LABELS[l.status] || l.status,
       l.remarks || "",
       l.assignedTelecaller?.name || "",
       l.followUpDate ? formatDateForExcel(l.followUpDate) : "",
     ]);
-
     const BOM = "\uFEFF";
-    const csv = BOM + [header, ...rows]
-      .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const csv = BOM + [header, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
     const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
     a.download = `leads_${fromDate || "all"}_to_${toDate || "all"}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    a.click(); URL.revokeObjectURL(a.href);
   }
 
   const presetBtn = "px-3 py-1 rounded text-xs font-medium border border-slate-300 text-slate-600 hover:bg-slate-100 transition";
@@ -371,59 +343,42 @@ export default function LeadsDashboard() {
     <div>
       {toast && (
         <div className={`fixed right-4 top-4 z-[200] flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
-          {toast.text}
-          <button onClick={() => setToast(null)} className="ml-2 opacity-60 hover:opacity-100">✕</button>
+          {toast.text}<button onClick={() => setToast(null)} className="ml-2 opacity-60 hover:opacity-100">✕</button>
         </div>
       )}
 
       <div className="space-y-5">
 
-        {/* Header + Actions */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-[#1a3a6b]">Customer Lead Management</h1>
-          <div className="flex gap-2">
-            <Link href="/leads/add" className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4"><path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v5.5h5.5a.75.75 0 010 1.5h-5.5v5.5a.75.75 0 01-1.5 0v-5.5H3.75a.75.75 0 010-1.5h5.5V3.75A.75.75 0 0110 3z" clipRule="evenodd" /></svg>
-              Fill Form
-            </Link>
-          </div>
+          <Link href="/leads/add" className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4"><path fillRule="evenodd" d="M10 3a.75.75 0 01.75.75v5.5h5.5a.75.75 0 010 1.5h-5.5v5.5a.75.75 0 01-1.5 0v-5.5H3.75a.75.75 0 010-1.5h5.5V3.75A.75.75 0 0110 3z" clipRule="evenodd" /></svg>
+            Add Lead
+          </Link>
         </div>
 
-        {/* ── Filter Bar ── */}
+        {/* Filter Bar */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm px-5 py-4 space-y-3">
-
-          {/* Row 1: date range + presets */}
           <div className="flex flex-wrap items-end gap-3">
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">From Date</label>
-              <input
-                type="date"
-                className="border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                value={fromDate}
-                onChange={e => setFromDate(e.target.value)}
-              />
+              <input type="date" className="border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={fromDate} onChange={e => setFromDate(e.target.value)} />
             </div>
             <div className="text-slate-400 pb-1.5 font-medium text-sm">→</div>
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1">To Date</label>
-              <input
-                type="date"
-                className="border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                value={toDate}
-                onChange={e => setToDate(e.target.value)}
-              />
+              <input type="date" className="border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={toDate} onChange={e => setToDate(e.target.value)} />
             </div>
-
-            {/* Quick presets */}
             <div className="flex items-end gap-1.5 pb-0.5">
               <button onClick={() => applyPreset("today")}     className={presetBtn}>Today</button>
               <button onClick={() => applyPreset("yesterday")} className={presetBtn}>Yesterday</button>
               <button onClick={() => applyPreset("week")}      className={presetBtn}>Last 7 Days</button>
               <button onClick={() => applyPreset("month")}     className={presetBtn}>This Month</button>
-              <button onClick={() => applyPreset("all")}       className={presetBtn + " border-indigo-300 text-indigo-600 hover:bg-indigo-50"}>All Time</button>
+              <button onClick={() => applyPreset("all")}       className={`${presetBtn} border-indigo-300 text-indigo-600 hover:bg-indigo-50`}>All Time</button>
             </div>
-
-            {/* Result count badge — shows combined total */}
             <div className="ml-auto pb-0.5">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                 {loading ? "..." : allLeads.length} leads found
@@ -431,48 +386,28 @@ export default function LeadsDashboard() {
             </div>
           </div>
 
-          {/* Row 2: search + export */}
           <div className="flex flex-wrap items-end gap-3 border-t border-slate-100 pt-3">
             <div className="flex-1 min-w-[260px]">
               <label className="block text-xs font-medium text-slate-600 mb-1">Search</label>
               <div className="flex gap-2">
-                <input
-                  className="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                <input className="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="Search by name, mobile, location, district..."
                   value={searchInput}
                   onChange={e => setSearchInput(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && setSearch(searchInput)}
                 />
-                <button
-                  onClick={() => setSearch(searchInput)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-medium flex items-center gap-1.5"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4"><path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" /></svg>
-                  Search
-                </button>
-                {search && (
-                  <button
-                    onClick={() => { setSearch(""); setSearchInput(""); }}
-                    className="border border-slate-300 text-slate-500 hover:bg-slate-50 px-3 py-1.5 rounded text-sm"
-                  >
-                    ✕ Clear
-                  </button>
-                )}
+                <button onClick={() => setSearch(searchInput)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-medium">Search</button>
+                {search && <button onClick={() => { setSearch(""); setSearchInput(""); }} className="border border-slate-300 text-slate-500 hover:bg-slate-50 px-3 py-1.5 rounded text-sm">✕ Clear</button>}
               </div>
             </div>
-
             <div className="flex gap-2 ml-auto">
-              <button onClick={() => window.print()} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">
-                🖨️ Print
-              </button>
-              <button onClick={() => exportCSV(allLeads)} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">
-                📄 Export CSV
-              </button>
+              <button onClick={() => window.print()} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">🖨️ Print</button>
+              <button onClick={exportCSV} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">📄 Export CSV</button>
             </div>
           </div>
         </div>
 
-        {/* Today's Follow-Ups — always shows today's follow-ups regardless of date filter */}
+        {/* Today's Follow-Ups */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
           <button className="w-full flex items-center justify-between px-5 py-3 bg-slate-100 hover:bg-slate-200 transition"
             onClick={() => setFollowupOpen(p => !p)}>
@@ -489,7 +424,7 @@ export default function LeadsDashboard() {
           )}
         </div>
 
-        {/* Regular Numbers — filtered by entryDate range */}
+        {/* Regular Numbers */}
         <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
           <button className="w-full flex items-center justify-between px-5 py-3 bg-slate-100 hover:bg-slate-200 transition"
             onClick={() => setRegularOpen(p => !p)}>

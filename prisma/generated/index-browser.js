@@ -205,6 +205,7 @@ exports.Prisma.CompanyScalarFieldEnum = {
   accountNumber: 'accountNumber',
   ifscCode: 'ifscCode',
   upiId: 'upiId',
+  upiQrUrl: 'upiQrUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
