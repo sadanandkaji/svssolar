@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -81,7 +81,6 @@ function EditLeadModal({ lead, employees, onClose, onSaved }: {
     assignedFranchiseId: lead.assignedFranchise?.id?.toString() || "",
   });
   const [saving, setSaving] = useState(false);
-
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
 
   async function save() {
@@ -253,14 +252,18 @@ function LeadsTable({ leads, employees, onEdit, onDelete, loading, emptyMsg }: {
 export default function LeadsDashboard() {
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(false);
-  const [date, setDate] = useState(todayISO());
-  const [search, setSearch] = useState("");
+
+  // ── Date range filter ──
+  const [fromDate, setFromDate] = useState(todayISO());
+  const [toDate, setToDate]     = useState(todayISO());
+
+  const [search, setSearch]           = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [followupOpen, setFollowupOpen] = useState(true);
-  const [regularOpen, setRegularOpen] = useState(true);
-  const [editingLead, setEditingLead] = useState<Lead | null>(null);
-  const [employees, setEmployees] = useState<{ id: number; name: string }[]>([]);
-  const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [regularOpen, setRegularOpen]   = useState(true);
+  const [editingLead, setEditingLead]   = useState<Lead | null>(null);
+  const [employees, setEmployees]       = useState<{ id: number; name: string }[]>([]);
+  const [toast, setToast]               = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
   function showToast(type: "ok" | "err", text: string) {
     setToast({ type, text });
@@ -271,14 +274,15 @@ export default function LeadsDashboard() {
     setLoading(true);
     try {
       const params = new URLSearchParams({ pageSize: "ALL" });
-      if (date) params.set("date", date);
-      if (search) params.set("search", search);
-      const res = await fetch(`/api/leads?${params}`);
+      if (fromDate) params.set("fromDate", fromDate);
+      if (toDate)   params.set("toDate",   toDate);
+      if (search)   params.set("search",   search);
+      const res  = await fetch(`/api/leads?${params}`);
       const data = await res.json();
       setAllLeads(data.leads || []);
     } catch { showToast("err", "Failed to load leads"); }
     finally { setLoading(false); }
-  }, [date, search]);
+  }, [fromDate, toDate, search]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -288,6 +292,27 @@ export default function LeadsDashboard() {
       .then(d => setEmployees((d.employees || []).map((e: any) => ({ id: e.id, name: e.name }))))
       .catch(() => {});
   }, []);
+
+  // Quick range presets
+  function applyPreset(preset: "today" | "yesterday" | "week" | "month" | "all") {
+    const now = new Date();
+    if (preset === "today") {
+      const t = todayISO();
+      setFromDate(t); setToDate(t);
+    } else if (preset === "yesterday") {
+      const y = new Date(now); y.setDate(y.getDate() - 1);
+      const yISO = y.toISOString().slice(0, 10);
+      setFromDate(yISO); setToDate(yISO);
+    } else if (preset === "week") {
+      const w = new Date(now); w.setDate(w.getDate() - 6);
+      setFromDate(w.toISOString().slice(0, 10)); setToDate(todayISO());
+    } else if (preset === "month") {
+      const m = new Date(now.getFullYear(), now.getMonth(), 1);
+      setFromDate(m.toISOString().slice(0, 10)); setToDate(todayISO());
+    } else if (preset === "all") {
+      setFromDate(""); setToDate("");
+    }
+  }
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
 
@@ -306,24 +331,50 @@ export default function LeadsDashboard() {
     load();
   }
 
-  function exportCSV(leads: Lead[]) {
-    const header = ["Entry Date", "Mobile", "Customer Name", "Location", "District", "System", "Config", "Status", "Remarks", "Telecaller", "Follow Up"];
-    const rows = leads.map(l => [
-      formatDate(l.entryDate), l.mobileNumber, l.customerName || "", l.location || "",
-      l.district || "", l.systemRequirements || "", l.configuration || "",
-      STATUS_LABELS[l.status] || l.status, l.remarks || "",
-      l.assignedTelecaller?.name || "", l.followUpDate ? formatDate(l.followUpDate) : "",
-    ]);
-    const csv = [header, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `leads_${date}.csv`;
-    a.click();
+  function formatDateForExcel(d: string) {
+    // DD/MM/YYYY — Excel reads this correctly as a date
+    const dt = new Date(d);
+    const dd = String(dt.getDate()).padStart(2, "0");
+    const mm = String(dt.getMonth() + 1).padStart(2, "0");
+    const yyyy = dt.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
   }
 
+  function exportCSV(leads: Lead[]) {
+    const header = ["Entry Date", "Mobile Number", "Customer Name", "Location", "District", "System Required", "Config (KW/HP)", "Status", "Remarks", "Telecaller", "Follow Up Date"];
+    const rows = leads.map(l => [
+      formatDateForExcel(l.entryDate),
+      // Prefix with tab character forces Excel to treat as text — prevents scientific notation
+      "\t" + l.mobileNumber,
+      l.customerName || "",
+      l.location || "",
+      l.district || "",
+      l.systemRequirements || (l.systemRequired ? l.systemRequired.replace(/_/g, " ") : ""),
+      l.configuration || "",
+      STATUS_LABELS[l.status] || l.status,
+      l.remarks || "",
+      l.assignedTelecaller?.name || "",
+      l.followUpDate ? formatDateForExcel(l.followUpDate) : "",
+    ]);
+
+    // Add BOM so Excel opens UTF-8 correctly (handles special chars)
+    const BOM = "\uFEFF";
+    const csv = BOM + [header, ...rows]
+      .map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `leads_${fromDate || "all"}_to_${toDate || "all"}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  const presetBtn = "px-3 py-1 rounded text-xs font-medium border border-slate-300 text-slate-600 hover:bg-slate-100 transition";
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div>
       {toast && (
         <div className={`fixed right-4 top-4 z-[200] flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
           {toast.text}
@@ -331,9 +382,9 @@ export default function LeadsDashboard() {
         </div>
       )}
 
-      <div className="max-w-[1600px] mx-auto px-4 py-6 space-y-5">
+      <div className="space-y-5">
 
-        {/* Welcome + Actions */}
+        {/* Header + Actions */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-[#1a3a6b]">Customer Lead Management</h1>
           <div className="flex gap-2">
@@ -347,38 +398,89 @@ export default function LeadsDashboard() {
             </Link>
             <Link href="/leads/upload" className="flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded text-sm font-medium">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4"><path d="M9.25 13.25a.75.75 0 001.5 0V4.636l2.955 3.129a.75.75 0 001.09-1.03l-4.25-4.5a.75.75 0 00-1.09 0l-4.25 4.5a.75.75 0 101.09 1.03L9.25 4.636v8.614z" /><path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" /></svg>
-              Upload Mobile Numbers
+              Upload Numbers
             </Link>
           </div>
         </div>
 
-        {/* Filter Bar */}
-        <div className="bg-white rounded-lg border border-slate-200 shadow-sm px-5 py-4">
-          <div className="flex flex-wrap items-end gap-4">
+        {/* ── Filter Bar ── */}
+        <div className="bg-white rounded-lg border border-slate-200 shadow-sm px-5 py-4 space-y-3">
+
+          {/* Row 1: date range + presets */}
+          <div className="flex flex-wrap items-end gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Date:</label>
-              <input type="date" className="border border-slate-300 rounded px-3 py-1.5 text-sm" value={date} onChange={e => setDate(e.target.value)} />
+              <label className="block text-xs font-medium text-slate-600 mb-1">From Date</label>
+              <input
+                type="date"
+                className="border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={fromDate}
+                onChange={e => setFromDate(e.target.value)}
+              />
             </div>
+            <div className="text-slate-400 pb-1.5 font-medium text-sm">→</div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">To Date</label>
+              <input
+                type="date"
+                className="border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                value={toDate}
+                onChange={e => setToDate(e.target.value)}
+              />
+            </div>
+
+            {/* Quick presets */}
+            <div className="flex items-end gap-1.5 pb-0.5">
+              <button onClick={() => applyPreset("today")}     className={presetBtn}>Today</button>
+              <button onClick={() => applyPreset("yesterday")} className={presetBtn}>Yesterday</button>
+              <button onClick={() => applyPreset("week")}      className={presetBtn}>Last 7 Days</button>
+              <button onClick={() => applyPreset("month")}     className={presetBtn}>This Month</button>
+              <button onClick={() => applyPreset("all")}       className={presetBtn + " border-indigo-300 text-indigo-600 hover:bg-indigo-50"}>All Time</button>
+            </div>
+
+            {/* Result count badge */}
+            <div className="ml-auto pb-0.5">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                {loading ? "..." : allLeads.length} leads found
+              </span>
+            </div>
+          </div>
+
+          {/* Row 2: search + export */}
+          <div className="flex flex-wrap items-end gap-3 border-t border-slate-100 pt-3">
             <div className="flex-1 min-w-[260px]">
-              <label className="block text-xs font-medium text-slate-600 mb-1">Search:</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Search</label>
               <div className="flex gap-2">
-                <input className="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm" placeholder="Search by name, location, number..." value={searchInput} onChange={e => setSearchInput(e.target.value)}
-                  onKeyDown={e => e.key === "Enter" && setSearch(searchInput)} />
-                <button onClick={() => setSearch(searchInput)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-medium flex items-center gap-1.5">
+                <input
+                  className="flex-1 border border-slate-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Search by name, mobile, location, district..."
+                  value={searchInput}
+                  onChange={e => setSearchInput(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && setSearch(searchInput)}
+                />
+                <button
+                  onClick={() => setSearch(searchInput)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded text-sm font-medium flex items-center gap-1.5"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4"><path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" /></svg>
                   Search
                 </button>
+                {search && (
+                  <button
+                    onClick={() => { setSearch(""); setSearchInput(""); }}
+                    className="border border-slate-300 text-slate-500 hover:bg-slate-50 px-3 py-1.5 rounded text-sm"
+                  >
+                    ✕ Clear
+                  </button>
+                )}
               </div>
             </div>
+
             <div className="flex gap-2 ml-auto">
               <button onClick={() => window.print()} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">
                 🖨️ Print
               </button>
               <button onClick={() => exportCSV(allLeads)} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">
-                📊 Excel
-              </button>
-              <button onClick={() => exportCSV(allLeads)} className="flex items-center gap-1.5 border border-slate-300 rounded px-3 py-1.5 text-sm text-slate-600 hover:bg-slate-50">
-                📄 CSV
+                📄 Export CSV
               </button>
             </div>
           </div>
@@ -397,7 +499,7 @@ export default function LeadsDashboard() {
           {followupOpen && (
             <LeadsTable leads={followupLeads} employees={employees}
               onEdit={setEditingLead} onDelete={handleDelete}
-              loading={loading} emptyMsg="No follow-ups found for today" />
+              loading={loading} emptyMsg="No follow-ups scheduled for today" />
           )}
         </div>
 
@@ -414,9 +516,10 @@ export default function LeadsDashboard() {
           {regularOpen && (
             <LeadsTable leads={regularLeads} employees={employees}
               onEdit={setEditingLead} onDelete={handleDelete}
-              loading={loading} emptyMsg="No records found" />
+              loading={loading} emptyMsg="No records found for the selected date range" />
           )}
         </div>
+
       </div>
 
       {editingLead && (
