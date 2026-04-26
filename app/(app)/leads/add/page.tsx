@@ -4,13 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-type Employee = { id: number; name: string };
-
 function todayISO() { return new Date().toISOString().slice(0, 10); }
 
 export default function AddLeadPage() {
   const router = useRouter();
-  const [employees, setEmployees] = useState<Employee[]>([]);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
@@ -30,16 +27,7 @@ export default function AddLeadPage() {
     systemRequired: "",
     requiredFor: "DOMESTIC",
     siteType: "ROOF_TOP",
-    assignedTelecallerId: "",
-    assignedFranchiseId: "",
   });
-
-  useEffect(() => {
-    fetch("/api/employees?pageSize=ALL")
-      .then(r => r.json())
-      .then(d => setEmployees((d.employees || []).map((e: any) => ({ id: e.id, name: e.name }))))
-      .catch(() => {});
-  }, []);
 
   const set = (k: string, v: string) => setForm(p => ({ ...p, [k]: v }));
 
@@ -51,7 +39,6 @@ export default function AddLeadPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.mobileNumber.trim()) { showToast("err", "Mobile number is required"); return; }
-    if (!form.assignedTelecallerId) { showToast("err", "Please assign a telecaller"); return; }
     setSaving(true);
     try {
       const res = await fetch("/api/leads", {
@@ -62,8 +49,6 @@ export default function AddLeadPage() {
           leadType: "REGULAR",
           systemRequired: form.systemRequired || null,
           followUpDate: form.followUpDate || null,
-          assignedTelecallerId: form.assignedTelecallerId || null,
-          assignedFranchiseId: form.assignedFranchiseId || null,
         }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error || "Failed"); }
@@ -77,21 +62,21 @@ export default function AddLeadPage() {
   const labelCls = "block text-sm font-medium text-slate-700 mb-1";
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div>
       {toast && (
         <div className={`fixed right-4 top-4 z-[200] flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg text-sm font-medium ${toast.type === "ok" ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-red-200 bg-red-50 text-red-800"}`}>
           {toast.text}
         </div>
       )}
 
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-xl font-bold text-[#1a3a6b]">
             <span className="mr-2">➕</span> Add Customer Details
           </h1>
           <div className="flex gap-2">
-            <Link href="/leads/add" className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">📋 Fill Form</Link>
+            <Link href="/leads/add"    className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">📋 Fill Form</Link>
             <Link href="/leads/walkin" className="bg-teal-600 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">🚶 Walk-in Customer</Link>
             <Link href="/leads/upload" className="bg-amber-500 text-white px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5">📤 Upload Mobile Numbers</Link>
           </div>
@@ -128,7 +113,11 @@ export default function AddLeadPage() {
               <div>
                 <label className={labelCls}>Region</label>
                 <select className={inputCls} value={form.region} onChange={e => set("region", e.target.value)}>
-                  <option>North</option><option>South</option><option>East</option><option>West</option><option>NA</option>
+                  <option>North</option>
+                  <option>South</option>
+                  <option>East</option>
+                  <option>West</option>
+                  <option>NA</option>
                 </select>
               </div>
               <div className="md:col-span-2">
@@ -222,29 +211,6 @@ export default function AddLeadPage() {
             </div>
           </div>
 
-          {/* Assignment */}
-          <div className="bg-white rounded-lg border border-slate-200 shadow-sm">
-            <div className="border-b border-slate-200 px-5 py-3">
-              <h2 className="font-semibold text-[#1a3a6b] flex items-center gap-2">👥 Assignment</h2>
-            </div>
-            <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>Assign to Telecaller <span className="text-red-500">*</span></label>
-                <select className={inputCls} value={form.assignedTelecallerId} onChange={e => set("assignedTelecallerId", e.target.value)} required>
-                  <option value="">-- Select Telecaller --</option>
-                  {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className={labelCls}>Assign to Franchise</label>
-                <select className={inputCls} value={form.assignedFranchiseId} onChange={e => set("assignedFranchiseId", e.target.value)}>
-                  <option value="">-- Select Franchise --</option>
-                  {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-                </select>
-              </div>
-            </div>
-          </div>
-
           {/* Submit */}
           <div className="flex justify-center pb-6">
             <button type="submit" disabled={saving}
@@ -252,6 +218,7 @@ export default function AddLeadPage() {
               {saving ? "Submitting..." : "📤 Submit Customer Details"}
             </button>
           </div>
+
         </form>
       </div>
     </div>
