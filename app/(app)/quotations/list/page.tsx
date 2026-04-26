@@ -12,6 +12,60 @@ type Quotation = {
 
 type PageSize = 10 | 20 | "ALL";
 
+// ── Quotation Type Modal ───────────────────────────────────────────────────────
+function QuotationTypeModal({ quotationId, onClose }: { quotationId: number; onClose: () => void }) {
+  const router = useRouter();
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="bg-[#1a237e] px-6 py-4 flex items-center justify-between">
+          <h2 className="text-white font-bold text-lg">Select Quotation Type</h2>
+          <button onClick={onClose} className="text-white/70 hover:text-white text-xl leading-none">✕</button>
+        </div>
+
+        {/* Options */}
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-slate-500 mb-2">Choose the type of quotation to view or print:</p>
+
+          {/* Simple Quotation */}
+          <button
+            onClick={() => router.push(`/quotations/${quotationId}/simple`)}
+            className="w-full flex items-start gap-4 rounded-xl border-2 border-slate-200 hover:border-blue-400 bg-white hover:bg-blue-50 p-4 text-left transition group"
+          >
+            <div className="h-10 w-10 shrink-0 rounded-lg bg-blue-100 flex items-center justify-center text-xl group-hover:bg-blue-200 transition">
+              📄
+            </div>
+            <div>
+              <p className="font-semibold text-slate-800 group-hover:text-blue-700">Simple Quotation</p>
+              <p className="text-xs text-slate-500 mt-0.5">Basic quotation with product list and total amount. No tax breakdown, no system configuration. Clean and straightforward.</p>
+            </div>
+          </button>
+
+          {/* Detailed Quotation */}
+          <button
+            onClick={() => router.push(`/quotations/${quotationId}/preview`)}
+            className="w-full flex items-start gap-4 rounded-xl border-2 border-slate-200 hover:border-indigo-400 bg-white hover:bg-indigo-50 p-4 text-left transition group"
+          >
+            <div className="h-10 w-10 shrink-0 rounded-lg bg-indigo-100 flex items-center justify-center text-xl group-hover:bg-indigo-200 transition">
+              📋
+            </div>
+            <div>
+              <p className="font-semibold text-slate-800 group-hover:text-indigo-700">Detailed Quotation</p>
+              <p className="text-xs text-slate-500 mt-0.5">Full quotation with system configuration, GST/CGST/SGST breakdown, HSN codes, and payment details.</p>
+            </div>
+          </button>
+        </div>
+
+        <div className="border-t border-slate-100 px-6 py-3 bg-slate-50 text-right">
+          <button onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700 font-medium">Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main List Page ─────────────────────────────────────────────────────────────
 export default function QuotationListPage() {
   const router = useRouter();
   const [quotations, setQuotations] = useState<Quotation[]>([]);
@@ -21,6 +75,7 @@ export default function QuotationListPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [toast, setToast] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [quotationModalId, setQuotationModalId] = useState<number | null>(null);
 
   function showToast(type: "ok" | "err", text: string) {
     setToast({ type, text });
@@ -89,11 +144,24 @@ export default function QuotationListPage() {
         </div>
       )}
 
+      {/* Quotation Type Modal */}
+      {quotationModalId !== null && (
+        <QuotationTypeModal
+          quotationId={quotationModalId}
+          onClose={() => setQuotationModalId(null)}
+        />
+      )}
+
       <div className="bg-[#1a237e] text-white px-6 py-3 flex items-center justify-between shadow">
         <h1 className="text-lg font-bold tracking-wide">Quotation System</h1>
-        <Link href="/quotations" className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded flex items-center gap-1.5 transition">
-          + New Quotation
-        </Link>
+        <div className="flex gap-3">
+          <Link href="/invoices" className="text-sm bg-violet-500 hover:bg-violet-600 px-3 py-1.5 rounded flex items-center gap-1.5 transition font-medium">
+            🧾 All Invoices
+          </Link>
+          <Link href="/quotations" className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded flex items-center gap-1.5 transition">
+            + New Quotation
+          </Link>
+        </div>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 py-6">
@@ -137,18 +205,20 @@ export default function QuotationListPage() {
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1">
-                        {/* Preview */}
-                        <Link href={`/quotations/${q.id}/preview`}
-                          className="flex h-7 w-7 items-center justify-center rounded bg-cyan-500 text-white hover:bg-cyan-600" title="Preview">
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
-                            <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"/>
-                            <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41z" clipRule="evenodd"/>
-                          </svg>
-                        </Link>
+                        {/* Quotation type picker */}
+                        <button
+                          onClick={() => setQuotationModalId(q.id)}
+                          className="flex h-7 items-center gap-1 rounded bg-cyan-500 hover:bg-cyan-600 text-white px-2 text-xs font-medium"
+                          title="View Quotation"
+                        >
+                          📄 Quotation
+                        </button>
                         {/* Invoice */}
                         <Link href={`/quotations/${q.id}/invoice`}
-                          className="flex h-7 w-7 items-center justify-center rounded bg-violet-500 text-white hover:bg-violet-600 text-xs font-bold" title="Tax Invoice">
-                          ₹
+                          className="flex h-7 items-center gap-1 rounded bg-violet-500 hover:bg-violet-600 text-white px-2 text-xs font-medium"
+                          title="Tax Invoice"
+                        >
+                          🧾 Invoice
                         </Link>
                         {/* Edit */}
                         <button onClick={() => router.push(`/quotations?edit=${q.id}`)}

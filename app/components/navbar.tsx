@@ -15,24 +15,23 @@ type SessionUser = {
   isOwner: boolean;
 };
 
-// Top-level nav groups
 const NAV_ITEMS = [
   { href: "/dashboard",  label: "Dashboard"  },
-  { href: "/leads",      label: "Leads"      },  // CRM
+  { href: "/leads",      label: "Leads"      },
   { href: "/warehouses", label: "Warehouses" },
   { href: "/categories", label: "Categories" },
   { href: "/products",   label: "Products"   },
   { href: "/inventory",  label: "Inventory"  },
   { href: "/quotations", label: "Quotations" },
+  { href: "/invoices",   label: "🧾 Invoices" },
   { href: "/company",    label: "Company"    },
 ];
 
-// Sub-nav shown only when on a /leads/* route
 const LEADS_SUBNAV = [
-  { href: "/leads",        label: "📋 All Leads"      },
-  { href: "/leads/add",    label: "➕ Add Lead"        },
-  { href: "/leads/walkin", label: "🚶 Walk-in"         },
-  { href: "/leads/upload", label: "📤 Upload Numbers"  },
+  { href: "/leads",        label: "📋 All Leads"     },
+  { href: "/leads/add",    label: "➕ Add Lead"       },
+  { href: "/leads/walkin", label: "🚶 Walk-in"        },
+  { href: "/leads/upload", label: "📤 Upload Numbers" },
 ];
 
 function RoleBadge({ role }: { role: string }) {
@@ -107,8 +106,12 @@ export default function Navbar() {
                 href={item.href}
                 className={`inline-flex items-center rounded-t-md px-4 py-2 text-sm font-medium transition ${
                   isActive(item.href)
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-700 hover:bg-slate-100"
+                    ? item.href === "/invoices"
+                      ? "bg-violet-600 text-white"
+                      : "bg-blue-600 text-white"
+                    : item.href === "/invoices"
+                      ? "text-violet-700 hover:bg-violet-50 border border-violet-200 rounded-t-md"
+                      : "text-slate-700 hover:bg-slate-100"
                 }`}
               >
                 {item.label}
