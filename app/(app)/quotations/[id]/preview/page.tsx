@@ -239,9 +239,9 @@ export default function DetailedQuotationPage() {
             <div className="mt-4">
               <p className="font-bold text-slate-800 mb-1.5 text-sm">TERMS & CONDITIONS</p>
               <ol className="text-xs text-slate-600 space-y-0.5 list-decimal list-inside">
-                <li>40% Installation Advance amount</li>
+                <li>5% Installation Advance amount</li>
                 <li>50% Material dispatch</li>
-                <li>10% After Installation</li>
+                <li>45% After Installation</li>
               </ol>
               {q.remarks && <p className="text-xs text-slate-600 mt-2"><span className="font-medium">Remarks:</span> {q.remarks}</p>}
             </div>
