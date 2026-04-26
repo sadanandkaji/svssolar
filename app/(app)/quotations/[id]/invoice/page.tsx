@@ -17,7 +17,8 @@ type Quotation = {
     name: string; address: string | null; gstNumber: string | null;
     contact: string | null; email: string | null; logoUrl: string | null;
     bankName: string | null; branchName: string | null;
-    accountName: string | null; accountNumber: string | null; ifscCode: string | null;
+    accountName: string | null; accountNumber: string | null;
+    ifscCode: string | null; upiId: string | null;
   };
   items: Array<{
     id: number; productName: string; hsnCode: string | null;
@@ -86,6 +87,7 @@ export default function InvoicePreviewPage() {
 
   const invoiceNumber = q.quoteNumber.replace(/^QT-/, "INV-");
   const gstGroups = splitGst(q.items, q.fixedCosts);
+  const isUpi = q.paymentType === "UPI";
 
   const allItems = [
     ...q.items.map((it, i) => ({
@@ -273,6 +275,47 @@ export default function InvoicePreviewPage() {
                 </div>
               )}
             </div>
+
+            {/* Bank Details */}
+            {(q.company.bankName || q.company.accountNumber) && (
+              <div className="mt-4 pt-3 border-t border-slate-100">
+                <p className="text-xs font-bold text-slate-700 mb-2 uppercase tracking-wide">Bank Details</p>
+                <div className="space-y-1 text-xs">
+                  {q.company.accountName && (
+                    <div className="flex gap-2">
+                      <span className="text-slate-500 w-24 shrink-0">Account Name:</span>
+                      <span className="font-medium text-slate-800">{q.company.accountName}</span>
+                    </div>
+                  )}
+                  {q.company.accountNumber && (
+                    <div className="flex gap-2">
+                      <span className="text-slate-500 w-24 shrink-0">Account No:</span>
+                      <span className="font-mono font-medium text-slate-800">{q.company.accountNumber}</span>
+                    </div>
+                  )}
+                  {q.company.bankName && (
+                    <div className="flex gap-2">
+                      <span className="text-slate-500 w-24 shrink-0">Bank:</span>
+                      <span className="font-medium text-slate-800">{q.company.bankName}{q.company.branchName ? ` - ${q.company.branchName}` : ""}</span>
+                    </div>
+                  )}
+                  {q.company.ifscCode && (
+                    <div className="flex gap-2">
+                      <span className="text-slate-500 w-24 shrink-0">IFSC:</span>
+                      <span className="font-mono font-medium text-slate-800">{q.company.ifscCode}</span>
+                    </div>
+                  )}
+                  {/* UPI ID — always show if present; highlight when payment mode is UPI */}
+                  {q.company.upiId && (
+                    <div className={`flex gap-2 mt-1 pt-1 border-t border-slate-100 ${isUpi ? "text-indigo-700" : ""}`}>
+                      <span className={`w-24 shrink-0 ${isUpi ? "text-indigo-500 font-semibold" : "text-slate-500"}`}>UPI ID:</span>
+                      <span className={`font-mono font-semibold ${isUpi ? "text-indigo-700" : "text-slate-800"}`}>{q.company.upiId}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {q.remarks && (
               <div className="mt-4 pt-3 border-t border-slate-100">
                 <p className="text-xs font-bold text-slate-600 mb-0.5">Remarks:</p>
@@ -352,7 +395,6 @@ export default function InvoicePreviewPage() {
           }
           .print\\:hidden { display: none !important; }
 
-          /* Force the invoice container to fit exactly one page */
           .invoice-root {
             width: 100% !important;
             max-width: 100% !important;
@@ -360,11 +402,9 @@ export default function InvoicePreviewPage() {
             padding: 0 !important;
             box-shadow: none !important;
             border: none !important;
-            /* Scale down to fit if content is taller than one page */
             transform-origin: top left;
           }
 
-          /* Shrink font sizes slightly for print */
           .invoice-root * {
             font-size: 0.72rem !important;
             line-height: 1.3 !important;
@@ -372,7 +412,6 @@ export default function InvoicePreviewPage() {
           .invoice-root h1 { font-size: 1.3rem !important; }
           .invoice-root .text-lg, .invoice-root .text-xl { font-size: 0.85rem !important; }
 
-          /* Tighten padding for print */
           .invoice-root td, .invoice-root th { padding: 3px 6px !important; }
           .invoice-root .p-6 { padding: 8px 12px !important; }
           .invoice-root .px-6 { padding-left: 12px !important; padding-right: 12px !important; }
@@ -385,7 +424,6 @@ export default function InvoicePreviewPage() {
           .invoice-root .gap-6 { gap: 8px !important; }
           .invoice-root .space-y-1\\.5 > * + * { margin-top: 3px !important; }
 
-          /* Never break across pages */
           .invoice-root { page-break-inside: avoid; break-inside: avoid; }
           .invoice-root table { page-break-inside: avoid; break-inside: avoid; }
           .invoice-root tr { page-break-inside: avoid; break-inside: avoid; }

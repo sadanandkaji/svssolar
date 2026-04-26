@@ -20,7 +20,8 @@ type Quotation = {
     name: string; ownerName: string | null; address: string | null;
     gstNumber: string | null; contact: string | null; email: string | null;
     logoUrl: string | null; bankName: string | null; branchName: string | null;
-    accountName: string | null; accountNumber: string | null; ifscCode: string | null;
+    accountName: string | null; accountNumber: string | null;
+    ifscCode: string | null; upiId: string | null;
   };
   items: Array<{
     id: number; categoryName: string | null; productName: string;
@@ -85,6 +86,7 @@ export default function DetailedQuotationPage() {
   if (!q) return <div className="flex h-screen items-center justify-center text-red-500">Quotation not found.</div>;
 
   const gstGroups = splitGst(q.items, q.fixedCosts);
+  const isUpi = q.paymentType === "UPI";
   const allLineItems = [
     ...q.items.map(it=>({
       name:it.productName, desc:it.description, hsn:it.hsnCode||"—",
@@ -215,16 +217,25 @@ export default function DetailedQuotationPage() {
           <div className="px-5 py-4 border-r border-slate-200">
             <p className="font-bold text-slate-800 mb-3 text-sm">BANK DETAILS</p>
             {[
-              ["Name",       q.company.accountName],
-              ["IFSC Code",  q.company.ifscCode],
+              ["Name",        q.company.accountName],
+              ["IFSC Code",   q.company.ifscCode],
               ["Account No.", q.company.accountNumber],
-              ["Bank", q.company.bankName ? `${q.company.bankName}${q.company.branchName?` - ${q.company.branchName}`:""}` : null],
+              ["Bank",        q.company.bankName ? `${q.company.bankName}${q.company.branchName?` - ${q.company.branchName}`:""}` : null],
             ].filter(([,v])=>v).map(([label,val])=>(
               <div key={label as string} className="flex gap-2 text-xs mb-1">
                 <span className="text-slate-500 w-24 shrink-0">{label}:</span>
                 <span className="font-medium text-slate-800 font-mono">{val}</span>
               </div>
             ))}
+
+            {/* UPI ID — always show if present; highlighted when payment mode is UPI */}
+            {q.company.upiId && (
+              <div className={`flex gap-2 text-xs mt-2 pt-2 border-t border-slate-100 ${isUpi ? "text-indigo-700" : ""}`}>
+                <span className={`w-24 shrink-0 font-semibold ${isUpi ? "text-indigo-600" : "text-slate-500"}`}>UPI ID:</span>
+                <span className={`font-mono font-semibold ${isUpi ? "text-indigo-700" : "text-slate-800"}`}>{q.company.upiId}</span>
+              </div>
+            )}
+
             <div className="mt-4">
               <p className="font-bold text-slate-800 mb-1.5 text-sm">TERMS & CONDITIONS</p>
               <ol className="text-xs text-slate-600 space-y-0.5 list-decimal list-inside">
@@ -267,7 +278,7 @@ export default function DetailedQuotationPage() {
           </div>
         </div>
 
-        {/* Authorized Signatory only — customer signature removed */}
+        {/* Authorized Signatory */}
         <div className="px-6 py-5 border-t border-slate-200 flex justify-end">
           <div className="text-center border border-dashed border-slate-300 rounded p-4 w-64">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Authorized Signatory</p>

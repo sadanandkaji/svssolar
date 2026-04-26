@@ -29,6 +29,7 @@ type Company = {
   accountName: string | null;
   accountNumber: string | null;
   ifscCode: string | null;
+  upiId: string | null;
 };
 
 type Employee = {
@@ -44,6 +45,7 @@ type CompanyForm = {
   name: string; ownerName: string; address: string; gstNumber: string;
   contact: string; email: string; logoUrl: string; bankName: string;
   branchName: string; accountName: string; accountNumber: string; ifscCode: string;
+  upiId: string;
 };
 
 type EmpForm = { name: string; email: string; password: string; role: "OWNER" | "ADMIN" | "STAFF" };
@@ -55,6 +57,7 @@ function emptyCompanyForm(c?: Company): CompanyForm {
     gstNumber: c?.gstNumber ?? "", contact: c?.contact ?? "", email: c?.email ?? "",
     logoUrl: c?.logoUrl ?? "", bankName: c?.bankName ?? "", branchName: c?.branchName ?? "",
     accountName: c?.accountName ?? "", accountNumber: c?.accountNumber ?? "", ifscCode: c?.ifscCode ?? "",
+    upiId: c?.upiId ?? "",
   };
 }
 
@@ -246,6 +249,7 @@ export default function CompanyPage() {
           accountName: companyForm.accountName.trim() || null,
           accountNumber: companyForm.accountNumber.trim() || null,
           ifscCode: companyForm.ifscCode.trim() || null,
+          upiId: companyForm.upiId.trim() || null,
         }),
       });
       const data = await res.json();
@@ -511,6 +515,9 @@ export default function CompanyPage() {
                 <Field label="IFSC Code" value={companyForm.ifscCode}
                   onChange={(v) => setCompanyForm((p) => ({ ...p, ifscCode: v.toUpperCase() }))}
                   readOnly={!editingCompany} placeholder="e.g. CNRB0000452" />
+                <Field label="UPI ID" value={companyForm.upiId}
+                  onChange={(v) => setCompanyForm((p) => ({ ...p, upiId: v }))}
+                  readOnly={!editingCompany} placeholder="e.g. svssolar@okaxis" />
               </div>
             </div>
 
@@ -531,7 +538,7 @@ export default function CompanyPage() {
                     {company.address && <p className="mt-2 text-xs text-slate-500 leading-relaxed">{company.address}</p>}
                   </div>
                   <div>
-                    {(company.bankName || company.accountNumber) && (
+                    {(company.bankName || company.accountNumber || company.upiId) && (
                       <div className="border-l-4 border-blue-500 pl-4 bg-white rounded-r-xl py-3 pr-4 space-y-1.5 text-sm">
                         <p className="font-bold text-blue-800 text-xs uppercase tracking-wide mb-2">Bank Details</p>
                         {company.accountName && <p><span className="font-medium text-blue-700">Account Name:</span> {company.accountName}</p>}
@@ -539,6 +546,12 @@ export default function CompanyPage() {
                         {company.bankName && <p><span className="font-medium text-blue-700">Bank:</span> {company.bankName}</p>}
                         {company.branchName && <p><span className="font-medium text-blue-700">Branch:</span> {company.branchName}</p>}
                         {company.ifscCode && <p><span className="font-medium text-blue-700">IFSC:</span> {company.ifscCode}</p>}
+                        {company.upiId && (
+                          <p className="pt-1 mt-1 border-t border-blue-100">
+                            <span className="font-medium text-blue-700">UPI ID:</span>{" "}
+                            <span className="font-mono">{company.upiId}</span>
+                          </p>
+                        )}
                       </div>
                     )}
                     {company.logoUrl && (

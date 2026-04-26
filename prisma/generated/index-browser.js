@@ -204,6 +204,7 @@ exports.Prisma.CompanyScalarFieldEnum = {
   accountName: 'accountName',
   accountNumber: 'accountNumber',
   ifscCode: 'ifscCode',
+  upiId: 'upiId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -258,6 +259,67 @@ exports.Prisma.QuotationItemScalarFieldEnum = {
 exports.Prisma.QuotationFixedCostScalarFieldEnum = {
   id: 'id',
   quotationId: 'quotationId',
+  label: 'label',
+  cost: 'cost',
+  rateNote: 'rateNote',
+  hsnCode: 'hsnCode',
+  gstRate: 'gstRate',
+  total: 'total',
+  included: 'included',
+  sortOrder: 'sortOrder'
+};
+
+exports.Prisma.InvoiceScalarFieldEnum = {
+  id: 'id',
+  invoiceNumber: 'invoiceNumber',
+  invoiceDate: 'invoiceDate',
+  quotationId: 'quotationId',
+  companyId: 'companyId',
+  customerName: 'customerName',
+  customerAddress: 'customerAddress',
+  customerContact: 'customerContact',
+  customerEmail: 'customerEmail',
+  systemType: 'systemType',
+  systemSizeKw: 'systemSizeKw',
+  panelType: 'panelType',
+  panelWattage: 'panelWattage',
+  panelCount: 'panelCount',
+  outputWattageKw: 'outputWattageKw',
+  phase: 'phase',
+  subtotal: 'subtotal',
+  totalGst: 'totalGst',
+  discountPercent: 'discountPercent',
+  discountAmount: 'discountAmount',
+  finalPrice: 'finalPrice',
+  roundedPrice: 'roundedPrice',
+  advancePayment: 'advancePayment',
+  balanceDue: 'balanceDue',
+  paymentType: 'paymentType',
+  receiverName: 'receiverName',
+  remarks: 'remarks',
+  preparedBy: 'preparedBy',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvoiceItemScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
+  categoryName: 'categoryName',
+  productName: 'productName',
+  hsnCode: 'hsnCode',
+  description: 'description',
+  unitPrice: 'unitPrice',
+  quantity: 'quantity',
+  gstRate: 'gstRate',
+  totalPrice: 'totalPrice',
+  sortOrder: 'sortOrder'
+};
+
+exports.Prisma.InvoiceFixedCostScalarFieldEnum = {
+  id: 'id',
+  invoiceId: 'invoiceId',
   label: 'label',
   cost: 'cost',
   rateNote: 'rateNote',
@@ -355,6 +417,13 @@ exports.QuotationStatus = exports.$Enums.QuotationStatus = {
   APPROVED: 'APPROVED'
 };
 
+exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  ISSUED: 'ISSUED',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED'
+};
+
 exports.EmployeeRole = exports.$Enums.EmployeeRole = {
   OWNER: 'OWNER',
   ADMIN: 'ADMIN',
@@ -423,6 +492,9 @@ exports.Prisma.ModelName = {
   Quotation: 'Quotation',
   QuotationItem: 'QuotationItem',
   QuotationFixedCost: 'QuotationFixedCost',
+  Invoice: 'Invoice',
+  InvoiceItem: 'InvoiceItem',
+  InvoiceFixedCost: 'InvoiceFixedCost',
   Employee: 'Employee',
   Session: 'Session',
   CustomerLead: 'CustomerLead'

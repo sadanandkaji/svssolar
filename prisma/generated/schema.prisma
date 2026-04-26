@@ -1,4 +1,5 @@
 // prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
   output   = "./generated"
@@ -8,6 +9,8 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+// ── Categories ────────────────────────────────────────────────────────────────
 
 model Category {
   id          Int      @id @default(autoincrement())
@@ -42,6 +45,8 @@ enum AttributeType {
   NUMBER
   SELECT
 }
+
+// ── Products ──────────────────────────────────────────────────────────────────
 
 model Product {
   id              Int             @id @default(autoincrement())
@@ -89,6 +94,8 @@ enum BarcodeType {
   QRCODE
 }
 
+// ── Warehouses & Inventory ────────────────────────────────────────────────────
+
 enum WarehouseStatus {
   ACTIVE
   INACTIVE
@@ -135,9 +142,11 @@ model UniqueBarcode {
   @@map("unique_barcodes")
 }
 
+// ── Company ───────────────────────────────────────────────────────────────────
+
 model Company {
-  id            Int         @id @default(autoincrement())
-  name          String      @unique
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
   ownerName     String?
   address       String?
   gstNumber     String?
@@ -149,13 +158,18 @@ model Company {
   accountName   String?
   accountNumber String?
   ifscCode      String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  quotations    Quotation[]
-  employees     Employee[]
+  upiId         String? // ← UPI ID for payments
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  quotations Quotation[]
+  employees  Employee[]
+  invoices   Invoice[]
 
   @@map("companies")
 }
+
+// ── Quotations ────────────────────────────────────────────────────────────────
 
 enum QuotationStatus {
   DRAFT
@@ -164,75 +178,169 @@ enum QuotationStatus {
 }
 
 model Quotation {
-  id              Int                  @id @default(autoincrement())
-  quoteNumber     String               @unique
-  quoteDate       DateTime             @default(now())
+  id              Int             @id @default(autoincrement())
+  quoteNumber     String          @unique
+  quoteDate       DateTime        @default(now())
   companyId       Int
   customerName    String
   customerAddress String?
   customerContact String?
   customerEmail   String?
   systemType      String?
-  systemSizeKw    Decimal?             @db.Decimal(10, 2)
+  systemSizeKw    Decimal?        @db.Decimal(10, 2)
   panelType       String?
   panelWattage    Int?
   panelCount      Int?
-  outputWattageKw Decimal?             @db.Decimal(10, 2)
+  outputWattageKw Decimal?        @db.Decimal(10, 2)
   phase           String?
-  subtotal        Decimal              @default(0) @db.Decimal(14, 2)
-  totalGst        Decimal              @default(0) @db.Decimal(14, 2)
-  discountPercent Decimal              @default(0) @db.Decimal(5, 2)
-  discountAmount  Decimal              @default(0) @db.Decimal(14, 2)
-  finalPrice      Decimal              @default(0) @db.Decimal(14, 2)
-  roundedPrice    Decimal              @default(0) @db.Decimal(14, 2)
-  advancePayment  Decimal              @default(0) @db.Decimal(14, 2)
-  balanceDue      Decimal              @default(0) @db.Decimal(14, 2)
+  subtotal        Decimal         @default(0) @db.Decimal(14, 2)
+  totalGst        Decimal         @default(0) @db.Decimal(14, 2)
+  discountPercent Decimal         @default(0) @db.Decimal(5, 2)
+  discountAmount  Decimal         @default(0) @db.Decimal(14, 2)
+  finalPrice      Decimal         @default(0) @db.Decimal(14, 2)
+  roundedPrice    Decimal         @default(0) @db.Decimal(14, 2)
+  advancePayment  Decimal         @default(0) @db.Decimal(14, 2)
+  balanceDue      Decimal         @default(0) @db.Decimal(14, 2)
   paymentType     String?
   receiverName    String?
   remarks         String?
   preparedBy      String?
-  status          QuotationStatus      @default(DRAFT)
-  company         Company              @relation(fields: [companyId], references: [id])
-  items           QuotationItem[]
-  fixedCosts      QuotationFixedCost[]
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
+  status          QuotationStatus @default(DRAFT)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  company    Company              @relation(fields: [companyId], references: [id])
+  items      QuotationItem[]
+  fixedCosts QuotationFixedCost[]
+  invoice    Invoice? // auto-created when status = SAVED
 
   @@map("quotations")
 }
 
 model QuotationItem {
-  id           Int       @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   quotationId  Int
   categoryName String?
   productName  String
   hsnCode      String?
   description  String?
-  unitPrice    Decimal   @db.Decimal(12, 2)
-  quantity     Decimal   @default(1) @db.Decimal(10, 2)
-  gstRate      Decimal   @default(0) @db.Decimal(5, 2)
-  totalPrice   Decimal   @db.Decimal(14, 2)
-  sortOrder    Int       @default(0)
-  quotation    Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  unitPrice    Decimal @db.Decimal(12, 2)
+  quantity     Decimal @default(1) @db.Decimal(10, 2)
+  gstRate      Decimal @default(0) @db.Decimal(5, 2)
+  totalPrice   Decimal @db.Decimal(14, 2)
+  sortOrder    Int     @default(0)
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
 
   @@map("quotation_items")
 }
 
 model QuotationFixedCost {
-  id          Int       @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   quotationId Int
   label       String
-  cost        Decimal   @default(0) @db.Decimal(14, 2)
+  cost        Decimal @default(0) @db.Decimal(14, 2)
   rateNote    String?
   hsnCode     String?
-  gstRate     Decimal   @default(18) @db.Decimal(5, 2)
-  total       Decimal   @default(0) @db.Decimal(14, 2)
-  included    Boolean   @default(true)
-  sortOrder   Int       @default(0)
-  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  gstRate     Decimal @default(18) @db.Decimal(5, 2)
+  total       Decimal @default(0) @db.Decimal(14, 2)
+  included    Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  quotation Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
 
   @@map("quotation_fixed_costs")
 }
+
+// ── Invoices ──────────────────────────────────────────────────────────────────
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  CANCELLED
+}
+
+model Invoice {
+  id            Int      @id @default(autoincrement())
+  invoiceNumber String   @unique
+  invoiceDate   DateTime @default(now())
+
+  // Linked to quotation if auto-created (null = standalone invoice)
+  quotationId Int?       @unique
+  quotation   Quotation? @relation(fields: [quotationId], references: [id], onDelete: SetNull)
+
+  companyId       Int
+  customerName    String
+  customerAddress String?
+  customerContact String?
+  customerEmail   String?
+  systemType      String?
+  systemSizeKw    Decimal?      @db.Decimal(10, 2)
+  panelType       String?
+  panelWattage    Int?
+  panelCount      Int?
+  outputWattageKw Decimal?      @db.Decimal(10, 2)
+  phase           String?
+  subtotal        Decimal       @default(0) @db.Decimal(14, 2)
+  totalGst        Decimal       @default(0) @db.Decimal(14, 2)
+  discountPercent Decimal       @default(0) @db.Decimal(5, 2)
+  discountAmount  Decimal       @default(0) @db.Decimal(14, 2)
+  finalPrice      Decimal       @default(0) @db.Decimal(14, 2)
+  roundedPrice    Decimal       @default(0) @db.Decimal(14, 2)
+  advancePayment  Decimal       @default(0) @db.Decimal(14, 2)
+  balanceDue      Decimal       @default(0) @db.Decimal(14, 2)
+  paymentType     String?
+  receiverName    String?
+  remarks         String?
+  preparedBy      String?
+  status          InvoiceStatus @default(ISSUED)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  company    Company            @relation(fields: [companyId], references: [id])
+  items      InvoiceItem[]
+  fixedCosts InvoiceFixedCost[]
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id           Int     @id @default(autoincrement())
+  invoiceId    Int
+  categoryName String?
+  productName  String
+  hsnCode      String?
+  description  String?
+  unitPrice    Decimal @db.Decimal(12, 2)
+  quantity     Decimal @default(1) @db.Decimal(10, 2)
+  gstRate      Decimal @default(0) @db.Decimal(5, 2)
+  totalPrice   Decimal @db.Decimal(14, 2)
+  sortOrder    Int     @default(0)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_items")
+}
+
+model InvoiceFixedCost {
+  id        Int     @id @default(autoincrement())
+  invoiceId Int
+  label     String
+  cost      Decimal @default(0) @db.Decimal(14, 2)
+  rateNote  String?
+  hsnCode   String?
+  gstRate   Decimal @default(18) @db.Decimal(5, 2)
+  total     Decimal @default(0) @db.Decimal(14, 2)
+  included  Boolean @default(true)
+  sortOrder Int     @default(0)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@map("invoice_fixed_costs")
+}
+
+// ── Employees & Sessions ──────────────────────────────────────────────────────
 
 enum EmployeeRole {
   OWNER
@@ -270,11 +378,11 @@ model Session {
   @@map("sessions")
 }
 
-// ── CRM Lead Management ────────────────────────────────────────────────────────
+// ── CRM Lead Management ───────────────────────────────────────────────────────
 
 enum LeadType {
-  REGULAR // uploaded / fill form
-  WALKIN // walk-in customer
+  REGULAR
+  WALKIN
 }
 
 enum LeadStatus {
@@ -323,42 +431,31 @@ enum SystemRequired {
 }
 
 model CustomerLead {
-  id Int @id @default(autoincrement())
-
-  // Customer Info
-  entryDate          DateTime @default(now())
-  mobileNumber       String
-  customerName       String?
-  location           String?
-  district           String?
-  region             String   @default("North")
-  systemRequirements String? // free text e.g. "5KW On Grid"
-  configuration      String? // KW/HP value
-
-  // Type
-  leadType LeadType @default(REGULAR)
-
-  // Status & Follow-up
-  status         LeadStatus        @default(PENDING)
-  remarks        String?
-  quotation      QuotationProvided @default(NOT_PROVIDED)
-  callBackStatus CallBackStatus    @default(NO)
-  followUpDate   DateTime?
-
-  // System Details
-  systemRequired SystemRequired?
-  requiredFor    RequiredFor     @default(DOMESTIC)
-  siteType       SiteType        @default(ROOF_TOP)
-
-  // Assignment
+  id                   Int               @id @default(autoincrement())
+  entryDate            DateTime          @default(now())
+  mobileNumber         String
+  customerName         String?
+  location             String?
+  district             String?
+  region               String            @default("North")
+  systemRequirements   String?
+  configuration        String?
+  leadType             LeadType          @default(REGULAR)
+  status               LeadStatus        @default(PENDING)
+  remarks              String?
+  quotation            QuotationProvided @default(NOT_PROVIDED)
+  callBackStatus       CallBackStatus    @default(NO)
+  followUpDate         DateTime?
+  systemRequired       SystemRequired?
+  requiredFor          RequiredFor       @default(DOMESTIC)
+  siteType             SiteType          @default(ROOF_TOP)
   assignedTelecallerId Int?
   assignedFranchiseId  Int?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
 
   assignedTelecaller Employee? @relation("AssignedTelecaller", fields: [assignedTelecallerId], references: [id])
   assignedFranchise  Employee? @relation("AssignedFranchise", fields: [assignedFranchiseId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@map("customer_leads")
 }

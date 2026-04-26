@@ -1,3 +1,5 @@
+// app/api/quotations/route.ts
+// Key change: after creating/updating a SAVED quotation, auto-create an Invoice record
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -11,11 +13,114 @@ function generateQuoteNumber(companyName: string): string {
   return `QT-${prefix}-${y}${m}${d}-${rand}`;
 }
 
+function generateInvoiceNumber(companyName: string): string {
+  const now = new Date();
+  const y = String(now.getFullYear()).slice(2);
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  const rand = Math.floor(Math.random() * 9000 + 1000);
+  const prefix = companyName.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 3);
+  return `INV-${prefix}-${y}${m}${d}-${rand}`;
+}
+
 const includeBlock = {
   company: true,
   items: { orderBy: { sortOrder: "asc" as const } },
   fixedCosts: { orderBy: { sortOrder: "asc" as const } },
 };
+
+// Helper: create/update the linked Invoice for a quotation
+async function syncInvoice(quotationId: number, companyName: string, body: any, items: any[], fixedCosts: any[]) {
+  // Check if invoice already exists for this quotation
+  const existing = await prisma.invoice.findUnique({ where: { quotationId } });
+
+  // Generate invoice number
+  let invoiceNumber = existing?.invoiceNumber;
+  if (!invoiceNumber) {
+    let attempts = 0;
+    do {
+      invoiceNumber = generateInvoiceNumber(companyName);
+      attempts++;
+      if (attempts > 10) break;
+    } while (await prisma.invoice.findUnique({ where: { invoiceNumber } }));
+  }
+
+  const invoiceData = {
+    invoiceNumber: invoiceNumber!,
+    quotationId,
+    companyId: Number(body.companyId),
+    customerName: body.customerName?.trim() || "",
+    customerAddress: body.customerAddress?.trim() || null,
+    customerContact: body.customerContact?.trim() || null,
+    customerEmail: body.customerEmail?.trim() || null,
+    systemType: body.systemType?.trim() || null,
+    systemSizeKw: body.systemSizeKw ? parseFloat(body.systemSizeKw) : null,
+    panelType: body.panelType?.trim() || null,
+    panelWattage: body.panelWattage ? Number(body.panelWattage) : null,
+    panelCount: body.panelCount ? Number(body.panelCount) : null,
+    outputWattageKw: body.outputWattageKw ? parseFloat(body.outputWattageKw) : null,
+    phase: body.phase?.trim() || null,
+    subtotal: parseFloat(body.subtotal || "0"),
+    totalGst: parseFloat(body.totalGst || "0"),
+    discountPercent: parseFloat(body.discountPercent || "0"),
+    discountAmount: parseFloat(body.discountAmount || "0"),
+    finalPrice: parseFloat(body.finalPrice || "0"),
+    roundedPrice: parseFloat(body.roundedPrice || "0"),
+    advancePayment: parseFloat(body.advancePayment || "0"),
+    balanceDue: parseFloat(body.balanceDue || "0"),
+    paymentType: body.paymentType?.trim() || null,
+    receiverName: body.receiverName?.trim() || null,
+    remarks: body.remarks?.trim() || null,
+    preparedBy: body.preparedBy?.trim() || null,
+    status: "ISSUED" as const,
+  };
+
+  const itemsData = items.map((item: any, i: number) => ({
+    categoryName: item.categoryName?.trim() || null,
+    productName: item.productName?.trim() || "",
+    hsnCode: item.hsnCode?.trim() || null,
+    description: item.description?.trim() || null,
+    unitPrice: parseFloat(item.unitPrice || "0"),
+    quantity: parseFloat(item.quantity || "1"),
+    gstRate: parseFloat(item.gstRate || "0"),
+    totalPrice: parseFloat(item.totalPrice || "0"),
+    sortOrder: i,
+  }));
+
+  const fcData = fixedCosts.map((fc: any, i: number) => ({
+    label: fc.label?.trim() || "",
+    cost: parseFloat(fc.cost || "0"),
+    rateNote: fc.rateNote?.trim() || null,
+    hsnCode: fc.hsnCode?.trim() || null,
+    gstRate: parseFloat(fc.gstRate || "18"),
+    total: parseFloat(fc.total || "0"),
+    included: fc.included !== false,
+    sortOrder: i,
+  }));
+
+  if (existing) {
+    // Update existing invoice
+    await prisma.invoiceItem.deleteMany({ where: { invoiceId: existing.id } });
+    await prisma.invoiceFixedCost.deleteMany({ where: { invoiceId: existing.id } });
+    await prisma.invoice.update({
+      where: { id: existing.id },
+      data: {
+        ...invoiceData,
+        items: { createMany: { data: itemsData } },
+        fixedCosts: { createMany: { data: fcData } },
+      },
+    });
+  } else {
+    // Create new invoice
+    await prisma.invoice.create({
+      data: {
+        ...invoiceData,
+        items: { createMany: { data: itemsData } },
+        fixedCosts: { createMany: { data: fcData } },
+      },
+    });
+  }
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -38,18 +143,13 @@ export async function GET(req: NextRequest) {
   let quotations;
   if (pageSize === "ALL") {
     quotations = await prisma.quotation.findMany({
-      where,
-      include: includeBlock,
-      orderBy: { createdAt: "desc" },
+      where, include: includeBlock, orderBy: { createdAt: "desc" },
     });
   } else {
     const size = Number(pageSize);
     quotations = await prisma.quotation.findMany({
-      where,
-      include: includeBlock,
-      orderBy: { createdAt: "desc" },
-      skip: (page - 1) * size,
-      take: size,
+      where, include: includeBlock, orderBy: { createdAt: "desc" },
+      skip: (page - 1) * size, take: size,
     });
   }
 
@@ -59,7 +159,6 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const company = await prisma.company.findUnique({ where: { id: Number(body.companyId) } });
     if (!company) return NextResponse.json({ error: "Company not found" }, { status: 404 });
 
@@ -110,7 +209,7 @@ export async function POST(req: NextRequest) {
             data: items.map((item: any, i: number) => ({
               categoryName: item.categoryName?.trim() || null,
               productName: item.productName?.trim() || "",
-              hsnCode: item.hsnCode?.trim() || null,   // ← save hsnCode
+              hsnCode: item.hsnCode?.trim() || null,
               description: item.description?.trim() || null,
               unitPrice: parseFloat(item.unitPrice || "0"),
               quantity: parseFloat(item.quantity || "1"),
@@ -126,7 +225,7 @@ export async function POST(req: NextRequest) {
               label: fc.label?.trim() || "",
               cost: parseFloat(fc.cost || "0"),
               rateNote: fc.rateNote?.trim() || null,
-              hsnCode: fc.hsnCode?.trim() || null,     // ← save hsnCode
+              hsnCode: fc.hsnCode?.trim() || null,
               gstRate: parseFloat(fc.gstRate || "18"),
               total: parseFloat(fc.total || "0"),
               included: fc.included !== false,
@@ -138,12 +237,15 @@ export async function POST(req: NextRequest) {
       include: includeBlock,
     });
 
+    // ── Auto-create invoice when quotation is SAVED (not DRAFT) ──────────────
+    if (quotation.status === "SAVED") {
+      await syncInvoice(quotation.id, company.name, body, items, fixedCosts).catch(console.error);
+    }
+
     return NextResponse.json(quotation, { status: 201 });
   } catch (err: any) {
     console.error("POST /api/quotations:", err);
-    if (err.code === "P2002") {
-      return NextResponse.json({ error: "Quote number already exists" }, { status: 409 });
-    }
+    if (err.code === "P2002") return NextResponse.json({ error: "Quote number already exists" }, { status: 409 });
     return NextResponse.json({ error: err.message || "Failed to create quotation" }, { status: 500 });
   }
 }

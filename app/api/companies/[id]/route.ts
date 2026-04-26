@@ -31,18 +31,19 @@ export async function PUT(req: NextRequest, { params }: Ctx) {
     const company = await prisma.company.update({
       where: { id: numId },
       data: {
-        name: body.name?.trim(),
-        ownerName: body.ownerName?.trim() || null,
-        address: body.address?.trim() || null,
-        gstNumber: body.gstNumber?.trim() || null,
-        contact: body.contact?.trim() || null,
-        email: body.email?.trim() || null,
-        logoUrl: body.logoUrl?.trim() || null,
-        bankName: body.bankName?.trim() || null,
-        branchName: body.branchName?.trim() || null,
-        accountName: body.accountName?.trim() || null,
+        name:          body.name?.trim(),
+        ownerName:     body.ownerName?.trim()     || null,
+        address:       body.address?.trim()       || null,
+        gstNumber:     body.gstNumber?.trim()     || null,
+        contact:       body.contact?.trim()       || null,
+        email:         body.email?.trim()         || null,
+        logoUrl:       body.logoUrl?.trim()       || null,
+        bankName:      body.bankName?.trim()      || null,
+        branchName:    body.branchName?.trim()    || null,
+        accountName:   body.accountName?.trim()   || null,
         accountNumber: body.accountNumber?.trim() || null,
-        ifscCode: body.ifscCode?.trim() || null,
+        ifscCode:      body.ifscCode?.trim()      || null,
+        upiId:         body.upiId?.trim()         || null,  // ← new
       },
     });
     return NextResponse.json(company);

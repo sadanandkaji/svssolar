@@ -14,7 +14,8 @@ type Quotation = {
     name: string; ownerName: string | null; address: string | null;
     gstNumber: string | null; contact: string | null; email: string | null;
     logoUrl: string | null; bankName: string | null; branchName: string | null;
-    accountName: string | null; accountNumber: string | null; ifscCode: string | null;
+    accountName: string | null; accountNumber: string | null;
+    ifscCode: string | null; upiId: string | null;
   };
   items: Array<{
     id: number; productName: string; description: string | null;
@@ -66,8 +67,8 @@ export default function SimpleQuotationPage() {
   if (!q) return <div className="flex h-screen items-center justify-center text-red-500">Quotation not found.</div>;
 
   const roundedPrice = Number(q.roundedPrice);
+  const isUpi = q.paymentType === "UPI";
 
-  // Combine products + included fixed costs
   const allItems = [
     ...q.items.map((it,i)=>({
       sno: i+1,
@@ -91,6 +92,16 @@ export default function SimpleQuotationPage() {
 
   const grandTotal = allItems.reduce((s,it)=>s+it.total,0);
   const totalTax   = allItems.reduce((s,it)=>s+it.total*(it.gstRate/100),0);
+
+  // Build bank rows — separate UPI so we can style it
+  const bankRows: { label: string; val: string; isUpiRow?: boolean }[] = [
+    q.company.accountName  ? { label: "Account Name", val: q.company.accountName }  : null,
+    q.company.accountNumber? { label: "Account No.",  val: q.company.accountNumber } : null,
+    q.company.bankName     ? { label: "Bank",         val: q.company.bankName }      : null,
+    q.company.branchName   ? { label: "Branch",       val: q.company.branchName }    : null,
+    q.company.ifscCode     ? { label: "IFSC Code",    val: q.company.ifscCode }      : null,
+    q.company.upiId        ? { label: "UPI ID",       val: q.company.upiId, isUpiRow: true } : null,
+  ].filter(Boolean) as { label: string; val: string; isUpiRow?: boolean }[];
 
   return (
     <>
@@ -144,7 +155,7 @@ export default function SimpleQuotationPage() {
           {q.customerEmail && <p className="text-xs text-slate-600">Email: {q.customerEmail}</p>}
         </div>
 
-        {/* Products Table - Simple (no tax columns) */}
+        {/* Products Table */}
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-[#1a237e] text-white">
@@ -176,16 +187,17 @@ export default function SimpleQuotationPage() {
           {/* Left: Bank Details */}
           <div className="px-5 py-5 border-r border-slate-200">
             <p className="font-bold text-slate-800 mb-3 text-sm uppercase tracking-wide">Bank Details</p>
-            {[
-              ["Account Name", q.company.accountName],
-              ["Account No.", q.company.accountNumber],
-              ["Bank", q.company.bankName],
-              ["Branch", q.company.branchName],
-              ["IFSC Code", q.company.ifscCode],
-            ].filter(([,v])=>v).map(([label,val])=>(
-              <div key={label as string} className="flex gap-2 text-xs mb-1.5">
-                <span className="text-slate-500 w-24 shrink-0">{label}:</span>
-                <span className="font-semibold text-slate-800">{val}</span>
+            {bankRows.map(({ label, val, isUpiRow }) => (
+              <div
+                key={label}
+                className={`flex gap-2 text-xs mb-1.5 ${isUpiRow ? "mt-2 pt-2 border-t border-slate-100" : ""}`}
+              >
+                <span className={`w-24 shrink-0 ${isUpiRow && isUpi ? "font-semibold text-indigo-600" : "text-slate-500"}`}>
+                  {label}:
+                </span>
+                <span className={`font-semibold ${isUpiRow && isUpi ? "text-indigo-700 font-mono" : "text-slate-800"} ${isUpiRow ? "font-mono" : ""}`}>
+                  {val}
+                </span>
               </div>
             ))}
             {q.remarks && (
@@ -236,7 +248,7 @@ export default function SimpleQuotationPage() {
           </div>
         </div>
 
-        {/* Signature - Authorized only */}
+        {/* Signature */}
         <div className="px-6 py-5 border-t border-slate-200 flex justify-end">
           <div className="text-center border border-dashed border-slate-300 rounded p-4 w-64">
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-8">Authorized Signatory</p>
